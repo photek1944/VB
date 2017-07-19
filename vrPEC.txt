@@ -1,0 +1,54 @@
+Option Explicit
+
+Sub ophalen_voorraad()
+
+Dim wkb1 As Workbook
+Dim wkb2 As Workbook
+Dim fileName As String
+Dim nDate As String
+Dim RetVal As Variant
+Dim wk_name As Variant
+Dim wsh As Object
+Set wsh = VBA.CreateObject("WScript.Shell")
+Dim waitOnReturn As Boolean: waitOnReturn = True
+Dim windowStyle As Integer: windowStyle = 1
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+'verandert de folder naar de map met de voorraadlijsten
+ChDrive "C"
+ChDir "C:\Users\Niels\Desktop\PEC VR 2"
+
+'laat de gebruiker een voorraadlijst selecteren
+fileName = Application.GetOpenFilename( _
+    FileFilter:="xl Files,*.xl*,xm Files,*.xm*", _
+    Title:="Selecteer de Excel-file van de voorraadlijst om de huidige voorraad mee te vergelijken.", _
+    MultiSelect:=False)
+
+'maakt objecten van de actieve werkmap en creëert een nieuwe werkmap voor het geselecteerde bestand
+Set wkb1 = ActiveWorkbook
+Set wkb2 = Workbooks.Add(fileName)
+
+'kopieert het eerste werkblad van het geselecteerde bestand naar de actieve werkmap
+wkb2.Sheets(1).Copy After:=wkb1.Sheets(1)
+'focust op het werkblad van de huidige voorraad
+wkb1.Sheets(1).Activate
+'sluit de werkmap van de gekopieerde voorraad
+wkb2.Close
+
+nDate = Format(Date, "yyyy-mm-dd")
+
+ActiveWorkbook.Worksheets(1).Name = nDate
+ActiveWorkbook.SaveAs fileName:=nDate & " PEC Voorraad", FileFormat:=xlOpenXMLWorkbookMacroEnabled
+wk_name = nDate & " PEC Voorraad.xlsm"
+ActiveWorkbook.Close
+
+wsh.Run "C:\Users\Niels\AppData\Local\Programs\Python\Python35\Scripts\dist\pec_vr\pec_vr.exe", windowStyle, waitOnReturn
+
+Workbooks.Open (wk_name)
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+End Sub
