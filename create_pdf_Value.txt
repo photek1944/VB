@@ -1,0 +1,19 @@
+Sub Save_Excel_As_PDF()
+
+    Dim iCounter As Integer
+    
+    For iCounter = 1 To Worksheets.Count
+
+        Worksheets(iCounter).ExportAsFixedFormat _
+            Type:=xlTypePDF, _
+            Filename:=ActiveWorkbook.Path & "\" & "(Value)" & " (" & Worksheets(iCounter).Range("G51").Value & ") " & Worksheets(iCounter).Name, _
+            Quality:=xlQualityStandard, _
+            IncludeDocProperties:=False, _
+            IgnorePrintAreas:=False, _
+            From:=1, _
+            To:=1, _
+            OpenAfterPublish:=False
+
+    Next
+    
+End Sub
