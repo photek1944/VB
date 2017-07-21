@@ -34,6 +34,7 @@ Dim RowToTest As Long
 Dim RowToAdd As Long
 Dim TotalRowsAdded As Long
 Dim element As Variant
+Dim test As Variant
 
 Application.ScreenUpdating = False
 Application.DisplayAlerts = False
@@ -79,14 +80,18 @@ Workbooks.Open (wk_name)
 'slaat de verwijderde ringnummers op in een array
 Worksheets("verwijderd").Activate
 TotalRowsRemoved = Rows(Rows.Count).End(xlUp).Row
-If TotalRowsRemoved <> 0 Then
+test = Range(Cells(1, 1), Cells(TotalRowsRemoved, 1)).Value
+If Not IsEmpty(test) Then
     removeArray = Range(Cells(1, 1), Cells(TotalRowsRemoved, 1)).Value
 End If
 
 'slaat de toegevoegde ringnummers op in een array
 Worksheets("toegevoegd").Activate
 TotalRowsAdded = Rows(Rows.Count).End(xlUp).Row
-addArray = Range(Cells(1, 1), Cells(TotalRowsAdded, 1)).Value
+test = Range(Cells(1, 1), Cells(TotalRowsAdded, 1)).Value
+If Not IsEmpty(test) Then
+    addArray = Range(Cells(1, 1), Cells(TotalRowsAdded, 1)).Value
+End If
 
 Worksheets(2).Activate
 
@@ -99,15 +104,14 @@ For RowToTest = Cells(Rows.Count, "C").End(xlUp).Row To 6 Step -1
 Next
 
 'zoekt de laatste rij met data in kolom "C" - 7 en voegt alle toegevoegde ringnummers toe
-For Each element In addArray
-    RowToAdd = Cells(Rows.Count, "C").End(xlUp).Row - 7
-    Cells(RowToAdd, "C").Select
-    Selection.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
-    Cells(RowToAdd, "C") = element
-Next element
-
-
-
+If Not IsEmpty(test) Then
+    For Each element In addArray
+        RowToAdd = Cells(Rows.Count, "C").End(xlUp).Row - 7
+        Cells(RowToAdd, "C").Select
+        Selection.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
+        Cells(RowToAdd, "C") = element
+    Next element
+End If
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
