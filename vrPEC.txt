@@ -59,18 +59,19 @@ wkb1.Sheets(1).Activate
 'sluit de werkmap van de gekopieerde voorraad
 wkb2.Close
 
-'formateert de datum van vandaag
+'herformatteert de datum en tijd van vandaag
 nDate = Format(Date, "yyyy-mm-dd")
+nTime = Format(Time, "(hhumm)")
 
 'geeft het werkblad de datum van vandaag als titel
-ActiveWorkbook.Worksheets(1).Name = nDate
+ActiveWorkbook.Worksheets(1).Name = nDate & " " & nTime
 'slaat de nieuwe werkmap op als een xlsm bestand
-ActiveWorkbook.SaveAs fileName:=nDate & " PEC Voorraad", FileFormat:=xlOpenXMLWorkbookMacroEnabled
-wk_name = nDate & " PEC Voorraad.xlsm"
+ActiveWorkbook.SaveAs fileName:=nDate & " " & nTime & " PEC Voorraad", FileFormat:=xlOpenXMLWorkbookMacroEnabled
+wk_name = nDate & " " & nTime & " PEC Voorraad.xlsm"
 'sluit de werkmap alvorens python code uit te voeren
 ActiveWorkbook.Close
 
-wsh.Run "C:\Users\Niels\AppData\Local\Programs\Python\Python35\Scripts\dist\pec_vr\pec_vr.exe", windowStyle, waitOnReturn
+wsh.Run "C:\Users\Niels\AppData\Local\Programs\Python\Python35\Scripts\dist\vrPEC\vrPEC.exe", windowStyle, waitOnReturn
 
 'opent opnieuw het werkboek nadat de python code uitgevoerd is
 Workbooks.Open (wk_name)
@@ -78,7 +79,9 @@ Workbooks.Open (wk_name)
 'slaat de verwijderde ringnummers op in een array
 Worksheets("verwijderd").Activate
 TotalRowsRemoved = Rows(Rows.Count).End(xlUp).Row
-removeArray = Range(Cells(1, 1), Cells(TotalRowsRemoved, 1)).Value
+If TotalRowsRemoved <> 0 Then
+    removeArray = Range(Cells(1, 1), Cells(TotalRowsRemoved, 1)).Value
+End If
 
 'slaat de toegevoegde ringnummers op in een array
 Worksheets("toegevoegd").Activate
@@ -102,7 +105,10 @@ For Each element In addArray
     Selection.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
     Cells(RowToAdd, "C") = element
 Next element
-    
+
+
+
+
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
 
