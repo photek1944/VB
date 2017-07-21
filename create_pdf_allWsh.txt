@@ -1,0 +1,19 @@
+Sub PDF_Creator()
+
+    Dim iCounter As Integer
+    
+    For iCounter = 1 To Worksheets.Count
+
+        Worksheets(iCounter).ExportAsFixedFormat _
+            Type:=xlTypePDF, _
+            Filename:=ActiveWorkbook.Path & "\" & Worksheets(iCounter).Name, _
+            Quality:=xlQualityStandard, _
+            IncludeDocProperties:=False, _
+            IgnorePrintAreas:=False, _
+            From:=1, _
+            To:=3, _
+            OpenAfterPublish:=False
+
+    Next
+    
+End Sub
