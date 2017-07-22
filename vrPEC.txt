@@ -57,8 +57,13 @@ Set wkb2 = Workbooks.Add(fileName)
 
 'kopieert het eerste werkblad van het geselecteerde bestand naar de actieve werkmap
 wkb2.Sheets(1).Copy After:=wkb1.Sheets(1)
-'focust op het werkblad van de huidige voorraad
+
+'focust op het werkblad van de huidige voorraad en converteert naar waarden
 wkb1.Sheets(1).Activate
+With Range("C6:C")
+    .Value = .Value
+End With
+
 'sluit de werkmap van de gekopieerde voorraad
 wkb2.Close
 
@@ -71,6 +76,7 @@ ActiveWorkbook.Worksheets(1).Name = nDate & " " & nTime
 'slaat de nieuwe werkmap op als een xlsm bestand
 ActiveWorkbook.SaveAs fileName:=nDate & " " & nTime & " PEC Voorraad", FileFormat:=xlOpenXMLWorkbookMacroEnabled
 wk_name = nDate & " " & nTime & " PEC Voorraad.xlsm"
+
 'sluit de werkmap alvorens python code uit te voeren
 ActiveWorkbook.Close
 
