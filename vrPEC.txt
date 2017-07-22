@@ -169,6 +169,7 @@ If IsEmpty(Range("A1")) = False Then
     lastRow = Cells(Rows.Count, "A").End(xlUp).Row
     Range("A1:A" & lastRow).Sort key1:=Range("A1:A" & lastRow), _
         order1:=xlAscending, Header:=xlNo
+        
 End If
 'kolombreedtes oude ringnummers autoaanpassen en sorteren
 Worksheets(4).Activate
