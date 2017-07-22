@@ -157,21 +157,34 @@ Columns("Z:Z").Select
     Selection.Columns.AutoFit
 'kolombreedte toegevoegde ringnummers autoaanpassen en sorteren
 Worksheets(3).Activate
-Columns("A:A").Select
-    Selection.Columns.AutoFit
-lastRow = Cells(Rows.Count, "A").End(xlUp).Row
-Range("A1:A" & lastRow).Sort key1:=Range("A1:A" & lastRow), _
-    order1:=xlAscending, Header:=xlNo
+If IsEmpty(Range("A1")) = False Then
+    Columns("A:A").Select
+        Selection.Columns.AutoFit
+    lastRow = Cells(Rows.Count, "A").End(xlUp).Row
+    Range("A1:A" & lastRow).Sort key1:=Range("A1:A" & lastRow), _
+        order1:=xlAscending, Header:=xlNo
+End If
 'kolombreedtes oude ringnummers autoaanpassen en sorteren
 Worksheets(4).Activate
-Columns("A:B").Select
-    Selection.Columns.AutoFit
-lastRow = Cells(Rows.Count, "A").End(xlUp).Row
-Range("A1:B" & lastRow).Sort key1:=Range("A1:A" & lastRow), _
-    order1:=xlAscending, Header:=xlNo
+If IsEmpty(Range("A1")) = False Then
+    Columns("A:B").Select
+        Selection.Columns.AutoFit
+    lastRow = Cells(Rows.Count, "A").End(xlUp).Row
+    Range("A1:B" & lastRow).Sort key1:=Range("A1:A" & lastRow), _
+        order1:=xlAscending, Header:=xlNo
+End If
 
 'voert de advanced filter uit
 Worksheets(1).Activate
+lastRow = Cells(Rows.Count, "AX").End(xlUp).Row
+Range("AA5:AX" & (lastRow - 32)).AdvancedFilter _
+Action:=xlFilterInPlace, _
+CriteriaRange:=Range("AA444:AX" & lastRow)
+
+Range("C2").Activate
+ActiveWorkbook.Save
+Workbooks.Close
+Workbooks.Open (wk_name)
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
