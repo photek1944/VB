@@ -134,7 +134,7 @@ Range("C6:Z" & lastRow).Sort key1:=Range("C6:C" & lastRow), _
 'voegt formules toe aan de nieuwe voorraadlijst (exact en vlookup)
 'voor vergelijkingen en opzoekingen uit oude voorraadlijst
 Sheet2Name = Sheets(2).Name
-Range("Z6:Z" & lastRow).Formula = "=VLOOKUP(C6,'" & Sheet2Name & "'!$C$5:$Z$437,24,FALSE)"
+Range("Z6:Z" & lastRow).Formula = "=VLOOKUP(C6,'" & Sheet2Name & "'!$C$5:$Z$" & lastRow & ",24,FALSE)"
 Range("AA6:AX" & lastRow).Formula = "=EXACT(C6,'" & Sheet2Name & "'!C6)"
 
 'converteert de formules naar waarden
@@ -179,7 +179,7 @@ Worksheets(1).Activate
 lastRow = Cells(Rows.Count, "AX").End(xlUp).Row
 Range("AA5:AX" & (lastRow - 32)).AdvancedFilter _
 Action:=xlFilterInPlace, _
-CriteriaRange:=Range("AA444:AX" & lastRow)
+CriteriaRange:=Range("AA" & (lastRow - 24) & ":AX" & lastRow)
 
 Range("C2").Activate
 ActiveWorkbook.Save
