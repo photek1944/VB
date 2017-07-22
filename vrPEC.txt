@@ -33,6 +33,7 @@ Dim bandNumber As String
 Dim RowToTest As Long
 Dim RowToAdd As Long
 Dim TotalRowsAdded As Long
+Dim lastRow As Long
 Dim element As Variant
 
 Application.ScreenUpdating = False
@@ -111,6 +112,20 @@ If IsNull(addArray) = False Then
         Cells(RowToAdd, "C") = element
     Next element
 End If
+
+'sorteert de oude voorraadlijst oplopend volgens ringnummer
+lastRow = Cells(Rows.Count, "C").End(xlUp).Row - 8
+Range("C6:Z" & lastRow).Sort key1:=Range("C6:C" & lastRow), _
+    order1:=xlAscending, Header:=xlNo
+
+
+'voegt formules toe aan de nieuwe voorraadlijst (match en vlookup)
+
+'kleurt nieuwe duiven in geel
+
+'voert de advanced filter uit
+
+
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
