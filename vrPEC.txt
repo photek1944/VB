@@ -26,15 +26,14 @@ Dim wsh As Object
 Set wsh = VBA.CreateObject("WScript.Shell")
 Dim waitOnReturn As Boolean: waitOnReturn = True
 Dim windowStyle As Integer: windowStyle = 1
-Dim removeArray() As Variant
-Dim addArray() As Variant
+Dim removeArray As Variant
+Dim addArray As Variant
 Dim TotalRowsRemoved As Long
 Dim bandNumber As String
 Dim RowToTest As Long
 Dim RowToAdd As Long
 Dim TotalRowsAdded As Long
 Dim element As Variant
-Dim test As Variant
 
 Application.ScreenUpdating = False
 Application.DisplayAlerts = False
@@ -79,18 +78,18 @@ Workbooks.Open (wk_name)
 
 'slaat de verwijderde ringnummers op in een array
 Worksheets("verwijderd").Activate
-TotalRowsRemoved = Rows(Rows.Count).End(xlUp).Row
-test = Range(Cells(1, 1), Cells(TotalRowsRemoved, 1)).Value
-If Not IsEmpty(test) Then
+If IsEmpty(Range("A1")) = False Then
+    TotalRowsRemoved = Rows(Rows.Count).End(xlUp).Row
     removeArray = Range(Cells(1, 1), Cells(TotalRowsRemoved, 1)).Value
 End If
 
 'slaat de toegevoegde ringnummers op in een array
 Worksheets("toegevoegd").Activate
-TotalRowsAdded = Rows(Rows.Count).End(xlUp).Row
-test = Range(Cells(1, 1), Cells(TotalRowsAdded, 1)).Value
-If Not IsEmpty(test) Then
+If IsEmpty(Range("A1")) = False Then
+    TotalRowsAdded = Rows(Rows.Count).End(xlUp).Row
     addArray = Range(Cells(1, 1), Cells(TotalRowsAdded, 1)).Value
+Else
+    addArray = Null
 End If
 
 Worksheets(2).Activate
@@ -104,11 +103,11 @@ For RowToTest = Cells(Rows.Count, "C").End(xlUp).Row To 6 Step -1
 Next
 
 'zoekt de laatste rij met data in kolom "C" - 7 en voegt alle toegevoegde ringnummers toe
-If Not IsEmpty(test) Then
+If IsNull(addArray) = False Then
     For Each element In addArray
         RowToAdd = Cells(Rows.Count, "C").End(xlUp).Row - 7
         Cells(RowToAdd, "C").Select
-        Selection.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
+        ActiveCell.EntireRow.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
         Cells(RowToAdd, "C") = element
     Next element
 End If
