@@ -60,7 +60,7 @@ wkb2.Sheets(1).Copy After:=wkb1.Sheets(1)
 
 'focust op het werkblad van de huidige voorraad en converteert naar waarden
 wkb1.Sheets(1).Activate
-With Range("C6:C")
+With Range("C:C")
     .Value = .Value
 End With
 
@@ -114,7 +114,7 @@ For RowToTest = Cells(Rows.Count, "C").End(xlUp).Row To 6 Step -1
     End If
 Next
 
-'zoekt de laatste rij met data in kolom "C" - 7 en voegt alle toegevoegde ringnummers toe
+'zoekt de laatste rij - 7 met data in kolom "C" en voegt alle toegevoegde ringnummers toe
 If IsNull(addArray) = False Then
     For Each bandNumberAdd In addArray
         RowToAdd = Cells(Rows.Count, "C").End(xlUp).Row - 7
@@ -122,35 +122,37 @@ If IsNull(addArray) = False Then
         ActiveCell.EntireRow.Insert Shift:=xlDown, _
         CopyOrigin:=xlFormatFromLeftOrAbove
         Cells(RowToAdd, "C") = bandNumberAdd
+        Range("D" & RowToAdd & ":Z" & RowToAdd).Value = "-"
+        Range("AA" & RowToAdd).Value = "nieuwe duif; check " & Date
     Next bandNumberAdd
 End If
 
 'sorteert de oude voorraadlijst oplopend volgens ringnummer
 lastRow = Cells(Rows.Count, "C").End(xlUp).Row - 8
-Range("C6:Z" & lastRow).Sort key1:=Range("C6:C" & lastRow), _
+Range("C6:AA" & lastRow).Sort key1:=Range("C6:C" & lastRow), _
     order1:=xlAscending, Header:=xlNo
 
 Worksheets(1).Activate
 
 'sorteert de nieuwe voorraadlijst oplopend volgens ringnummer
 lastRow = Cells(Rows.Count, "C").End(xlUp).Row - 8
-Range("C6:Z" & lastRow).Sort key1:=Range("C6:C" & lastRow), _
+Range("C6:AA" & lastRow).Sort key1:=Range("C6:C" & lastRow), _
     order1:=xlAscending, Header:=xlNo
 
 'voegt formules toe aan de nieuwe voorraadlijst (exact en vlookup)
 'voor vergelijkingen en opzoekingen uit oude voorraadlijst
 Sheet2Name = Sheets(2).Name
-Range("Z6:Z" & lastRow).Formula = "=VLOOKUP(C6,'" & Sheet2Name & "'!$C$5:$Z$" & lastRow & ",24,FALSE)"
-Range("AA6:AX" & lastRow).Formula = "=EXACT(C6,'" & Sheet2Name & "'!C6)"
+Range("AA6:AA" & lastRow).Formula = "=VLOOKUP(C6,'" & Sheet2Name & "'!$C$5:$AA$" & lastRow & ",25,FALSE)"
+Range("AB6:AZ" & lastRow).Formula = "=EXACT(C6,'" & Sheet2Name & "'!C6)"
 
 'converteert de formules naar waarden
-With Range("Z6:AX" & lastRow)
+With Range("AA6:AY" & lastRow)
     .Value = .Value
 End With
 
 'kleurt celachtergrond nieuwe duiven in het geel
 If IsNull(addArray) = False Then
-    For RowToTest = (Cells(Rows.Count, "C").End(xlUp).Row - 7) To 6 Step -1
+    For RowToTest = (Cells(Rows.Count, "C").End(xlUp).Row - 8) To 6 Step -1
         bandNumberAdd = Cells(RowToTest, "C").Value
         If IsInArray(bandNumberAdd, addArray) Then
             Range("C" & RowToTest).Interior.Color = 65535
@@ -159,7 +161,7 @@ If IsNull(addArray) = False Then
 End If
 
 'kolombreedte kolom 'opmerkingen' autoaanpassen
-Columns("Z:Z").Select
+Columns("AA:AA").Select
     Selection.Columns.AutoFit
 'kolombreedte toegevoegde ringnummers autoaanpassen en sorteren
 Worksheets(3).Activate
@@ -169,8 +171,8 @@ If IsEmpty(Range("A1")) = False Then
     lastRow = Cells(Rows.Count, "A").End(xlUp).Row
     Range("A1:A" & lastRow).Sort key1:=Range("A1:A" & lastRow), _
         order1:=xlAscending, Header:=xlNo
-        
 End If
+
 'kolombreedtes oude ringnummers autoaanpassen en sorteren
 Worksheets(4).Activate
 If IsEmpty(Range("A1")) = False Then
@@ -181,12 +183,12 @@ If IsEmpty(Range("A1")) = False Then
         order1:=xlAscending, Header:=xlNo
 End If
 
-'voert de advanced filter uit
+'advanced filter
 Worksheets(1).Activate
-lastRow = Cells(Rows.Count, "AX").End(xlUp).Row
-Range("AA5:AX" & (lastRow - 32)).AdvancedFilter _
+lastRow = Cells(Rows.Count, "AZ").End(xlUp).Row
+Range("AB5:AZ" & (lastRow - 33)).AdvancedFilter _
 Action:=xlFilterInPlace, _
-CriteriaRange:=Range("AA" & (lastRow - 24) & ":AX" & lastRow)
+CriteriaRange:=Range("AB" & (lastRow - 25) & ":AZ" & lastRow)
 
 Range("C2").Activate
 ActiveWorkbook.Save
