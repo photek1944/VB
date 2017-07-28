@@ -1,0 +1,68 @@
+Dim lastRow As String
+Dim rng As Range, cell As Variant
+Dim x As Integer
+
+
+Sub Verzendlijst_inkleurenperklant()
+
+lastRow = Cells(Rows.Count, "Z").End(xlUp).Row
+    ActiveWorkbook.Worksheets("Magazijnverzending").Sort.SortFields.Clear
+    ActiveWorkbook.Worksheets("Magazijnverzending").Sort.SortFields.Add Key:= _
+        Range("AA6:AA" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets("Magazijnverzending").Sort.SortFields.Add Key:= _
+        Range("Z6:Z" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets("Magazijnverzending").Sort.SortFields.Add Key:= _
+        Range("T6:T" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    With ActiveWorkbook.Worksheets("Magazijnverzending").Sort
+        .SetRange Range("G5:AI" & lastRow)
+        .Header = xlYes
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+    End With
+
+lastRow = Cells(Rows.Count, "C").End(xlUp).Row
+x = 0
+For cell = 7 To lastRow
+    If (Cells(cell, 26).Value = Cells(cell - 1, 26).Value) Then
+            Range("F" & cell - 1 & ":AI" & cell - 1).Select
+            Selection.Copy
+            Range("F" & cell & ":AI" & cell).Select
+            Selection.PasteSpecial Paste:=xlPasteFormats, Operation:=xlNone, _
+                SkipBlanks:=False, Transpose:=False
+            Application.CutCopyMode = False
+    Else
+        If x = 0 Then
+            x = 1
+            With Range("F" & cell & ":AI" & cell).Interior
+                .Pattern = xlSolid
+                .PatternColorIndex = xlAutomatic
+                .ThemeColor = xlThemeColorAccent1
+                .TintAndShade = 0.799981688894314
+                .PatternTintAndShade = 0
+            End With
+        ElseIf x = 1 Then
+            x = 0
+            With Range("F" & cell & ":AI" & cell).Interior
+                .Pattern = xlSolid
+                .PatternColorIndex = xlAutomatic
+                .ThemeColor = xlThemeColorDark1
+                .TintAndShade = 0
+                .PatternTintAndShade = 0
+            End With
+        End If
+    End If
+Next cell
+
+For RowToTest = (Cells(Rows.Count, "T").End(xlUp).Row) To 6 Step -1
+    InvoiceValue = Cells(RowToTest, "AD").Value
+    If InvoiceValue > 9000 Then
+        Range("T" & RowToTest).Interior.Color = 65535
+    End If
+Next
+
+End Sub
