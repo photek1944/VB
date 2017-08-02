@@ -11,7 +11,7 @@ Application.DisplayAlerts = False
 'in geval van refresh van bestaande hoklijst, volledig worksheet verwijderen en nieuw maken
 If Not IsEmpty(Range("A2").Value) Then
     lastRow2 = Cells(Rows.Count, "H").End(xlUp).Row
-    Range("A5:" & "I" & lastRow2).RemoveSubtotal
+    Range("A5:" & "J" & lastRow2).RemoveSubtotal
     Worksheets("Hoklijst").Delete
     Sheets.Add(After:=Sheets(Sheets.Count)).Name = "Hoklijst"
     Sheets("Hoklijst").Select
@@ -27,7 +27,7 @@ Range("F2").Value = "Hoklijst"
 Range("A2").Value = Worksheets("Magazijnverzending").Range("F3")
 Range("A2").NumberFormat = "dd/mm/yyyy"
 Range("A3").Value = Worksheets("Magazijnverzending").Range("K3")
-Range("A2:I5").Font.Bold = True
+Range("A2:J5").Font.Bold = True
 
 'kolomheaders toevoegen
 Range("A5").Value = "vestiging"
@@ -39,6 +39,7 @@ Range("F5").Value = "ringkleur"
 Range("G5").Value = "P nr."
 Range("H5").Value = "ringnummer"
 Range("I5").Value = "leverancier"
+Range("J5").Value = "bedrag"
 
 'lastRow Magazijnverzending
 Application.Worksheets("Magazijnverzending").Activate
@@ -90,6 +91,11 @@ Worksheets("Magazijnverzending").Range("U6:U" & lastRow).Copy
 Worksheets("Hoklijst").Range("I6").PasteSpecial Paste:=xlPasteValues
 Application.CutCopyMode = False
 
+'kopiëren van bedragen
+Worksheets("Magazijnverzending").Range("AD6:AD" & lastRow).Copy
+Worksheets("Hoklijst").Range("J6").PasteSpecial Paste:=xlPasteValues
+Application.CutCopyMode = False
+
 lastRow = Cells(Rows.Count, "H").End(xlUp).Row
 
 'opmaak datums
@@ -107,7 +113,7 @@ ActiveWorkbook.Worksheets("Hoklijst").Sort.SortFields.Clear
         Range("H6:H" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
         :=xlSortNormal
     With ActiveWorkbook.Worksheets("Hoklijst").Sort
-        .SetRange Range("A5:I" & lastRow)
+        .SetRange Range("A5:H" & lastRow)
         .Header = xlYes
         .MatchCase = False
         .Orientation = xlTopToBottom
@@ -116,7 +122,7 @@ ActiveWorkbook.Worksheets("Hoklijst").Sort.SortFields.Clear
     End With
     
 'opmaak headers
-Range("A5:I5").Select
+Range("A5:J5").Select
     With Selection.Interior
         .Pattern = xlSolid
         .PatternColorIndex = xlAutomatic
@@ -126,15 +132,15 @@ Range("A5:I5").Select
     End With
 
 'subtotalen
-Range("A5:I" & lastRow).Select
+Range("A5:J" & lastRow).Select
     Range(Selection, Selection.End(xlDown)).Select
     Selection.Subtotal GroupBy:=2, Function:=xlCount, TotalList:=Array(2), _
         Replace:=True, PageBreaks:=False, SummaryBelowData:=True
         
 'kolombreedtes autoaanpassen en waarden centreren
-Columns("A:I").Select
+Columns("A:J").Select
     Selection.Columns.AutoFit
-Columns("A:I").Select
+Columns("A:J").Select
 With Selection
     .HorizontalAlignment = xlCenter
     .VerticalAlignment = xlBottom
@@ -149,7 +155,7 @@ End With
 
 'omkaderen
 lastRow = Cells(Rows.Count, "A").End(xlUp).Row
-Range("A6:I" & lastRow).Select
+Range("A6:J" & lastRow).Select
 Selection.Borders(xlDiagonalDown).LineStyle = xlNone
 Selection.Borders(xlDiagonalUp).LineStyle = xlNone
     With Selection.Borders(xlEdgeLeft)
@@ -188,21 +194,32 @@ Selection.Borders(xlDiagonalUp).LineStyle = xlNone
         .TintAndShade = 0
         .Weight = xlThin
     End With
+    
+'dure duiven inkleuren
+For RowToTest = (Cells(Rows.Count, "H").End(xlUp).Row) To 6 Step -1
+    InvoiceValue = Cells(RowToTest, "J").Value
+    If InvoiceValue > 9000 Then
+        Range("H" & RowToTest).Interior.Color = 65535
+    End If
+Next
 
 'totaalrijen inkleuren
 For RowToTest = (Cells(Rows.Count, "A").End(xlUp).Row) To 6 Step -1
     subTot = Cells(RowToTest, "A").Value
     If subTot Like "*" & "Aantal" & "*" Then
-        With Range("A" & RowToTest & ":I" & RowToTest).Interior
+        With Range("A" & RowToTest & ":J" & RowToTest).Interior
             .Pattern = xlSolid
             .PatternColorIndex = xlAutomatic
             .ThemeColor = xlThemeColorAccent1
             .TintAndShade = 0.599993896298105
             .PatternTintAndShade = 0
         End With
-        Range("A" & RowToTest & ":I" & RowToTest).Font.Bold = True
+        Range("A" & RowToTest & ":J" & RowToTest).Font.Bold = True
     End If
 Next
+
+'kolom bedragen verbergen
+Columns("J").Hidden = True
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
