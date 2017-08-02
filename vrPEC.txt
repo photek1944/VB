@@ -14,7 +14,7 @@ On Error GoTo 0
 IsInArray = False
 End Function
 
-Sub ophalen_voorraad()
+Sub ophalen_vrPEC()
 
 Dim wkb1 As Workbook
 Dim wkb2 As Workbook
@@ -36,14 +36,14 @@ Dim RowToAdd As Long
 Dim TotalRowsAdded As Long
 Dim lastRow As Long
 Dim Sheet2Name As String
-Dim Rng As Variant
+Dim rng As Variant
 
 Application.ScreenUpdating = False
 Application.DisplayAlerts = False
 
 'verandert de folder naar de map met de voorraadlijsten
-ChDrive "C"
-ChDir "C:\Users\Niels\Desktop\PEC VR 2"
+ChDrive "N"
+ChDir "N:\PEC\Voorraad (boekhouding)\Voorraad PEC (ERP)\(jetreport) Voorraadwijzigingen"
 
 'laat de gebruiker een voorraadlijst selecteren
 fileName = Application.GetOpenFilename( _
@@ -60,6 +60,11 @@ wkb2.Sheets(1).Copy After:=wkb1.Sheets(1)
 
 'focust op het werkblad van de huidige voorraad en converteert naar waarden
 wkb1.Sheets(1).Activate
+With Range("C:C")
+    .Value = .Value
+End With
+'focust op het werkblad van de oude voorraad en converteert naar waarden
+wkb1.Sheets(2).Activate
 With Range("C:C")
     .Value = .Value
 End With
@@ -80,7 +85,7 @@ wk_name = nDate & " " & nTime & " PEC Voorraad.xlsm"
 'sluit de werkmap alvorens python code uit te voeren
 ActiveWorkbook.Close
 
-wsh.Run "C:\Users\Niels\AppData\Local\Programs\Python\Python35\Scripts\dist\vrPEC\vrPEC.exe", windowStyle, waitOnReturn
+wsh.Run "C:\Users\NielsC\AppData\Local\Programs\Python\Python35\Scripts\dist\vrPEC\vrPEC.exe", windowStyle, waitOnReturn
 
 'opent opnieuw het werkboek nadat de python code uitgevoerd is
 Workbooks.Open (wk_name)
@@ -104,6 +109,11 @@ Else
 End If
 
 Worksheets(2).Activate
+
+'schakelt alle filters weer uit
+If ActiveSheet.FilterMode = True Then
+ActiveSheet.ShowAllData
+End If
 
 'zoekt voor elke rij of het ringnummer in kolom C terug te vinden is in de array
 'met verwijderde ringnummers en indien WAAR verwijdert de volledige rij
@@ -189,6 +199,11 @@ lastRow = Cells(Rows.Count, "AZ").End(xlUp).Row
 Range("AB5:AZ" & (lastRow - 33)).AdvancedFilter _
 Action:=xlFilterInPlace, _
 CriteriaRange:=Range("AB" & (lastRow - 25) & ":AZ" & lastRow)
+
+'titelblokkering
+Columns("C:I").Select
+Range("I2").Activate
+ActiveWindow.FreezePanes = True
 
 Range("C2").Activate
 ActiveWorkbook.Save
