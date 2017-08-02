@@ -1,0 +1,210 @@
+Sub hoklijst()
+
+Dim lastRow As Integer
+Dim RowToTest As Long
+
+Application.Worksheets("Hoklijst").Activate
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+'in geval van refresh van bestaande hoklijst, volledig worksheet verwijderen en nieuw maken
+If Not IsEmpty(Range("A2").Value) Then
+    lastRow2 = Cells(Rows.Count, "H").End(xlUp).Row
+    Range("A5:" & "I" & lastRow2).RemoveSubtotal
+    Worksheets("Hoklijst").Delete
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = "Hoklijst"
+    Sheets("Hoklijst").Select
+End If
+
+'timestamp toevoegen
+Range("I2").Value = "Versie: " & Date & "   " & Time
+
+'titelblad
+Range("F2").Value = "Hoklijst"
+
+'formatteren
+Range("A2").Value = Worksheets("Magazijnverzending").Range("F3")
+Range("A2").NumberFormat = "dd/mm/yyyy"
+Range("A3").Value = Worksheets("Magazijnverzending").Range("K3")
+Range("A2:I5").Font.Bold = True
+
+'kolomheaders toevoegen
+Range("A5").Value = "vestiging"
+Range("B5").Value = "hok"
+Range("C5").Value = "verzochte ld"
+Range("D5").Value = "toegezegde ld"
+Range("E5").Value = "pluim"
+Range("F5").Value = "ringkleur"
+Range("G5").Value = "P nr."
+Range("H5").Value = "ringnummer"
+Range("I5").Value = "leverancier"
+
+'lastRow Magazijnverzending
+Application.Worksheets("Magazijnverzending").Activate
+lastRow = Cells(Rows.Count, "T").End(xlUp).Row
+
+'kopiëren van vestiging
+Application.Worksheets("Hoklijst").Activate
+Worksheets("Magazijnverzending").Range("K6:K" & lastRow).Copy
+Worksheets("Hoklijst").Range("A6").PasteSpecial Paste:=xlPasteValues
+Application.CutCopyMode = False
+
+'kopiëren van hok
+Worksheets("Magazijnverzending").Range("L6:L" & lastRow).Copy
+Worksheets("Hoklijst").Range("B6").PasteSpecial Paste:=xlPasteValues
+Application.CutCopyMode = False
+
+'kopiëren van verzochte leverdatum
+Worksheets("Magazijnverzending").Range("M6:M" & lastRow).Copy
+Worksheets("Hoklijst").Range("C6").PasteSpecial Paste:=xlPasteValues
+Application.CutCopyMode = False
+
+'kopiëren van toegezegde leverdatum
+Worksheets("Magazijnverzending").Range("N6:N" & lastRow).Copy
+Worksheets("Hoklijst").Range("D6").PasteSpecial Paste:=xlPasteValues
+Application.CutCopyMode = False
+
+'kopiëren van pluim
+Worksheets("Magazijnverzending").Range("O6:O" & lastRow).Copy
+Worksheets("Hoklijst").Range("E6").PasteSpecial Paste:=xlPasteValues
+Application.CutCopyMode = False
+
+'kopiëren van ringkleur
+Worksheets("Magazijnverzending").Range("P6:P" & lastRow).Copy
+Worksheets("Hoklijst").Range("F6").PasteSpecial Paste:=xlPasteValues
+Application.CutCopyMode = False
+
+'kopiëren van P nr.
+Worksheets("Magazijnverzending").Range("Q6:Q" & lastRow).Copy
+Worksheets("Hoklijst").Range("G6").PasteSpecial Paste:=xlPasteValues
+Application.CutCopyMode = False
+
+'kopiëren van ringnummers
+Worksheets("Magazijnverzending").Range("T6:T" & lastRow).Copy
+Worksheets("Hoklijst").Range("H6").PasteSpecial Paste:=xlPasteValues
+Application.CutCopyMode = False
+
+'kopiëren van leverancier
+Worksheets("Magazijnverzending").Range("U6:U" & lastRow).Copy
+Worksheets("Hoklijst").Range("I6").PasteSpecial Paste:=xlPasteValues
+Application.CutCopyMode = False
+
+lastRow = Cells(Rows.Count, "H").End(xlUp).Row
+
+'opmaak datums
+Range("C6:D" & lastRow).NumberFormat = "dd/mm/yyyy"
+
+'sorteren
+ActiveWorkbook.Worksheets("Hoklijst").Sort.SortFields.Clear
+    ActiveWorkbook.Worksheets("Hoklijst").Sort.SortFields.Add Key:= _
+        Range("A6:A" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets("Hoklijst").Sort.SortFields.Add Key:= _
+        Range("B6:B" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets("Hoklijst").Sort.SortFields.Add Key:= _
+        Range("H6:H" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    With ActiveWorkbook.Worksheets("Hoklijst").Sort
+        .SetRange Range("A5:I" & lastRow)
+        .Header = xlYes
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+    End With
+    
+'opmaak headers
+Range("A5:I5").Select
+    With Selection.Interior
+        .Pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorDark2
+        .TintAndShade = -9.99786370433668E-02
+        .PatternTintAndShade = 0
+    End With
+
+'subtotalen
+Range("A5:I" & lastRow).Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Subtotal GroupBy:=2, Function:=xlCount, TotalList:=Array(2), _
+        Replace:=True, PageBreaks:=False, SummaryBelowData:=True
+        
+'kolombreedtes autoaanpassen en waarden centreren
+Columns("A:I").Select
+    Selection.Columns.AutoFit
+Columns("A:I").Select
+With Selection
+    .HorizontalAlignment = xlCenter
+    .VerticalAlignment = xlBottom
+    .WrapText = False
+    .Orientation = 0
+    .AddIndent = False
+    .IndentLevel = 0
+    .ShrinkToFit = False
+    .ReadingOrder = xlContext
+    .MergeCells = False
+End With
+
+'omkaderen
+lastRow = Cells(Rows.Count, "A").End(xlUp).Row
+Range("A6:I" & lastRow).Select
+Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlInsideVertical)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlInsideHorizontal)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+
+'totaalrijen inkleuren
+For RowToTest = (Cells(Rows.Count, "A").End(xlUp).Row) To 6 Step -1
+    subTot = Cells(RowToTest, "A").Value
+    If subTot Like "*" & "Aantal" & "*" Then
+        With Range("A" & RowToTest & ":I" & RowToTest).Interior
+            .Pattern = xlSolid
+            .PatternColorIndex = xlAutomatic
+            .ThemeColor = xlThemeColorAccent1
+            .TintAndShade = 0.599993896298105
+            .PatternTintAndShade = 0
+        End With
+        Range("A" & RowToTest & ":I" & RowToTest).Font.Bold = True
+    End If
+Next
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+End Sub
