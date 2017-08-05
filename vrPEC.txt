@@ -64,7 +64,11 @@ With Range("C:C")
     .Value = .Value
 End With
 'focust op het werkblad van de oude voorraad en converteert naar waarden
+'schakelt alle filters weer uit
 wkb1.Sheets(2).Activate
+If ActiveSheet.FilterMode = True Then
+ActiveSheet.ShowAllData
+End If
 With Range("C:C")
     .Value = .Value
 End With
@@ -117,24 +121,40 @@ End If
 
 'zoekt voor elke rij of het ringnummer in kolom C terug te vinden is in de array
 'met verwijderde ringnummers en indien WAAR verwijdert de volledige rij
-For RowToTest = Cells(Rows.Count, "C").End(xlUp).Row To 6 Step -1
+For RowToTest = Cells(Rows.Count, "C").End(xlUp).Row - 8 To 6 Step -1
     bandNumberRem = Cells(RowToTest, "C").Value
-    If IsInArray(bandNumberRem, removeArray) Then
-        Rows(RowToTest).EntireRow.Delete
+    If IsArray(removeArray) Then 'controle of het om een array of var gaat (1 item array = var zoals het hier gebruikt wordt)
+        If IsInArray(bandNumberRem, removeArray) Then
+            Rows(RowToTest).EntireRow.Delete
+        End If
+    Else
+        If bandNumberRem = removeArray Then
+            Rows(RowToTest).EntireRow.Delete
+        End If
     End If
 Next
 
 'zoekt de laatste rij - 7 met data in kolom "C" en voegt alle toegevoegde ringnummers toe
 If IsNull(addArray) = False Then
-    For Each bandNumberAdd In addArray
+    If IsArray(addArray) Then
+       For Each bandNumberAdd In addArray
+            RowToAdd = Cells(Rows.Count, "C").End(xlUp).Row - 7
+            Cells(RowToAdd, "C").Select
+            ActiveCell.EntireRow.Insert Shift:=xlDown, _
+            CopyOrigin:=xlFormatFromLeftOrAbove
+            Cells(RowToAdd, "C") = bandNumberAdd
+        	Range("D" & RowToAdd & ":Z" & RowToAdd).Value = "-"
+        	Range("AA" & RowToAdd).Value = "nieuwe duif; check " & Date
+		Next bandNumberAdd
+	Else
         RowToAdd = Cells(Rows.Count, "C").End(xlUp).Row - 7
         Cells(RowToAdd, "C").Select
         ActiveCell.EntireRow.Insert Shift:=xlDown, _
         CopyOrigin:=xlFormatFromLeftOrAbove
-        Cells(RowToAdd, "C") = bandNumberAdd
+        Cells(RowToAdd, "C") = addArray
         Range("D" & RowToAdd & ":Z" & RowToAdd).Value = "-"
         Range("AA" & RowToAdd).Value = "nieuwe duif; check " & Date
-    Next bandNumberAdd
+	End If
 End If
 
 'sorteert de oude voorraadlijst oplopend volgens ringnummer
@@ -164,9 +184,15 @@ End With
 If IsNull(addArray) = False Then
     For RowToTest = (Cells(Rows.Count, "C").End(xlUp).Row - 8) To 6 Step -1
         bandNumberAdd = Cells(RowToTest, "C").Value
-        If IsInArray(bandNumberAdd, addArray) Then
-            Range("C" & RowToTest).Interior.Color = 65535
-        End If
+		If IsArray(addArray) Then
+			If IsInArray(bandNumberAdd, addArray) Then
+				Range("C" & RowToTest).Interior.Color = 65535
+			End If
+		Else
+	        If bandNumberAdd = addArray Then
+				Range("C" & RowToTest).Interior.Color = 65535
+	        End If
+		End If
     Next
 End If
 
