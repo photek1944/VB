@@ -14,7 +14,7 @@ On Error GoTo 0
 IsInArray = False
 End Function
 
-Sub ophalen_voorraad_PIPA()
+Sub ophalen_vrPIPA()
 
 Dim wkb1 As Workbook
 Dim wkb2 As Workbook
@@ -29,7 +29,7 @@ Dim windowStyle As Integer: windowStyle = 1
 Dim removeArray As Variant
 Dim addArray As Variant
 Dim TotalRowsRemoved As Long
-Dim bandNumberRem As Variant
+Dim bandNumberRem As String
 Dim bandNumberAdd As Variant
 Dim RowToTest As Long
 Dim RowToAdd As Long
@@ -42,8 +42,8 @@ Application.ScreenUpdating = False
 Application.DisplayAlerts = False
 
 'verandert de folder naar de map met de voorraadlijsten
-ChDrive "C"
-ChDir "C:\Users\Niels\Desktop\PEC VR 2"
+ChDrive "N"
+ChDir "N:\Financien\PIPA Trading Voorraad\(jetreport) PIPA Trading Voorraad"
 
 'laat de gebruiker een voorraadlijst selecteren
 fileName = Application.GetOpenFilename( _
@@ -64,11 +64,15 @@ With Range("C:C")
     .Value = .Value
 End With
 
+'focust op het werkblad van de oude voorraad en converteert naar waarden
 'schakelt alle filters weer uit
 wkb1.Sheets(2).Activate
 If ActiveSheet.FilterMode = True Then
 ActiveSheet.ShowAllData
 End If
+With Range("C:C")
+    .Value = .Value
+End With
 
 'sluit de werkmap van de gekopieerde voorraad
 wkb2.Close
@@ -86,7 +90,7 @@ wk_name = nDate & " " & nTime & " PIPA Voorraad.xlsm"
 'sluit de werkmap alvorens python code uit te voeren
 ActiveWorkbook.Close
 
-wsh.Run "C:\Users\Niels\AppData\Local\Programs\Python\Python35\Scripts\dist\vrPIPA\vrPIPA.exe", windowStyle, waitOnReturn
+wsh.Run "C:\Users\NielsC\AppData\Local\Programs\Python\Python35\Scripts\dist\vrPIPA\vrPIPA.exe", windowStyle, waitOnReturn
 
 'opent opnieuw het werkboek nadat de python code uitgevoerd is
 Workbooks.Open (wk_name)
@@ -111,6 +115,11 @@ End If
 
 Worksheets(2).Activate
 
+'schakelt alle filters weer uit
+If ActiveSheet.FilterMode = True Then
+ActiveSheet.ShowAllData
+End If
+
 'zoekt voor elke rij of het ringnummer in kolom C terug te vinden is in de array
 'met verwijderde ringnummers en indien WAAR verwijdert de volledige rij
 For RowToTest = Cells(Rows.Count, "C").End(xlUp).Row - 8 To 6 Step -1
@@ -128,15 +137,25 @@ Next
 
 'zoekt de laatste rij - 7 met data in kolom "C" en voegt alle toegevoegde ringnummers toe
 If IsNull(addArray) = False Then
-    For Each bandNumberAdd In addArray
+    If IsArray(addArray) Then
+        For Each bandNumberAdd In addArray
+            RowToAdd = Cells(Rows.Count, "C").End(xlUp).Row - 7
+            Cells(RowToAdd, "C").Select
+            ActiveCell.EntireRow.Insert Shift:=xlDown, _
+            CopyOrigin:=xlFormatFromLeftOrAbove
+            Cells(RowToAdd, "C") = bandNumberAdd
+            Range("E" & RowToAdd & ":AA" & RowToAdd).Value = "-"
+            Range("D" & RowToAdd).Value = "nieuwe duif; check " & Date
+        Next bandNumberAdd
+    Else
         RowToAdd = Cells(Rows.Count, "C").End(xlUp).Row - 7
-        Cells(RowToAdd, "C").Select
-        ActiveCell.EntireRow.Insert Shift:=xlDown, _
-        CopyOrigin:=xlFormatFromLeftOrAbove
-        Cells(RowToAdd, "C") = bandNumberAdd
-        Range("E" & RowToAdd & ":AA" & RowToAdd).Value = "-"
-        Range("D" & RowToAdd).Value = "nieuwe duif; check " & Date
-    Next bandNumberAdd
+            Cells(RowToAdd, "C").Select
+            ActiveCell.EntireRow.Insert Shift:=xlDown, _
+            CopyOrigin:=xlFormatFromLeftOrAbove
+            Cells(RowToAdd, "C") = addArray
+            Range("E" & RowToAdd & ":AA" & RowToAdd).Value = "-"
+            Range("D" & RowToAdd).Value = "nieuwe duif; check " & Date
+    End If
 End If
 
 'sorteert de oude voorraadlijst oplopend volgens ringnummer
@@ -169,8 +188,14 @@ End With
 If IsNull(addArray) = False Then
     For RowToTest = (Cells(Rows.Count, "C").End(xlUp).Row - 8) To 6 Step -1
         bandNumberAdd = Cells(RowToTest, "C").Value
-        If IsInArray(bandNumberAdd, addArray) Then
-            Range("C" & RowToTest & ":D" & RowToTest).Interior.Color = 65535
+        If IsArray(addArray) Then
+            If IsInArray(bandNumberAdd, addArray) Then
+                Range("C" & RowToTest & ":D" & RowToTest).Interior.Color = 65535
+            End If
+        Else
+            If bandNumberAdd = addArray Then
+                Range("C" & RowToTest & ":D" & RowToTest).Interior.Color = 65535
+            End If
         End If
     Next
 End If
