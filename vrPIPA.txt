@@ -63,7 +63,12 @@ wkb1.Sheets(1).Activate
 With Range("C:C")
     .Value = .Value
 End With
+
 'focust op het werkblad van de oude voorraad en converteert naar waarden
+'schakelt alle filters weer uit
+If ActiveSheet.FilterMode = True Then
+ActiveSheet.ShowAllData
+End If
 wkb1.Sheets(2).Activate
 With Range("C:C")
     .Value = .Value
