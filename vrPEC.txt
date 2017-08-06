@@ -143,10 +143,10 @@ If IsNull(addArray) = False Then
             ActiveCell.EntireRow.Insert Shift:=xlDown, _
             CopyOrigin:=xlFormatFromLeftOrAbove
             Cells(RowToAdd, "C") = bandNumberAdd
-        	Range("D" & RowToAdd & ":Z" & RowToAdd).Value = "-"
-        	Range("AA" & RowToAdd).Value = "nieuwe duif; check " & Date
-		Next bandNumberAdd
-	Else
+            Range("D" & RowToAdd & ":Z" & RowToAdd).Value = "-"
+            Range("AA" & RowToAdd).Value = "nieuwe duif; check " & Date
+        Next bandNumberAdd
+    Else
         RowToAdd = Cells(Rows.Count, "C").End(xlUp).Row - 7
         Cells(RowToAdd, "C").Select
         ActiveCell.EntireRow.Insert Shift:=xlDown, _
@@ -154,7 +154,7 @@ If IsNull(addArray) = False Then
         Cells(RowToAdd, "C") = addArray
         Range("D" & RowToAdd & ":Z" & RowToAdd).Value = "-"
         Range("AA" & RowToAdd).Value = "nieuwe duif; check " & Date
-	End If
+    End If
 End If
 
 'sorteert de oude voorraadlijst oplopend volgens ringnummer
@@ -184,15 +184,15 @@ End With
 If IsNull(addArray) = False Then
     For RowToTest = (Cells(Rows.Count, "C").End(xlUp).Row - 8) To 6 Step -1
         bandNumberAdd = Cells(RowToTest, "C").Value
-		If IsArray(addArray) Then
-			If IsInArray(bandNumberAdd, addArray) Then
-				Range("C" & RowToTest).Interior.Color = 65535
-			End If
-		Else
-	        If bandNumberAdd = addArray Then
-				Range("C" & RowToTest).Interior.Color = 65535
-	        End If
-		End If
+        If IsArray(addArray) Then
+            If IsInArray(bandNumberAdd, addArray) Then
+                Range("C" & RowToTest).Interior.Color = 65535
+            End If
+        Else
+            If bandNumberAdd = addArray Then
+                Range("C" & RowToTest).Interior.Color = 65535
+            End If
+        End If
     Next
 End If
 
