@@ -1,9 +1,13 @@
 Dim lastRow As String
 Dim rng As Range, cell As Variant
 Dim x As Integer
+Dim auctionName As String
 
+Sub Verzendlijst_formatteren()
 
-Sub Verzendlijst_inkleurenperklant()
+nDate = Format(Date, "yyyy-mm-dd")
+Range("F2").Value = "Versie:"
+Range("G2").Value = nDate & "   " & Time
 
 lastRow = Cells(Rows.Count, "Z").End(xlUp).Row
     ActiveWorkbook.Worksheets("Magazijnverzending").Sort.SortFields.Clear
@@ -25,7 +29,7 @@ lastRow = Cells(Rows.Count, "Z").End(xlUp).Row
         .Apply
     End With
 
-lastRow = Cells(Rows.Count, "C").End(xlUp).Row
+lastRow = Cells(Rows.Count, "T").End(xlUp).Row
 x = 0
 For cell = 7 To lastRow
     If (Cells(cell, 26).Value = Cells(cell - 1, 26).Value) Then
@@ -63,6 +67,76 @@ For RowToTest = (Cells(Rows.Count, "T").End(xlUp).Row) To 6 Step -1
     If InvoiceValue > 9000 Then
         Range("T" & RowToTest).Interior.Color = 65535
     End If
+    auctionName = Cells(RowToTest, "V").Value
+    If auctionName Like "*Shipping Only*" Then
+        Range("AC" & RowToTest).Value = "shipping only"
+        Range("AD" & RowToTest & ":AE" & RowToTest).Value = 0
+    End If
 Next
 
+Range("F6:AI" & lastRow).Select
+Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlInsideVertical)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlInsideHorizontal)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+
+Range("G2").Select
+    With Selection
+        .HorizontalAlignment = xlLeft
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+Range("G2:K2").Select
+    With Selection
+        .HorizontalAlignment = xlLeft
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
 End Sub
