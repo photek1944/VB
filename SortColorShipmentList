@@ -70,7 +70,7 @@ For RowToTest = (Cells(Rows.Count, "T").End(xlUp).Row) To 6 Step -1
     auctionName = Cells(RowToTest, "V").Value
     If auctionName Like "*Shipping Only*" Then
         Range("AC" & RowToTest).Value = "shipping only"
-        Range("AD" & RowToTest & ":AE" & RowToTest).Value = 0
+        Range("AD" & RowToTest & ":AF" & RowToTest).Value = 0
     End If
 Next
 
