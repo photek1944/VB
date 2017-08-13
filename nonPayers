@@ -1,0 +1,63 @@
+Option Explicit
+
+Dim dagenSindsVF As Integer
+Dim datumVF As Variant
+Dim vandaag As Date
+Dim RowToTest As Integer
+Dim aantalReminders As Integer
+Dim datumLaatsteRem As Date
+
+Sub aantal_Reminders()
+
+'open de vorige niet-betalers xlsm en maak beschikbaar als extra werkblad
+'om later opmerkingen en de datum van de opmerkingen uit te kopiëren
+'ook het werkblad 'herverkopen' meenemen uit de oude sheet
+
+vandaag = Date
+
+For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 4 Step -1
+    datumVF = Cells(RowToTest, "AC").Value
+    If IsDate(datumVF) = True Then
+        datumVF = datumVF - 1
+        dagenSindsVF = Date - datumVF
+        If dagenSindsVF < 12 Then
+            Range("AD" & RowToTest).Value = 0
+            Range("AE" & RowToTest).Value = "-"
+        ElseIf dagenSindsVF >= 12 And dagenSindsVF < 19 Then
+            aantalReminders = 1
+            Range("AD" & RowToTest).Value = aantalReminders
+            datumLaatsteRem = datumVF + 12
+            Range("AE" & RowToTest).Value = datumLaatsteRem
+        ElseIf dagenSindsVF >= 19 Then
+            aantalReminders = ((dagenSindsVF - 12) \ 7) + 1
+            Range("AD" & RowToTest).Value = aantalReminders
+            datumLaatsteRem = datumVF + 12 + ((aantalReminders - 1) * 7)
+            Range("AE" & RowToTest).Value = datumLaatsteRem
+        End If
+     End If
+Next
+
+'alle klanten CTs met reminders > 0 en klantsaldo > 0 toevoegen in array
+
+
+
+'alle chinezen en taiwanezen uit de reminders halen -> via jet best doen
+
+'voor elke rij checken of het CT-nr voor komt in de array, zoniet, rij deleten
+
+'voor alle VIPs op tabblad VIP, kolom AH wijzigen naar VIP
+
+'voor alle standards die boven de 4 reminders zitten AH aanpassen naar non-payer, om lijst voor te leggen aan nik en thomas
+
+'na aanpassing van status herverkopen/pipa koopt/terug naar verkoper, aparte knoppen om worksheets te genereren
+'worksheet pipa koopt (finance crediteert factuur en betaalt verkoper uit), shipping only aanmaken voor PIPA Trading en uitboeken als bij PIPA, leverancier wijzigen naar PIPA Trading
+'worksheet terug naar verkoper (finance crediteert alle documenten en logistics maakt order shipping only)
+'worksheet
+
+'error voorzien: indien een ringnummer al bestaat op het worksheet, kan de rij niet overgezet worden
+
+
+
+
+End Sub
+
