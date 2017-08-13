@@ -36,6 +36,7 @@ For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
         End If
     Else
         Range("AD" & RowToTest).Value = 0
+        Range("AE" & RowToTest).Value = "-"
     End If
 Next
 
@@ -54,12 +55,20 @@ Next
 On Error GoTo 0
 
 'voor elke rij checken of het CT-nr voor komt in de collection, zoniet, rij deleten/verbergen
+Dim checkCT As String
+Dim InCollection As Boolean
+
 For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
+    checkCT = Range("T" & RowToTest).Value
+    InCollection = False
     For Each CT In clientsOverdue
-        If CT <> Range("T" & RowToTest).Value Then
-            Rows(RowToTest).EntireRow.Hidden = True
+        If CT = checkCT Then
+            InCollection = True
         End If
     Next CT
+    If InCollection = False Then
+        Rows(RowToTest).EntireRow.Hidden = True
+    End If
 Next
     
 'voor alle VIPs op tabblad VIP, kolom AH wijzigen naar VIP
@@ -73,5 +82,8 @@ Next
 
 'error voorzien: indien een ringnummer al bestaat op het worksheet, kan de rij niet overgezet worden
 
+'lookup functie toevoegen om commissies in één cel te krijgen
+
+'nieuwe jet maken voor betaald/nog niet verzonden na x aantal weken
 
 End Sub
