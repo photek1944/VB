@@ -7,7 +7,7 @@ Dim RowToTest As Integer
 Dim aantalReminders As Integer
 Dim datumLaatsteRem As Date
 
-Sub aantal_Reminders()
+Sub nonPayers()
 
 'open de vorige niet-betalers xlsm en maak beschikbaar als extra werkblad
 'om later opmerkingen en de datum van de opmerkingen uit te kopiëren
@@ -15,7 +15,7 @@ Sub aantal_Reminders()
 
 vandaag = Date
 
-For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 4 Step -1
+For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
     datumVF = Cells(RowToTest, "AC").Value
     If IsDate(datumVF) = True Then
         datumVF = datumVF - 1
@@ -34,17 +34,34 @@ For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 4 Step -1
             datumLaatsteRem = datumVF + 12 + ((aantalReminders - 1) * 7)
             Range("AE" & RowToTest).Value = datumLaatsteRem
         End If
-     End If
+    Else
+        Range("AD" & RowToTest).Value = 0
+    End If
 Next
 
-'alle klanten CTs met reminders > 0 en klantsaldo > 0 toevoegen in array
+'alle klanten CTs met reminders > 0 en klantsaldo > 0 toevoegen in collection
+Dim clientsOverdue As Collection
+Set clientsOverdue = New Collection
+Dim CT As Variant
 
+On Error Resume Next
+For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
+    If Range("AD" & RowToTest).Value > 0 And Range("AQ" & RowToTest).Value > 0 Then
+        clientsOverdue.Add Range("T" & RowToTest).Value, Range("T" & RowToTest).Value
+        Range("BC" & RowToTest) = Range("T" & RowToTest).Value
+    End If
+Next
+On Error GoTo 0
 
-
-'alle chinezen en taiwanezen uit de reminders halen -> via jet best doen
-
-'voor elke rij checken of het CT-nr voor komt in de array, zoniet, rij deleten
-
+'voor elke rij checken of het CT-nr voor komt in de collection, zoniet, rij deleten/verbergen
+For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
+    For Each CT In clientsOverdue
+        If CT <> Range("T" & RowToTest).Value Then
+            Rows(RowToTest).EntireRow.Hidden = True
+        End If
+    Next CT
+Next
+    
 'voor alle VIPs op tabblad VIP, kolom AH wijzigen naar VIP
 
 'voor alle standards die boven de 4 reminders zitten AH aanpassen naar non-payer, om lijst voor te leggen aan nik en thomas
@@ -57,7 +74,4 @@ Next
 'error voorzien: indien een ringnummer al bestaat op het worksheet, kan de rij niet overgezet worden
 
 
-
-
 End Sub
-
