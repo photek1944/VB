@@ -6,6 +6,12 @@ Dim vandaag As Date
 Dim RowToTest As Integer
 Dim aantalReminders As Integer
 Dim datumLaatsteRem As Date
+Dim lastRow As Integer
+Dim checkCT As String
+Dim InCollection As Boolean
+Dim CT As Variant
+Dim i As Integer
+
 
 Sub nonPayers()
 
@@ -43,21 +49,16 @@ Next
 'alle klanten CTs met reminders > 0 en klantsaldo > 0 toevoegen in collection
 Dim clientsOverdue As Collection
 Set clientsOverdue = New Collection
-Dim CT As Variant
 
 On Error Resume Next
 For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
     If Range("AD" & RowToTest).Value > 0 And Range("AQ" & RowToTest).Value > 0 Then
         clientsOverdue.Add Range("T" & RowToTest).Value, Range("T" & RowToTest).Value
-        Range("BC" & RowToTest) = Range("T" & RowToTest).Value
     End If
 Next
 On Error GoTo 0
 
 'voor elke rij checken of het CT-nr voor komt in de collection, zoniet, rij deleten/verbergen
-Dim checkCT As String
-Dim InCollection As Boolean
-
 For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
     checkCT = Range("T" & RowToTest).Value
     InCollection = False
@@ -70,8 +71,30 @@ For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
         Rows(RowToTest).EntireRow.Hidden = True
     End If
 Next
-    
-'voor alle VIPs op tabblad VIP, kolom AH wijzigen naar VIP
+
+'voer elke VipCT in in collection 'VIP'
+Sheets("VIP").Activate
+Dim Vip As Collection
+Set Vip = New Collection
+
+lastRow = Cells(Rows.Count, "B").End(xlUp).Row
+On Error Resume Next
+For i = 3 To lastRow
+    Vip.Add Range("B" & i), Range("B" & i)
+Next
+On Error GoTo 0
+
+'voor alle VIPs op tabblad VIP, categorie (AH) tabblad niet-betalers wijzigen naar VIP
+Sheets("niet-betalers").Activate
+For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
+    checkCT = Range("T" & RowToTest).Value
+    InCollection = False
+    For Each CT In Vip
+        If CT = checkCT Then
+            Range("AH" & RowToTest).Value = "VIP"
+        End If
+    Next CT
+Next
 
 'voor alle standards die boven de 4 reminders zitten AH aanpassen naar non-payer, om lijst voor te leggen aan nik en thomas
 
