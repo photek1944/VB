@@ -140,6 +140,8 @@ Sheets("niet-betalers").Activate
 lastRow = Cells(Rows.Count, "D").End(xlUp).Row
 Range("AY6:AY" & lastRow).Formula = "=LOOKUP_CONCAT($L6,'comdocs'!$D$3:$D$" & lastRow & ",'comdocs'!$E$3:$E$" & lastRow & ")"
 
+'tekstterugloop AY 
+
 'opmerkingen overkopieren
 'overwegen om ook status van duif mee te nemen van op vorige lijst -> indien een duif nog niet op afgewerkt is gezet (niet correct afgehandeld), komt ze nog eens in de lijst met een waarde in status duif
 'eerst deze duiven terug afwerken en dan jet opnieuw laten draaien, ofwel de rij verwijderen in de excel
