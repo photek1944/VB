@@ -125,12 +125,11 @@ For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
         Range("AH" & RowToTest).Interior.Color = 255
     End If
 Next
-        
-        
+
 'na aanpassing van status herverkopen/pipa koopt/terug naar verkoper, aparte knoppen om worksheets te genereren
 'worksheet pipa koopt (finance crediteert factuur en betaalt verkoper uit), shipping only aanmaken voor PIPA Trading en uitboeken als bij PIPA, leverancier wijzigen naar PIPA Trading
 'worksheet terug naar verkoper (finance crediteert alle documenten en logistics maakt order shipping only)
-'worksheet
+'worksheet herverkopen, aanvullen met rijen waar nodig, indien ringnummer al bestaat error geven
 
 'error voorzien: indien een ringnummer al bestaat op het worksheet, kan de rij niet overgezet worden
 
@@ -141,6 +140,14 @@ Sheets("niet-betalers").Activate
 lastRow = Cells(Rows.Count, "D").End(xlUp).Row
 Range("AY6:AY" & lastRow).Formula = "=LOOKUP_CONCAT($L6,'comdocs'!$D$3:$D$" & lastRow & ",'comdocs'!$E$3:$E$" & lastRow & ")"
 
+'opmerkingen overkopieren
+'overwegen om ook status van duif mee te nemen van op vorige lijst -> indien een duif nog niet op afgewerkt is gezet (niet correct afgehandeld), komt ze nog eens in de lijst met een waarde in status duif
+'eerst deze duiven terug afwerken en dan jet opnieuw laten draaien, ofwel de rij verwijderen in de excel
+
+'centreren van bladen (niet-betalers: rijhoogte is gelijk aan ringnummer, jordy: rijhoogte is gelijk aan inhoud comdoc cellen
+'jet aanpassen: bug bij "particulier/bedrijf" -> no agents found
+'jet aanpassen: comdocs -> alleen laatste comdocs trekken
+'flow uitwerken in visio + manual opstellen
 'nieuwe jet maken voor betaald/nog niet verzonden na x aantal weken
 
 End Sub
