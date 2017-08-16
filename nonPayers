@@ -7,10 +7,29 @@ Dim RowToTest As Integer
 Dim aantalReminders As Integer
 Dim datumLaatsteRem As Date
 Dim lastRow As Integer
+Dim lastRowComdocs As Integer
 Dim checkCT As String
 Dim InCollection As Boolean
 Dim CT As Variant
 Dim i As Integer
+
+Function LOOKUP_CONCAT(Search_string As String, _
+Search_in_col As Range, Return_val_col As Range)
+
+  Dim i As Long
+  Dim result As String
+
+    For i = 1 To Search_in_col.Count
+      If Search_in_col.Cells(i, 1) = Search_string And Return_val_col.Cells(i, 1).Value <> "" Then
+        result = result & " " & Return_val_col.Cells(i, 1).Value & Chr(10)
+      End If
+    Next
+
+  result = Left(result, Len(result) - 1)
+
+  LOOKUP_CONCAT = Trim(result)
+
+End Function
 
 
 Sub nonPayers()
@@ -88,16 +107,26 @@ On Error GoTo 0
 Sheets("niet-betalers").Activate
 For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
     checkCT = Range("T" & RowToTest).Value
-    InCollection = False
     For Each CT In Vip
         If CT = checkCT Then
             Range("AH" & RowToTest).Value = "VIP"
+            Range("AH" & RowToTest).Interior.Color = 65535
         End If
     Next CT
 Next
 
-'voor alle standards die boven de 4 reminders zitten AH aanpassen naar non-payer, om lijst voor te leggen aan nik en thomas
-
+'voor alle Standards die aan 4 reminders zitten categorie aanpassen naar Non-payer, om lijst voor te leggen aan zaakvoerders
+For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
+    If Range("AD" & RowToTest).Value >= 4 Then
+        Range("AD" & RowToTest).Interior.Color = 255
+    End If
+    If Range("AD" & RowToTest).Value >= 4 And Range("AH" & RowToTest).Value <> "VIP" Then
+        Range("AH" & RowToTest).Value = "Non-payer"
+        Range("AH" & RowToTest).Interior.Color = 255
+    End If
+Next
+        
+        
 'na aanpassing van status herverkopen/pipa koopt/terug naar verkoper, aparte knoppen om worksheets te genereren
 'worksheet pipa koopt (finance crediteert factuur en betaalt verkoper uit), shipping only aanmaken voor PIPA Trading en uitboeken als bij PIPA, leverancier wijzigen naar PIPA Trading
 'worksheet terug naar verkoper (finance crediteert alle documenten en logistics maakt order shipping only)
@@ -106,6 +135,11 @@ Next
 'error voorzien: indien een ringnummer al bestaat op het worksheet, kan de rij niet overgezet worden
 
 'lookup functie toevoegen om commissies in één cel te krijgen
+Sheets("comdocs").Activate
+lastRowComdocs = Cells(Rows.Count, "D").End(xlUp).Row
+Sheets("niet-betalers").Activate
+lastRow = Cells(Rows.Count, "D").End(xlUp).Row
+Range("AY6:AY" & lastRow).Formula = "=LOOKUP_CONCAT($L6,'comdocs'!$D$3:$D$" & lastRow & ",'comdocs'!$E$3:$E$" & lastRow & ")"
 
 'nieuwe jet maken voor betaald/nog niet verzonden na x aantal weken
 
