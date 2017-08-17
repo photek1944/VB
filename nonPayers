@@ -7,11 +7,19 @@ Dim RowToTest As Integer
 Dim aantalReminders As Integer
 Dim datumLaatsteRem As Date
 Dim lastRow As Integer
+Dim lastRow2 As Integer
 Dim lastRowComdocs As Integer
 Dim checkCT As String
 Dim InCollection As Boolean
 Dim CT As Variant
 Dim i As Integer
+Dim nDate As Variant
+Dim nTime As Variant
+Dim Filename As String
+Dim wkb1 As Workbook, wkb2 As Workbook
+Dim wk_name As Variant
+Dim Sheet2Name As String
+
 
 Function LOOKUP_CONCAT(Search_string As String, _
 Search_in_col As Range, Return_val_col As Range)
@@ -34,9 +42,52 @@ End Function
 
 Sub nonPayers()
 
-'open de vorige niet-betalers xlsm en maak beschikbaar als extra werkblad
-'om later opmerkingen en de datum van de opmerkingen uit te kopiëren
-'ook het werkblad 'herverkopen' meenemen uit de oude sheet
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+'herformatteert de datum en tijd van vandaag
+nDate = Format(Date, "yyyy-mm-dd")
+nTime = Format(Time, "(hhumm)")
+
+'geeft het werkblad de datum van vandaag als titel
+ActiveWorkbook.Worksheets(1).Name = "NB " & nDate & " " & nTime
+
+'verandert de folder naar de map met de niet-betalerslijsten
+ChDrive "C"
+ChDir "C:\Users\Niels\Desktop\niet-betalersflow\NB test vba"
+
+'laat de gebruiker een xl bestand kiezen om toe te voegen
+Filename = Application.GetOpenFilename( _
+    FileFilter:="xl Files,*.xl*,xm Files,*.xm*", _
+    Title:="Selecteer de vorige niet-betalerslijst.", _
+    MultiSelect:=False)
+
+'maakt objecten van de actieve werkmap en creëert een nieuwe werkmap voor het geselecteerde bestand
+Set wkb1 = ActiveWorkbook
+Set wkb2 = Workbooks.Add(Filename)
+
+'kopieert het eerste werkblad van het geselecteerde bestand naar de actieve werkmap
+wkb2.Sheets(1).Copy After:=wkb1.Sheets(1)
+wkb2.Sheets("herverkopen").Copy After:=wkb1.Sheets(2)
+
+'sluit de werkmap van de gekopieerde niet-betalerslijst
+wkb2.Close
+
+'slaat de nieuwe werkmap op als een xlsm bestand
+ActiveWorkbook.SaveAs Filename:=nDate & " " & nTime & " Niet-betalers", FileFormat:=xlOpenXMLWorkbookMacroEnabled
+wk_name = nDate & " " & nTime & " Niet-betalers.xlsm"
+
+'opmerkingen overnemen van vorige niet-betalerslijst
+Worksheets(2).Activate
+lastRow2 = Cells(Rows.Count, "L").End(xlUp).Row
+Worksheets(1).Activate
+lastRow = Cells(Rows.Count, "L").End(xlUp).Row
+Sheet2Name = Sheets(2).Name
+Range("AF6:AF" & lastRow).Formula = "=VLOOKUP($L6,'" & Sheet2Name & "'!$L$5:$AF$" & lastRow2 & ",21,FALSE)"
+Range("AG6:AG" & lastRow).Formula = "=VLOOKUP($L6,'" & Sheet2Name & "'!$L$5:$AG$" & lastRow2 & ",22,FALSE)"
+'indien een duif nog niet op afgewerkt is gezet (niet correct afgehandeld), komt ze nog eens in de lijst met een waarde in status duif
+'eerst deze duiven terug afwerken en dan jet opnieuw laten draaien, ofwel de rij verwijderen in de excel
+Range("AI6:AI" & lastRow).Formula = "=VLOOKUP($L6,'" & Sheet2Name & "'!$L$5:$AI$" & lastRow2 & ",24,FALSE)"
 
 vandaag = Date
 
@@ -104,7 +155,7 @@ Next
 On Error GoTo 0
 
 'voor alle VIPs op tabblad VIP, categorie (AH) tabblad niet-betalers wijzigen naar VIP
-Sheets("niet-betalers").Activate
+Sheets(1).Activate
 For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
     checkCT = Range("T" & RowToTest).Value
     For Each CT In Vip
@@ -126,6 +177,23 @@ For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
     End If
 Next
 
+'lookup functie toevoegen om commissies in één cel te krijgen
+Sheets("comdocs").Activate
+lastRowComdocs = Cells(Rows.Count, "D").End(xlUp).Row
+Sheets(1).Activate
+lastRow = Cells(Rows.Count, "D").End(xlUp).Row
+Range("AY6:AY" & lastRow).Formula = "=LOOKUP_CONCAT($L6,'comdocs'!$D$3:$D$" & lastRow & ",'comdocs'!$E$3:$E$" & lastRow & ")"
+
+'rijhoogtes aanpassen aan standaardhoogte
+Rows("6:" & lastRow).Select
+    Selection.RowHeight = 15
+
+'jet aanpassen tekstterugloop AY
+'jet aanpassen titel en datum
+'centreren van bladen (niet-betalers: rijhoogte is gelijk aan ringnummer, jordy: rijhoogte is gelijk aan inhoud comdoc cellen
+'jet aanpassen: bug bij "particulier/bedrijf" -> no agents found
+'jet aanpassen: comdocs -> alleen laatste comdocs trekken
+
 'na aanpassing van status herverkopen/pipa koopt/terug naar verkoper, aparte knoppen om worksheets te genereren
 'worksheet pipa koopt (finance crediteert factuur en betaalt verkoper uit), shipping only aanmaken voor PIPA Trading en uitboeken als bij PIPA, leverancier wijzigen naar PIPA Trading
 'worksheet terug naar verkoper (finance crediteert alle documenten en logistics maakt order shipping only)
@@ -133,23 +201,10 @@ Next
 
 'error voorzien: indien een ringnummer al bestaat op het worksheet, kan de rij niet overgezet worden
 
-'lookup functie toevoegen om commissies in één cel te krijgen
-Sheets("comdocs").Activate
-lastRowComdocs = Cells(Rows.Count, "D").End(xlUp).Row
-Sheets("niet-betalers").Activate
-lastRow = Cells(Rows.Count, "D").End(xlUp).Row
-Range("AY6:AY" & lastRow).Formula = "=LOOKUP_CONCAT($L6,'comdocs'!$D$3:$D$" & lastRow & ",'comdocs'!$E$3:$E$" & lastRow & ")"
-
-'tekstterugloop AY 
-
-'opmerkingen overkopieren
-'overwegen om ook status van duif mee te nemen van op vorige lijst -> indien een duif nog niet op afgewerkt is gezet (niet correct afgehandeld), komt ze nog eens in de lijst met een waarde in status duif
-'eerst deze duiven terug afwerken en dan jet opnieuw laten draaien, ofwel de rij verwijderen in de excel
-
-'centreren van bladen (niet-betalers: rijhoogte is gelijk aan ringnummer, jordy: rijhoogte is gelijk aan inhoud comdoc cellen
-'jet aanpassen: bug bij "particulier/bedrijf" -> no agents found
-'jet aanpassen: comdocs -> alleen laatste comdocs trekken
 'flow uitwerken in visio + manual opstellen
 'nieuwe jet maken voor betaald/nog niet verzonden na x aantal weken
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
 
 End Sub
