@@ -83,11 +83,11 @@ lastRow2 = Cells(Rows.Count, "L").End(xlUp).Row
 Worksheets(1).Activate
 lastRow = Cells(Rows.Count, "L").End(xlUp).Row
 Sheet2Name = Sheets(2).Name
-Range("AF6:AF" & lastRow).Formula = "=VLOOKUP($L6,'" & Sheet2Name & "'!$L$5:$AF$" & lastRow2 & ",21,FALSE)"
-Range("AG6:AG" & lastRow).Formula = "=VLOOKUP($L6,'" & Sheet2Name & "'!$L$5:$AG$" & lastRow2 & ",22,FALSE)"
+Range("AF6:AF" & lastRow).Formula = "=IF(VLOOKUP($L6,'" & Sheet2Name & "'!$L$5:$AF$" & lastRow2 & ",21,FALSE)="""","""",VLOOKUP($L6,'" & Sheet2Name & "'!$L$5:$AF$" & lastRow2 & ",21,FALSE))"
+Range("AG6:AG" & lastRow).Formula = "=IF(VLOOKUP($L6,'" & Sheet2Name & "'!$L$5:$AG$" & lastRow2 & ",22,FALSE)="""","""",VLOOKUP($L6,'" & Sheet2Name & "'!$L$5:$AG$" & lastRow2 & ",22,FALSE))"
 'indien een duif nog niet op afgewerkt is gezet (niet correct afgehandeld), komt ze nog eens in de lijst met een waarde in status duif
 'eerst deze duiven terug afwerken en dan jet opnieuw laten draaien, ofwel de rij verwijderen in de excel
-Range("AI6:AI" & lastRow).Formula = "=VLOOKUP($L6,'" & Sheet2Name & "'!$L$5:$AI$" & lastRow2 & ",24,FALSE)"
+Range("AI6:AI" & lastRow).Formula = "=IF(VLOOKUP($L6,'" & Sheet2Name & "'!$L$5:$AI$" & lastRow2 & ",24,FALSE)="""","""",VLOOKUP($L6,'" & Sheet2Name & "'!$L$5:$AI$" & lastRow2 & ",24,FALSE))"
 
 vandaag = Date
 
@@ -182,14 +182,19 @@ Sheets("comdocs").Activate
 lastRowComdocs = Cells(Rows.Count, "D").End(xlUp).Row
 Sheets(1).Activate
 lastRow = Cells(Rows.Count, "D").End(xlUp).Row
-Range("AY6:AY" & lastRow).Formula = "=LOOKUP_CONCAT($L6,'comdocs'!$D$3:$D$" & lastRow & ",'comdocs'!$E$3:$E$" & lastRow & ")"
+Range("AY6:AY" & lastRow).Formula = "=LOOKUP_CONCAT($L6,'comdocs'!$D$3:$D$" & lastRowComdocs & ",'comdocs'!$E$3:$E$" & lastRowComdocs & ")"
 
 'rijhoogtes aanpassen aan standaardhoogte
 Rows("6:" & lastRow).Select
     Selection.RowHeight = 15
 
-'jet aanpassen tekstterugloop AY
-'jet aanpassen titel en datum
+'kolombreedtes autofitten
+Columns("L:BA").Select
+        Selection.Columns.AutoFit
+
+'versie toevoegen
+Range("N3").Value = "Versie: " & nDate & " " & "(" & Time & ")"
+
 'centreren van bladen (niet-betalers: rijhoogte is gelijk aan ringnummer, jordy: rijhoogte is gelijk aan inhoud comdoc cellen
 'jet aanpassen: bug bij "particulier/bedrijf" -> no agents found
 'jet aanpassen: comdocs -> alleen laatste comdocs trekken
