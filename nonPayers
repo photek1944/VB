@@ -69,6 +69,7 @@ Set wkb2 = Workbooks.Add(Filename)
 'kopieert het eerste werkblad van het geselecteerde bestand naar de actieve werkmap
 wkb2.Sheets(1).Copy After:=wkb1.Sheets(1)
 wkb2.Sheets("herverkopen").Copy After:=wkb1.Sheets(2)
+wkb2.Sheets("VIP").Copy After:=wkb1.Sheets(3)
 
 'sluit de werkmap van de gekopieerde niet-betalerslijst
 wkb2.Close
@@ -196,8 +197,7 @@ Columns("L:BA").Select
 Range("N3").Value = "Versie: " & nDate & " " & "(" & Time & ")"
 
 'centreren van bladen (niet-betalers: rijhoogte is gelijk aan ringnummer, jordy: rijhoogte is gelijk aan inhoud comdoc cellen
-'jet aanpassen: bug bij "particulier/bedrijf" -> no agents found
-'jet aanpassen: comdocs -> alleen laatste comdocs trekken
+'jet aanpassen: comdocs -> alleen laatste comdocs trekken, kijken om gebruik te maken van het VT-order hiervoor
 
 'na aanpassing van status herverkopen/pipa koopt/terug naar verkoper, aparte knoppen om worksheets te genereren
 'worksheet pipa koopt (finance crediteert factuur en betaalt verkoper uit), shipping only aanmaken voor PIPA Trading en uitboeken als bij PIPA, leverancier wijzigen naar PIPA Trading
