@@ -1,0 +1,80 @@
+Option Explicit
+Dim checkWs As Boolean
+Dim i As Integer
+Dim lastRowPIPAbuys As Integer
+Dim RowToTest As Integer, lastRow As Integer
+Dim checkbandnumber As String
+Dim InCollection As Boolean
+Dim bandnumber As Variant
+Dim PIPAbuysVar As Variant
+
+Sub PIPA_buys()
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+'check if Worksheet already exists and deletes if True: 'terug naar verkoper'
+For i = 1 To Worksheets.Count
+    If Worksheets(i).Name = "PIPA koopt" Then
+        Worksheets("PIPA koopt").Delete
+    End If
+Next i
+
+'create new sheet
+Worksheets.Add(After:=Worksheets(Worksheets.Count)).Name = "PIPA koopt"
+
+'add headers
+Worksheets(1).Range("L5:AZ5").Copy _
+    Destination:=Worksheets("PIPA koopt").Range("A1")
+
+Worksheets("PIPA koopt").Activate
+
+Worksheets(1).Activate
+lastRow = Cells(Rows.Count, "L").End(xlUp).Row
+With Range("AI6" & ":AI" & lastRow)
+    .Value = .Value
+End With
+With Range("AY6" & ":AY" & lastRow)
+    .Value = .Value
+End With
+
+'check if bandnumber is in collection 'PIPA buys', if not, add entire row for this band number
+For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
+    Worksheets("PIPA koopt").Activate
+    lastRowPIPAbuys = Cells(Rows.Count, "A").End(xlUp).Row
+    Worksheets(1).Activate
+    PIPAbuysVar = "PIPA buys"
+    If PIPAbuysVar = Range("AI" & RowToTest).Value Then
+        Range("L" & RowToTest & ":AZ" & RowToTest).Copy _
+            Destination:=Worksheets("PIPA koopt").Range("A" & lastRowPIPAbuys + 1)
+    End If
+Next
+
+Worksheets("PIPA koopt").Activate
+
+'activate textwrap
+Columns("AN:AN").Select
+With Selection
+    .WrapText = True
+    .Orientation = 0
+    .AddIndent = False
+    .IndentLevel = 0
+    .ShrinkToFit = False
+    .ReadingOrder = xlContext
+    .MergeCells = False
+End With
+
+'adjust column width
+Columns("A:AZ").Select
+        Selection.Columns.AutoFit
+Columns("AN:AN").Select
+        Selection.ColumnWidth = 75
+
+'adjust row height
+Rows("2:" & lastRow).Select
+    Selection.Rows.AutoFit
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+End Sub
