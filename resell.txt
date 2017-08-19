@@ -1,0 +1,95 @@
+Option Explicit
+
+Dim lastRowHerverkopen As Integer
+Dim RowToTest As Integer, lastRow As Integer
+Dim checkbandnumber As String
+Dim InCollection As Boolean
+Dim bandnumber As Variant
+Dim resellVar As Variant
+Dim colval As Variant
+Dim msg As String, nMsg As String
+
+Sub resell()
+
+msg = ""
+nMsg = ""
+
+Worksheets("herverkopen").Activate
+
+'add band number to resell to collection
+Dim herverkopen As Collection
+Set herverkopen = New Collection
+
+Dim duplicaat As Collection
+Set duplicaat = New Collection
+
+On Error Resume Next
+For lastRowHerverkopen = Cells(Rows.Count, "A").End(xlUp).Row To 2 Step -1
+    herverkopen.Add Range("A" & lastRowHerverkopen).Value, Range("A" & lastRowHerverkopen).Value
+Next
+On Error GoTo 0
+
+Worksheets(1).Activate
+lastRow = Cells(Rows.Count, "L").End(xlUp).Row
+With Range("AI6" & ":AI" & lastRow)
+    .Value = .Value
+End With
+With Range("AY6" & ":AY" & lastRow)
+    .Value = .Value
+End With
+
+'check if bandnumber is in collection 'herverkopen', if not, add entire row for this band number
+For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
+    Worksheets(1).Activate
+    resellVar = "resell"
+    If resellVar = Range("AI" & RowToTest).Value Then
+        checkbandnumber = Range("L" & RowToTest).Value
+        InCollection = False
+        For Each bandnumber In herverkopen
+            If bandnumber = checkbandnumber Then
+                InCollection = True
+                On Error Resume Next
+                    duplicaat.Add checkbandnumber, checkbandnumber
+                On Error GoTo 0
+            End If
+        Next bandnumber
+            If InCollection = False Then
+                Worksheets("herverkopen").Activate
+                lastRowHerverkopen = Cells(Rows.Count, "A").End(xlUp).Row
+                Worksheets(1).Activate
+                Range("L" & RowToTest & ":AZ" & RowToTest).Copy _
+                Destination:=Worksheets("herverkopen").Range("A" & lastRowHerverkopen + 1)
+            End If
+    End If
+Next
+
+Worksheets("herverkopen").Activate
+'activate textwrap
+Columns("AN:AN").Select
+With Selection
+    .WrapText = True
+    .Orientation = 0
+    .AddIndent = False
+    .IndentLevel = 0
+    .ShrinkToFit = False
+    .ReadingOrder = xlContext
+    .MergeCells = False
+End With
+'adjust row height
+Rows("2:" & lastRow).Select
+    Selection.Rows.AutoFit
+
+'adjust column width
+Columns("A:AZ").Select
+        Selection.Columns.AutoFit
+
+'print a list of duplicate band numbers
+If duplicaat.Count > 0 Then
+    For Each colval In duplicaat
+        msg = msg & colval & vbNewLine
+    Next colval
+    nMsg = "Deze ringnummers bevinden zich al in de lijst 'herverkopen'!" & vbNewLine & vbNewLine & msg
+    MsgBox nMsg
+End If
+
+End Sub
