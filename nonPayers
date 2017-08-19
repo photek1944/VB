@@ -19,6 +19,8 @@ Dim Filename As String
 Dim wkb1 As Workbook, wkb2 As Workbook
 Dim wk_name As Variant
 Dim Sheet2Name As String
+Dim x As Integer
+Dim cell As Integer
 
 
 Function LOOKUP_CONCAT(Search_string As String, _
@@ -49,6 +51,9 @@ Application.DisplayAlerts = False
 nDate = Format(Date, "yyyy-mm-dd")
 nTime = Format(Time, "(hhumm)")
 
+'versie toevoegen
+Range("N3").Value = "Versie: " & nDate & " " & "(" & Time & ")"
+
 'geeft het werkblad de datum van vandaag als titel
 ActiveWorkbook.Worksheets(1).Name = "NB " & nDate & " " & nTime
 
@@ -77,6 +82,16 @@ wkb2.Close
 'slaat de nieuwe werkmap op als een xlsm bestand
 ActiveWorkbook.SaveAs Filename:=nDate & " " & nTime & " Niet-betalers", FileFormat:=xlOpenXMLWorkbookMacroEnabled
 wk_name = nDate & " " & nTime & " Niet-betalers.xlsm"
+
+'converteren naar waarden
+Worksheets(1).Activate
+With Range("K:K")
+    .Value = .Value
+End With
+Worksheets("comdocs").Activate
+With Range("D:D")
+    .Value = .Value
+End With
 
 'opmerkingen overnemen van vorige niet-betalerslijst
 Worksheets(2).Activate
@@ -124,14 +139,14 @@ Set clientsOverdue = New Collection
 On Error Resume Next
 For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
     If Range("AD" & RowToTest).Value > 0 And Range("AQ" & RowToTest).Value > 0 Then
-        clientsOverdue.Add Range("T" & RowToTest).Value, Range("T" & RowToTest).Value
+        clientsOverdue.Add Range("M" & RowToTest).Value, Range("M" & RowToTest).Value
     End If
 Next
 On Error GoTo 0
 
 'voor elke rij checken of het CT-nr voor komt in de collection, zoniet, rij deleten/verbergen
 For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
-    checkCT = Range("T" & RowToTest).Value
+    checkCT = Range("M" & RowToTest).Value
     InCollection = False
     For Each CT In clientsOverdue
         If CT = checkCT Then
@@ -139,11 +154,114 @@ For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
         End If
     Next CT
     If InCollection = False Then
-        Rows(RowToTest).EntireRow.Hidden = True
+        Rows(RowToTest).EntireRow.Delete
     End If
 Next
 
-'voer elke VipCT in in collection 'VIP'
+'sorteren land -> klantnaam -> factuurdatum -> leveranciernaam -> ringnummer
+ActiveWorkbook.Worksheets(1).Sort.SortFields.Clear
+    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
+        Range("O6:O" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
+        Range("N6:N" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
+        Range("AC6:AC" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
+        Range("Q6:Q" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
+        Range("L6:L" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    With ActiveWorkbook.Worksheets(1).Sort
+        .SetRange Range("A5:AZ" & lastRow)
+        .Header = xlYes
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+    End With
+    
+
+'format per klant
+lastRow = Cells(Rows.Count, "L").End(xlUp).Row
+x = 0
+For cell = 7 To lastRow
+    If (Cells(cell, 13).Value = Cells(cell - 1, 13).Value) Then
+            Range("L" & cell - 1 & ":AZ" & cell - 1).Select
+            Selection.Copy
+            Range("L" & cell & ":AZ" & cell).Select
+            Selection.PasteSpecial Paste:=xlPasteFormats, Operation:=xlNone, _
+                SkipBlanks:=False, Transpose:=False
+            Application.CutCopyMode = False
+    Else
+        If x = 0 Then
+            x = 1
+            With Range("L" & cell & ":AZ" & cell).Interior
+                .Pattern = xlSolid
+                .PatternColorIndex = xlAutomatic
+                .ThemeColor = xlThemeColorAccent1
+                .TintAndShade = 0.799981688894314
+                .PatternTintAndShade = 0
+            End With
+        ElseIf x = 1 Then
+            x = 0
+            With Range("L" & cell & ":AZ" & cell).Interior
+                .Pattern = xlSolid
+                .PatternColorIndex = xlAutomatic
+                .ThemeColor = xlThemeColorDark1
+                .TintAndShade = 0
+                .PatternTintAndShade = 0
+            End With
+        End If
+    End If
+Next cell
+
+'omkaderen
+Range("L6:AZ" & lastRow).Select
+Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlInsideVertical)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlInsideHorizontal)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+
+
+'voeg elk VIPct toe aan collectie 'VIP'
 Sheets("VIP").Activate
 Dim Vip As Collection
 Set Vip = New Collection
@@ -162,7 +280,8 @@ For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
     For Each CT In Vip
         If CT = checkCT Then
             Range("AH" & RowToTest).Value = "VIP"
-            Range("AH" & RowToTest).Interior.Color = 65535
+            Range("N" & RowToTest).Select
+            Selection.Style = "Neutraal"
         End If
     Next CT
 Next
@@ -170,11 +289,29 @@ Next
 'voor alle Standards die aan 4 reminders zitten categorie aanpassen naar Non-payer, om lijst voor te leggen aan zaakvoerders
 For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
     If Range("AD" & RowToTest).Value >= 4 Then
-        Range("AD" & RowToTest).Interior.Color = 255
+        Range("AD" & RowToTest).Select
+        With Selection.Font
+            .Color = -16776961
+            .TintAndShade = 0
+        End With
+        Range("L" & RowToTest).Select
+        With Selection.Font
+            .Color = -16776961
+            .TintAndShade = 0
+        End With
+        Range("N" & RowToTest).Select
+        With Selection.Font
+            .Color = -16776961
+            .TintAndShade = 0
+        End With
     End If
     If Range("AD" & RowToTest).Value >= 4 And Range("AH" & RowToTest).Value <> "VIP" Then
         Range("AH" & RowToTest).Value = "Non-payer"
-        Range("AH" & RowToTest).Interior.Color = 255
+        Range("AH" & RowToTest).Select
+        With Selection.Font
+            .Color = -16776961
+            .TintAndShade = 0
+        End With
     End If
 Next
 
@@ -192,9 +329,6 @@ Rows("6:" & lastRow).Select
 'kolombreedtes autofitten
 Columns("L:BA").Select
         Selection.Columns.AutoFit
-
-'versie toevoegen
-Range("N3").Value = "Versie: " & nDate & " " & "(" & Time & ")"
 
 'centreren van bladen (niet-betalers: rijhoogte is gelijk aan ringnummer, jordy: rijhoogte is gelijk aan inhoud comdoc cellen
 'jet aanpassen: comdocs -> alleen laatste comdocs trekken, kijken om gebruik te maken van het VT-order hiervoor
