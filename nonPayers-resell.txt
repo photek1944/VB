@@ -75,13 +75,16 @@ With Selection
     .ReadingOrder = xlContext
     .MergeCells = False
 End With
-'adjust row height
-Rows("2:" & lastRow).Select
-    Selection.Rows.AutoFit
 
 'adjust column width
 Columns("A:AZ").Select
         Selection.Columns.AutoFit
+Columns("AN:AN").Select
+        Selection.ColumnWidth = 75
+
+'adjust row height
+Rows("2:" & lastRow).Select
+    Selection.Rows.AutoFit
 
 'print a list of duplicate band numbers
 If duplicaat.Count > 0 Then
