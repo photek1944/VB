@@ -1,0 +1,101 @@
+Option Explicit
+
+Dim RowToTest As Integer
+
+Sub BTW_codes()
+
+Worksheets("verkopen").Activate
+For RowToTest = Cells(Rows.Count, "G").End(xlUp).Row To 4 Step -1
+    If InStr(1, Range("J" & RowToTest).Value, "B0101", vbTextCompare) <> 0 Then
+        Range("J" & RowToTest).Value = "Luchtvervoer van goederen"
+        Range("K" & RowToTest).Value = "B0101"
+    ElseIf InStr(1, Range("J" & RowToTest).Value, "B0301", vbTextCompare) <> 0 Then
+        Range("J" & RowToTest).Value = "Wegvervoer van goederen"
+        Range("K" & RowToTest).Value = "B0301"
+    ElseIf InStr(1, Range("J" & RowToTest).Value, "G0001", vbTextCompare) <> 0 Then
+        Range("J" & RowToTest).Value = "Informaticadiensten"
+        Range("K" & RowToTest).Value = "G0001"
+    ElseIf InStr(1, Range("J" & RowToTest).Value, "H0000", vbTextCompare) <> 0 Then
+        Range("J" & RowToTest).Value = "Commissies"
+        Range("K" & RowToTest).Value = "H0000"
+    ElseIf InStr(1, Range("J" & RowToTest).Value, "H6400", vbTextCompare) <> 0 Then
+        Range("J" & RowToTest).Value = "Fotografische diensten"
+        Range("K" & RowToTest).Value = "H6400"
+    ElseIf InStr(1, Range("J" & RowToTest).Value, "H2000", vbTextCompare) <> 0 Then
+        Range("J" & RowToTest).Value = "Reclame, marktonderzoek en opiniepeiling"
+        Range("K" & RowToTest).Value = "H2000"
+    ElseIf InStr(1, Range("J" & RowToTest).Value, "H4003", vbTextCompare) <> 0 Then
+        Range("J" & RowToTest).Value = "Wetenschappelijke en andere techn diensten"
+        Range("K" & RowToTest).Value = "H4003"
+    ElseIf InStr(1, Range("J" & RowToTest).Value, "H6300", vbTextCompare) <> 0 Then
+        Range("J" & RowToTest).Value = "Vertaal- en tolkdiensten"
+        Range("K" & RowToTest).Value = "H6300"
+    ElseIf InStr(1, Range("J" & RowToTest).Value, "H1100", vbTextCompare) <> 0 Then
+        Range("J" & RowToTest).Value = "Audit, boekhouding, secretariaatswerk"
+        Range("K" & RowToTest).Value = "H1100"
+    ElseIf InStr(1, Range("J" & RowToTest).Value, "F1000", vbTextCompare) <> 0 Then
+        Range("J" & RowToTest).Value = "Premies voor vrachtverzekeringen tegen diefstal ..."
+        Range("K" & RowToTest).Value = "F1000"
+    ElseIf InStr(1, Range("J" & RowToTest).Value, "C0003", vbTextCompare) <> 0 Then
+        Range("J" & RowToTest).Value = "Verblijfskosten voor zakenreizen in het buitenland"
+        Range("K" & RowToTest).Value = "C0003"
+    ElseIf InStr(1, Range("J" & RowToTest).Value, "H1000", vbTextCompare) <> 0 Then
+        Range("J" & RowToTest).Value = "Juridische diensten"
+        Range("K" & RowToTest).Value = "H1000"
+    ElseIf InStr(1, Range("J" & RowToTest).Value, "H9200", vbTextCompare) <> 0 Then
+        Range("J" & RowToTest).Value = "Culturele en recreatieve diensten in het buitenland verleend"
+        Range("K" & RowToTest).Value = "H9200"
+    ElseIf InStr(1, Range("J" & RowToTest).Value, "H2000", vbTextCompare) <> 0 Then
+        Range("J" & RowToTest).Value = "Reclame, marktonderzoek en opiniepeiling"
+        Range("K" & RowToTest).Value = "H2000"
+    End If
+Next
+
+Worksheets("aankopen").Activate
+For RowToTest = Cells(Rows.Count, "G").End(xlUp).Row To 4 Step -1
+    If InStr(1, Range("I" & RowToTest).Value, "B0101", vbTextCompare) <> 0 Then
+        Range("I" & RowToTest).Value = "Luchtvervoer van goederen"
+        Range("J" & RowToTest).Value = "B0101"
+    ElseIf InStr(1, Range("I" & RowToTest).Value, "B0301", vbTextCompare) <> 0 Then
+        Range("I" & RowToTest).Value = "Wegvervoer van goederen"
+        Range("J" & RowToTest).Value = "B0301"
+    ElseIf InStr(1, Range("I" & RowToTest).Value, "G0001", vbTextCompare) <> 0 Then
+        Range("I" & RowToTest).Value = "Informaticadiensten"
+        Range("J" & RowToTest).Value = "G0001"
+    ElseIf InStr(1, Range("I" & RowToTest).Value, "H0000", vbTextCompare) <> 0 Then
+        Range("I" & RowToTest).Value = "Commissies"
+        Range("J" & RowToTest).Value = "H0000"
+    ElseIf InStr(1, Range("I" & RowToTest).Value, "H6400", vbTextCompare) <> 0 Then
+        Range("I" & RowToTest).Value = "Fotografische diensten"
+        Range("J" & RowToTest).Value = "H6400"
+    ElseIf InStr(1, Range("I" & RowToTest).Value, "H2000", vbTextCompare) <> 0 Then
+        Range("I" & RowToTest).Value = "Reclame, marktonderzoek en opiniepeiling"
+        Range("J" & RowToTest).Value = "H2000"
+    ElseIf InStr(1, Range("I" & RowToTest).Value, "H4003", vbTextCompare) <> 0 Then
+        Range("I" & RowToTest).Value = "Wetenschappelijke en andere techn diensten"
+        Range("J" & RowToTest).Value = "H4003"
+    ElseIf InStr(1, Range("I" & RowToTest).Value, "H6300", vbTextCompare) <> 0 Then
+        Range("I" & RowToTest).Value = "Vertaal- en tolkdiensten"
+        Range("J" & RowToTest).Value = "H6300"
+    ElseIf InStr(1, Range("I" & RowToTest).Value, "H1100", vbTextCompare) <> 0 Then
+        Range("I" & RowToTest).Value = "Audit, boekhouding, secretariaatswerk"
+        Range("J" & RowToTest).Value = "H1100"
+    ElseIf InStr(1, Range("I" & RowToTest).Value, "F1000", vbTextCompare) <> 0 Then
+        Range("I" & RowToTest).Value = "Premies voor vrachtverzekeringen tegen diefstal ..."
+        Range("J" & RowToTest).Value = "F1000"
+    ElseIf InStr(1, Range("I" & RowToTest).Value, "C0003", vbTextCompare) <> 0 Then
+        Range("I" & RowToTest).Value = "Verblijfskosten voor zakenreizen in het buitenland"
+        Range("J" & RowToTest).Value = "C0003"
+    ElseIf InStr(1, Range("I" & RowToTest).Value, "H1000", vbTextCompare) <> 0 Then
+        Range("I" & RowToTest).Value = "Juridische diensten"
+        Range("J" & RowToTest).Value = "H1000"
+    ElseIf InStr(1, Range("I" & RowToTest).Value, "H9200", vbTextCompare) <> 0 Then
+        Range("I" & RowToTest).Value = "Culturele en recreatieve diensten in het buitenland verleend"
+        Range("J" & RowToTest).Value = "H9200"
+    ElseIf InStr(1, Range("I" & RowToTest).Value, "H2000", vbTextCompare) <> 0 Then
+        Range("I" & RowToTest).Value = "Reclame, marktonderzoek en opiniepeiling"
+        Range("J" & RowToTest).Value = "H2000"
+    End If
+Next
+
+End Sub
