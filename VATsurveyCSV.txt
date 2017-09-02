@@ -160,6 +160,9 @@ For lastRowCSV = Cells(Rows.Count, "A").End(xlUp).Row To lastRowCSVnew Step -1
     Range("D" & lastRowCSV).Value = "0"
 Next
 
+ChDrive "C"
+ChDir "C:\Users\Niels\Desktop\test vba\btw enquete"
+
 Dim myFileName As String
 myFileName = Application.GetSaveAsFilename("", "CSV (*.csv),*.csv")
 If myFileName <> "False" Then
@@ -167,7 +170,7 @@ If myFileName <> "False" Then
         .Select
         .Copy
     End With
-    ActiveWorkbook.SaveAs myFileName, FileFormat:=xlCSV, CreateBackup:=False
+    ActiveWorkbook.SaveAs myFileName, FileFormat:=xlCSV, CreateBackup:=False, Local:=True
 End If
 
 Application.ScreenUpdating = True
