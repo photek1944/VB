@@ -13,7 +13,9 @@ Worksheets("verkopen").Activate
 lastRowVerkopen = Cells(Rows.Count, "G").End(xlUp).Row
 With Range("E4:L" & lastRowVerkopen)
     .Value = .Value
+    .Select
 End With
+Selection.NumberFormat = "General"
 
 'sorteren verkopen
 ActiveWorkbook.Worksheets("verkopen").Sort.SortFields.Clear
@@ -56,7 +58,9 @@ Selection.FormulaR1C1 = "=R[-1]C"
 'gekopieerde cellen converteren naar waarden
 With Range("E4:M" & lastRowVerkopen)
     .Value = .Value
+    .Select
 End With
+Selection.NumberFormat = "General"
 
 'rijen zonder totalen verwijderen
 For RowToTest = Cells(Rows.Count, "M").End(xlUp).Row To 4 Step -1
@@ -70,7 +74,9 @@ Worksheets("aankopen").Activate
 lastRowAankopen = Cells(Rows.Count, "G").End(xlUp).Row
 With Range("E4:L" & lastRowAankopen)
     .Value = .Value
+    .Select
 End With
+Selection.NumberFormat = "General"
 
 ActiveWorkbook.Worksheets("aankopen").Sort.SortFields.Clear
     ActiveWorkbook.Worksheets("aankopen").Sort.SortFields.Add Key:= _
@@ -112,7 +118,9 @@ Selection.FormulaR1C1 = "=R[-1]C"
 'gekopieerde cellen converteren naar waarden
 With Range("D4:L" & lastRowAankopen)
     .Value = .Value
+    .Select
 End With
+Selection.NumberFormat = "General"
 
 'rijen zonder totalen verwijderen
 For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 4 Step -1
