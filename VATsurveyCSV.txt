@@ -27,18 +27,26 @@ ActiveWorkbook.Worksheets("verkopen").Sort.SortFields.Clear
 'subtotalen verkopen
 Range("M3").Value = "Subtotalen"
 For EachRow = Cells(Rows.Count, "G").End(xlUp).Row To 4 Step -1
-    Range("M" & EachRow).Value = Range("J" & EachRow).Value & Range("F" & EachRow).Value
+    Range("M" & EachRow).Value = Range("J" & EachRow).Value & " " & Range("F" & EachRow).Value
 Next
 
 Range("E3:M" & lastRowVerkopen).Select
     Range(Selection, Selection.End(xlDown)).Select
-    Selection.Subtotal GroupBy:=9, Function:=xlCount, TotalList:=Array(4), _
+    Selection.Subtotal GroupBy:=9, Function:=xlSum, TotalList:=Array(4), _
         Replace:=True, PageBreaks:=False, SummaryBelowData:=True
         
+lastRowVerkopen = Cells(Rows.Count, "M").End(xlUp).Row
+Rows(lastRowVerkopen).EntireRow.Delete
+
+lastRowVerkopen = Cells(Rows.Count, "M").End(xlUp).Row
+Range("A3:M" & lastRowVerkopen).Select
+Selection.SpecialCells(xlCellTypeBlanks).Select
+Selection.FormulaR1C1 = "=R[-1]C"
+        
+'sorteren aankopen
 Worksheets("aankopen").Activate
 lastRowAankopen = Cells(Rows.Count, "G").End(xlUp).Row
 
-'sorteren aankopen
 ActiveWorkbook.Worksheets("aankopen").Sort.SortFields.Clear
     ActiveWorkbook.Worksheets("aankopen").Sort.SortFields.Add Key:= _
         Range("J4:J" & lastRowAankopen), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
