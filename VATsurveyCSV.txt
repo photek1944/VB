@@ -1,6 +1,8 @@
 Option Explicit
 
-Dim lastRowVerkopen As Integer, lastRowAankopen As Integer, EachRow As Integer, RowToTest As Integer
+Dim lastRowVerkopen As Integer, lastRowAankopen As Integer
+Dim EachRow As Integer, RowToTest As Integer, lastRowCSV As Integer
+Dim lastRowCSVnew As Integer
 
 Sub CSV()
 
@@ -121,6 +123,42 @@ Next
 
 'add CSV sheet
 Worksheets.Add(After:=Worksheets(Worksheets.Count)).Name = "CSV"
+
+Worksheets("verkopen").Activate
+lastRowVerkopen = Cells(Rows.Count, "M").End(xlUp).Row
+
+Range("K4:" & "K" & lastRowVerkopen).Copy _
+Destination:=Worksheets("CSV").Range("A1")
+Range("F4:" & "F" & lastRowVerkopen).Copy _
+Destination:=Worksheets("CSV").Range("B1")
+Range("L4:" & "L" & lastRowVerkopen).Copy _
+Destination:=Worksheets("CSV").Range("C1")
+Range("H4:" & "H" & lastRowVerkopen).Copy _
+Destination:=Worksheets("CSV").Range("D1")
+
+Worksheets("CSV").Activate
+For lastRowCSV = Cells(Rows.Count, "A").End(xlUp).Row To 1 Step -1
+    Range("E" & lastRowCSV).Value = "0"
+Next
+
+lastRowCSVnew = Cells(Rows.Count, "A").End(xlUp).Row + 1
+
+Worksheets("aankopen").Activate
+lastRowAankopen = Cells(Rows.Count, "L").End(xlUp).Row
+
+Range("J4:" & "J" & lastRowAankopen).Copy _
+Destination:=Worksheets("CSV").Range("A" & lastRowCSVnew)
+Range("E4:" & "E" & lastRowAankopen).Copy _
+Destination:=Worksheets("CSV").Range("B" & lastRowCSVnew)
+Range("K4:" & "K" & lastRowAankopen).Copy _
+Destination:=Worksheets("CSV").Range("C" & lastRowCSVnew)
+Range("G4:" & "G" & lastRowAankopen).Copy _
+Destination:=Worksheets("CSV").Range("E" & lastRowCSVnew)
+
+Worksheets("CSV").Activate
+For lastRowCSV = Cells(Rows.Count, "A").End(xlUp).Row To lastRowCSVnew Step -1
+    Range("D" & lastRowCSV).Value = "0"
+Next
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
