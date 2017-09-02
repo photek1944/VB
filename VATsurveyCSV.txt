@@ -1,0 +1,47 @@
+Option Explicit
+
+Dim lastRowVerkopen As Integer, lastRowAankopen As Integer
+
+Sub CSV()
+
+Worksheets("verkopen").Activate
+lastRowVerkopen = Cells(Rows.Count, "G").End(xlUp).Row
+
+'sorteren verkopen
+ActiveWorkbook.Worksheets("verkopen").Sort.SortFields.Clear
+    ActiveWorkbook.Worksheets("verkopen").Sort.SortFields.Add Key:= _
+        Range("K4:K" & lastRowVerkopen), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets("verkopen").Sort.SortFields.Add Key:= _
+        Range("F4:F" & lastRowVerkopen), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    With ActiveWorkbook.Worksheets("verkopen").Sort
+        .SetRange Range("E3:L" & lastRowVerkopen)
+        .Header = xlYes
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+    End With
+    
+Worksheets("aankopen").Activate
+lastRowAankopen = Cells(Rows.Count, "G").End(xlUp).Row
+
+'sorteren aankopen
+ActiveWorkbook.Worksheets("aankopen").Sort.SortFields.Clear
+    ActiveWorkbook.Worksheets("aankopen").Sort.SortFields.Add Key:= _
+        Range("J4:J" & lastRowAankopen), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets("aankopen").Sort.SortFields.Add Key:= _
+        Range("E4:E" & lastRowAankopen), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    With ActiveWorkbook.Worksheets("aankopen").Sort
+        .SetRange Range("D3:K" & lastRowAankopen)
+        .Header = xlYes
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+    End With
+    
+End Sub
