@@ -4,6 +4,9 @@ Dim lastRowVerkopen As Integer, lastRowAankopen As Integer, EachRow As Integer, 
 
 Sub CSV()
 
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
 Worksheets("verkopen").Activate
 With Range("E:L")
     .Value = .Value
@@ -26,7 +29,7 @@ ActiveWorkbook.Worksheets("verkopen").Sort.SortFields.Clear
         .SortMethod = xlPinYin
         .Apply
     End With
-    
+
 'subtotalen verkopen
 Range("M3").Value = "Subtotalen"
 For EachRow = Cells(Rows.Count, "G").End(xlUp).Row To 4 Step -1
@@ -37,25 +40,29 @@ Range("E3:M" & lastRowVerkopen).Select
     Range(Selection, Selection.End(xlDown)).Select
     Selection.Subtotal GroupBy:=9, Function:=xlSum, TotalList:=Array(4), _
         Replace:=True, PageBreaks:=False, SummaryBelowData:=True
-        
+
+'verwijder laatste totaalrij
 lastRowVerkopen = Cells(Rows.Count, "M").End(xlUp).Row
 Rows(lastRowVerkopen).EntireRow.Delete
 
+'kopieer gegevens naar subtotaalrijen
 lastRowVerkopen = Cells(Rows.Count, "M").End(xlUp).Row
-Range("A3:M" & lastRowVerkopen).Select
+Range("E3:M" & lastRowVerkopen).Select
 Selection.SpecialCells(xlCellTypeBlanks).Select
 Selection.FormulaR1C1 = "=R[-1]C"
 
+'gekopieerde cellen converteren naar waarden
 With Range("E:M")
     .Value = .Value
 End With
 
+'rijen zonder totalen verwijderen
 For RowToTest = Cells(Rows.Count, "M").End(xlUp).Row To 4 Step -1
     If InStr(1, Range("M" & RowToTest).Value, "Totaal", vbTextCompare) <> 1 Then
         Rows(RowToTest).EntireRow.Delete
     End If
 Next
-        
+
 'sorteren aankopen
 Worksheets("aankopen").Activate
 With Range("E:L")
@@ -78,8 +85,44 @@ ActiveWorkbook.Worksheets("aankopen").Sort.SortFields.Clear
         .SortMethod = xlPinYin
         .Apply
     End With
-    
-    
+
 'subtotalen aankopen
-    
+Range("L3").Value = "Subtotalen"
+For EachRow = Cells(Rows.Count, "F").End(xlUp).Row To 4 Step -1
+    Range("L" & EachRow).Value = Range("I" & EachRow).Value & " " & Range("E" & EachRow).Value
+Next
+
+Range("D3:M" & lastRowAankopen).Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Subtotal GroupBy:=9, Function:=xlSum, TotalList:=Array(4), _
+        Replace:=True, PageBreaks:=False, SummaryBelowData:=True
+
+'verwijder laatste totaalrij
+lastRowAankopen = Cells(Rows.Count, "L").End(xlUp).Row
+Rows(lastRowAankopen).EntireRow.Delete
+
+'kopieer gegevens naar subtotaalrijen
+lastRowAankopen = Cells(Rows.Count, "L").End(xlUp).Row
+Range("D3:L" & lastRowVerkopen).Select
+Selection.SpecialCells(xlCellTypeBlanks).Select
+Selection.FormulaR1C1 = "=R[-1]C"
+
+'gekopieerde cellen converteren naar waarden
+With Range("D:L")
+    .Value = .Value
+End With
+
+'rijen zonder totalen verwijderen
+For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 4 Step -1
+    If InStr(1, Range("L" & RowToTest).Value, "Totaal", vbTextCompare) <> 1 Then
+        Rows(RowToTest).EntireRow.Delete
+    End If
+Next
+
+'add CSV sheet
+Worksheets.Add(After:=Worksheets(Worksheets.Count)).Name = "CSV"
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
 End Sub
