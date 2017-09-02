@@ -1,10 +1,13 @@
 Option Explicit
 
-Dim lastRowVerkopen As Integer, lastRowAankopen As Integer
+Dim lastRowVerkopen As Integer, lastRowAankopen As Integer, EachRow As Integer, RowToTest As Integer
 
 Sub CSV()
 
 Worksheets("verkopen").Activate
+With Range("E:L")
+    .Value = .Value
+End With
 lastRowVerkopen = Cells(Rows.Count, "G").End(xlUp).Row
 
 'sorteren verkopen
@@ -43,6 +46,10 @@ Range("A3:M" & lastRowVerkopen).Select
 Selection.SpecialCells(xlCellTypeBlanks).Select
 Selection.FormulaR1C1 = "=R[-1]C"
 
+With Range("E:M")
+    .Value = .Value
+End With
+
 For RowToTest = Cells(Rows.Count, "M").End(xlUp).Row To 4 Step -1
     If InStr(1, Range("M" & RowToTest).Value, "Totaal", vbTextCompare) <> 1 Then
         Rows(RowToTest).EntireRow.Delete
@@ -51,6 +58,9 @@ Next
         
 'sorteren aankopen
 Worksheets("aankopen").Activate
+With Range("E:L")
+    .Value = .Value
+End With
 lastRowAankopen = Cells(Rows.Count, "G").End(xlUp).Row
 
 ActiveWorkbook.Worksheets("aankopen").Sort.SortFields.Clear
@@ -68,5 +78,8 @@ ActiveWorkbook.Worksheets("aankopen").Sort.SortFields.Clear
         .SortMethod = xlPinYin
         .Apply
     End With
+    
+    
+'subtotalen aankopen
     
 End Sub
