@@ -24,6 +24,17 @@ ActiveWorkbook.Worksheets("verkopen").Sort.SortFields.Clear
         .Apply
     End With
     
+'subtotalen verkopen
+Range("M3").Value = "Subtotalen"
+For EachRow = Cells(Rows.Count, "G").End(xlUp).Row To 4 Step -1
+    Range("M" & EachRow).Value = Range("J" & EachRow).Value & Range("F" & EachRow).Value
+Next
+
+Range("E3:M" & lastRowVerkopen).Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Subtotal GroupBy:=9, Function:=xlCount, TotalList:=Array(4), _
+        Replace:=True, PageBreaks:=False, SummaryBelowData:=True
+        
 Worksheets("aankopen").Activate
 lastRowAankopen = Cells(Rows.Count, "G").End(xlUp).Row
 
