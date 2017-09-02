@@ -103,7 +103,7 @@ Rows(lastRowAankopen).EntireRow.Delete
 
 'kopieer gegevens naar subtotaalrijen
 lastRowAankopen = Cells(Rows.Count, "L").End(xlUp).Row
-Range("D3:L" & lastRowVerkopen).Select
+Range("D3:L" & lastRowAankopen).Select
 Selection.SpecialCells(xlCellTypeBlanks).Select
 Selection.FormulaR1C1 = "=R[-1]C"
 
