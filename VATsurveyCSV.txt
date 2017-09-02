@@ -10,10 +10,10 @@ Application.ScreenUpdating = False
 Application.DisplayAlerts = False
 
 Worksheets("verkopen").Activate
-With Range("E:L")
+lastRowVerkopen = Cells(Rows.Count, "G").End(xlUp).Row
+With Range("E4:L" & lastRowVerkopen)
     .Value = .Value
 End With
-lastRowVerkopen = Cells(Rows.Count, "G").End(xlUp).Row
 
 'sorteren verkopen
 ActiveWorkbook.Worksheets("verkopen").Sort.SortFields.Clear
@@ -54,7 +54,7 @@ Selection.SpecialCells(xlCellTypeBlanks).Select
 Selection.FormulaR1C1 = "=R[-1]C"
 
 'gekopieerde cellen converteren naar waarden
-With Range("E:M")
+With Range("E4:M" & lastRowVerkopen)
     .Value = .Value
 End With
 
@@ -67,10 +67,10 @@ Next
 
 'sorteren aankopen
 Worksheets("aankopen").Activate
-With Range("E:L")
+lastRowAankopen = Cells(Rows.Count, "G").End(xlUp).Row
+With Range("E4:L" & lastRowAankopen)
     .Value = .Value
 End With
-lastRowAankopen = Cells(Rows.Count, "G").End(xlUp).Row
 
 ActiveWorkbook.Worksheets("aankopen").Sort.SortFields.Clear
     ActiveWorkbook.Worksheets("aankopen").Sort.SortFields.Add Key:= _
@@ -110,7 +110,7 @@ Selection.SpecialCells(xlCellTypeBlanks).Select
 Selection.FormulaR1C1 = "=R[-1]C"
 
 'gekopieerde cellen converteren naar waarden
-With Range("D:L")
+With Range("D4:L" & lastRowAankopen)
     .Value = .Value
 End With
 
@@ -159,6 +159,16 @@ Worksheets("CSV").Activate
 For lastRowCSV = Cells(Rows.Count, "A").End(xlUp).Row To lastRowCSVnew Step -1
     Range("D" & lastRowCSV).Value = "0"
 Next
+
+Dim myFileName As String
+myFileName = Application.GetSaveAsFilename("", "CSV (*.csv),*.csv")
+If myFileName <> "False" Then
+    With Worksheets("CSV")
+        .Select
+        .Copy
+    End With
+    ActiveWorkbook.SaveAs myFileName, FileFormat:=xlCSV, CreateBackup:=False
+End If
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
