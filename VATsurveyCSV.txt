@@ -42,6 +42,12 @@ lastRowVerkopen = Cells(Rows.Count, "M").End(xlUp).Row
 Range("A3:M" & lastRowVerkopen).Select
 Selection.SpecialCells(xlCellTypeBlanks).Select
 Selection.FormulaR1C1 = "=R[-1]C"
+
+For RowToTest = Cells(Rows.Count, "M").End(xlUp).Row To 4 Step -1
+    If InStr(1, Range("M" & RowToTest).Value, "Totaal", vbTextCompare) <> 1 Then
+        Rows(RowToTest).EntireRow.Delete
+    End If
+Next
         
 'sorteren aankopen
 Worksheets("aankopen").Activate
