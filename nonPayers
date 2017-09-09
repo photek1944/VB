@@ -85,11 +85,13 @@ wk_name = nDate & " " & nTime & " Niet-betalers.xlsm"
 
 'converteren naar waarden
 Worksheets(1).Activate
-With Range("K:K")
+lastRow = Cells(Rows.Count, "K").End(xlUp).Row
+With Range("K6:K" & lastRow)
     .Value = .Value
 End With
 Worksheets("comdocs").Activate
-With Range("D:D")
+lastRowComdocs = Cells(Rows.Count, "D").End(xlUp).Row
+With Range("D6:K" & lastRowComdocs)
     .Value = .Value
 End With
 
