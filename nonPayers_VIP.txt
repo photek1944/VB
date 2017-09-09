@@ -1,0 +1,79 @@
+Option Explicit
+
+Dim lastRowVIP As Integer, RowToTest As Integer, lastRowVIPoriginal As Integer
+Dim VIPct As String
+Dim InCollection As Boolean
+Dim VIPvar As Variant
+Dim checkCT As String
+Dim CT As Variant
+
+Sub VIP()
+
+Worksheets("VIP").Activate
+lastRowVIPoriginal = Cells(Rows.Count, "B").End(xlUp).Row
+
+'create collection of current VIP
+Dim VIP As Collection
+Set VIP = New Collection
+
+On Error Resume Next
+For lastRowVIP = Cells(Rows.Count, "B").End(xlUp).Row To 3 Step -1
+    VIP.Add Range("B" & lastRowVIP).Value, Range("B" & lastRowVIP).Value
+Next
+On Error GoTo 0
+
+'check if CT is in collection VIP, if not, add CT and Suppliername to VIP tab
+Worksheets(1).Activate
+For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
+    Worksheets(1).Activate
+    VIPvar = "VIP"
+    If VIPvar = Range("AH" & RowToTest).Value Then
+        checkCT = Range("M" & RowToTest).Value
+        InCollection = False
+        For Each CT In VIP
+            If CT = checkCT Then
+                InCollection = True
+            End If
+        Next CT
+            If InCollection = False Then
+                On Error Resume Next
+                    VIP.Add checkCT, checkCT
+                On Error GoTo 0
+                Worksheets("VIP").Activate
+                lastRowVIP = Cells(Rows.Count, "B").End(xlUp).Row
+                Worksheets("VIP").Range("B" & lastRowVIP + 1) = Worksheets(1).Range("M" & RowToTest)
+                Worksheets("VIP").Range("C" & lastRowVIP + 1) = Worksheets(1).Range("N" & RowToTest)
+            End If
+    End If
+Next
+
+'autofit columns and justify
+Worksheets("VIP").Activate
+Columns("B:C").Select
+With Selection
+    .Columns.AutoFit
+    .HorizontalAlignment = xlCenter
+    .VerticalAlignment = xlBottom
+    .WrapText = False
+    .Orientation = 0
+    .AddIndent = False
+    .IndentLevel = 0
+    .ShrinkToFit = False
+    .ReadingOrder = xlContext
+    .MergeCells = False
+End With
+
+Range("A2").Select
+
+'MessageBox for new VIP
+Dim newVIP_CT As Range
+Dim newVIP_string As String
+Dim Row As Integer
+lastRowVIP = Cells(Rows.Count, "B").End(xlUp).Row
+For Row = lastRowVIP To lastRowVIPoriginal + 1 Step -1
+    newVIP_string = newVIP_string & Range("B" & Row).Value & " " & Range("C" & Row).Value & vbNewLine
+Next
+
+MsgBox "Volgende nieuwe VIP werden toegevoegd aan de VIP-lijst:" & vbNewLine & vbNewLine & newVIP_string
+
+End Sub
