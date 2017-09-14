@@ -91,7 +91,7 @@ With Range("K6:K" & lastRow)
 End With
 Worksheets("comdocs").Activate
 lastRowComdocs = Cells(Rows.Count, "D").End(xlUp).Row
-With Range("D6:K" & lastRowComdocs)
+With Range("D3:K" & lastRowComdocs)
     .Value = .Value
 End With
 
