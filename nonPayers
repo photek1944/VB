@@ -22,7 +22,6 @@ Dim Sheet2Name As String
 Dim x As Integer
 Dim cell As Integer
 
-
 Function LOOKUP_CONCAT(Search_string As String, _
 Search_in_col As Range, Return_val_col As Range)
 
@@ -42,7 +41,7 @@ Search_in_col As Range, Return_val_col As Range)
 End Function
 
 
-Sub nonPayers()
+Sub NonPayers()
 
 Application.ScreenUpdating = False
 Application.DisplayAlerts = False
@@ -58,8 +57,8 @@ Range("N3").Value = "Versie: " & nDate & " " & "(" & Time & ")"
 ActiveWorkbook.Worksheets(1).Name = "NB " & nDate & " " & nTime
 
 'verandert de folder naar de map met de niet-betalerslijsten
-ChDrive "C"
-ChDir "C:\Users\Niels\Desktop\niet-betalersflow\NB test vba"
+ChDrive "N"
+ChDir "N:\Administratie\Niet betalers\(jetreports & vba) Niet-betalers"
 
 'laat de gebruiker een xl bestand kiezen om toe te voegen
 Filename = Application.GetOpenFilename( _
@@ -265,21 +264,21 @@ Selection.Borders(xlDiagonalUp).LineStyle = xlNone
 
 'voeg elk VIPct toe aan collectie 'VIP'
 Sheets("VIP").Activate
-Dim Vip As Collection
-Set Vip = New Collection
+Dim VIP As Collection
+Set VIP = New Collection
 
 lastRow = Cells(Rows.Count, "B").End(xlUp).Row
 On Error Resume Next
 For i = 3 To lastRow
-    Vip.Add Range("B" & i), Range("B" & i)
+    VIP.Add Range("B" & i), Range("B" & i)
 Next
 On Error GoTo 0
 
 'voor alle VIPs op tabblad VIP, categorie (AH) tabblad niet-betalers wijzigen naar VIP
 Sheets(1).Activate
 For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
-    checkCT = Range("T" & RowToTest).Value
-    For Each CT In Vip
+    checkCT = Range("M" & RowToTest).Value
+    For Each CT In VIP
         If CT = checkCT Then
             Range("AH" & RowToTest).Value = "VIP"
             Range("N" & RowToTest).Select
@@ -331,19 +330,6 @@ Rows("6:" & lastRow).Select
 'kolombreedtes autofitten
 Columns("L:BA").Select
         Selection.Columns.AutoFit
-
-'centreren van bladen (niet-betalers: rijhoogte is gelijk aan ringnummer, jordy: rijhoogte is gelijk aan inhoud comdoc cellen
-'jet aanpassen: comdocs -> alleen laatste comdocs trekken, kijken om gebruik te maken van het VT-order hiervoor
-
-'na aanpassing van status herverkopen/pipa koopt/terug naar verkoper, aparte knoppen om worksheets te genereren
-'worksheet pipa koopt (finance crediteert factuur en betaalt verkoper uit), shipping only aanmaken voor PIPA Trading en uitboeken als bij PIPA, leverancier wijzigen naar PIPA Trading
-'worksheet terug naar verkoper (finance crediteert alle documenten en logistics maakt order shipping only)
-'worksheet herverkopen, aanvullen met rijen waar nodig, indien ringnummer al bestaat error geven
-
-'error voorzien: indien een ringnummer al bestaat op het worksheet, kan de rij niet overgezet worden
-
-'flow uitwerken in visio + manual opstellen
-'nieuwe jet maken voor betaald/nog niet verzonden na x aantal weken
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
