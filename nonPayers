@@ -22,6 +22,7 @@ Dim Sheet2Name As String
 Dim x As Integer
 Dim cell As Integer
 
+
 Function LOOKUP_CONCAT(Search_string As String, _
 Search_in_col As Range, Return_val_col As Range)
 
@@ -105,6 +106,11 @@ Range("AG6:AG" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($L6,'" & Sheet2Name & "
 'indien een duif nog niet op afgewerkt is gezet (niet correct afgehandeld), komt ze nog eens in de lijst met een waarde in status duif
 'eerst deze duiven terug afwerken en dan jet opnieuw laten draaien, ofwel de rij verwijderen in de excel
 Range("AI6:AI" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($L6,'" & Sheet2Name & "'!$L$5:$AI$" & lastRow2 & ",24,FALSE)="""","""",VLOOKUP($L6,'" & Sheet2Name & "'!$L$5:$AI$" & lastRow2 & ",24,FALSE)),"""")"
+
+Worksheets(1).Activate
+With Range("AF6:AG" & lastRow)
+    .Value = .Value
+End With
 
 vandaag = Date
 
@@ -281,6 +287,8 @@ For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
     For Each CT In VIP
         If CT = checkCT Then
             Range("AH" & RowToTest).Value = "VIP"
+            Range("AH" & RowToTest).Select
+            Selection.Style = "Neutraal"
             Range("N" & RowToTest).Select
             Selection.Style = "Neutraal"
         End If
@@ -301,6 +309,11 @@ For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
             .TintAndShade = 0
         End With
         Range("N" & RowToTest).Select
+        With Selection.Font
+            .Color = -16776961
+            .TintAndShade = 0
+        End With
+        Range("AH" & RowToTest).Select
         With Selection.Font
             .Color = -16776961
             .TintAndShade = 0
