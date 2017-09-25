@@ -1,0 +1,37 @@
+Sub opslaan_ontvangstlijst()
+
+    Dim nDate As String
+    Dim oDate As String
+    Dim xPath As String
+    Dim sht As Worksheet
+    Dim R1 As String
+    Dim R2 As String
+    Dim R3 As String
+  
+    With Application.FileDialog(msoFileDialogFolderPicker)
+        If .Show = -1 Then
+            xPath = .SelectedItems(1)
+        End If
+    End With
+
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+    
+    For Each sht In ActiveWorkbook.Sheets
+        If sht.Visible = True Then
+            oDate = Range("S9").Value
+            nDate = Format(oDate, "yyyy-mm-dd")
+            R1 = sht.Range("S13")
+            R2 = sht.Range("S10")
+            R3 = sht.Range("N11")
+            sht.Copy
+            Application.ActiveWorkbook.SaveAs Filename:=xPath & _
+            "\" & nDate & " " & "(" & R1 & ")" & " " & R2 & " (" & R3 & ")" & ".xlsx"
+            Application.ActiveWorkbook.Close False
+        End If
+    Next sht
+         
+    Application.DisplayAlerts = True
+    Application.ScreenUpdating = True
+      
+End Sub
