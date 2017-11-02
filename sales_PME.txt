@@ -1,0 +1,86 @@
+
+Option Explicit
+
+Dim lastRow As Integer
+Dim nDate As Variant
+Dim nTime As Variant
+Dim Filename As String, wk_name As String
+Dim wkb1 As Workbook, wkb2 As Workbook
+
+Sub Sales_PME()
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+'herformatteert de datum en tijd van vandaag
+nDate = Format(Date, "yyyy-mm-dd")
+nTime = Format(Time, "(hhumm)")
+
+'versie toevoegen
+Range("I3").Value = "Versie: " & nDate & " " & "(" & Time & ")"
+
+'geeft het werkblad de datum van vandaag als titel
+ActiveWorkbook.Worksheets(1).Name = "PME " & nDate & " " & nTime
+
+'verandert de folder naar de map met de niet-betalerslijsten
+ChDrive "N"
+ChDir "N:\Medewerkers\Murteza Sharif"
+
+'laat de gebruiker een xl bestand kiezen om toe te voegen
+Filename = Application.GetOpenFilename( _
+    FileFilter:="xl Files,*.xl*,xm Files,*.xm*", _
+    Title:="Selecteer de vorige sales PME spreadsheet.", _
+MultiSelect:=False)
+
+'maakt objecten van de actieve werkmap en creëert een nieuwe werkmap voor het geselecteerde bestand
+Set wkb1 = ActiveWorkbook
+Set wkb2 = Workbooks.Add(Filename)
+
+'kopieert het eerste werkblad van het geselecteerde bestand naar de actieve werkmap
+wkb2.Sheets(1).Copy after:=wkb1.Sheets(1)
+
+'sluit de werkmap van de gekopieerde niet-betalerslijst
+wkb2.Close
+
+'slaat de nieuwe werkmap op als een xlsm bestand
+ActiveWorkbook.SaveAs Filename:=nDate & " " & nTime & " sales PME", FileFormat:=xlOpenXMLWorkbookMacroEnabled
+wk_name = nDate & " " & nTime & " sales PME.xlsm"
+
+'converteren naar waarden
+Worksheets(1).Activate
+lastRow = Range("G:G").Find(what:="END", after:=Range("A1")).Row
+With Range("G6:X" & lastRow)
+    .Value = .Value
+End With
+
+'sorteren land -> klantnaam -> factuurdatum -> leveranciernaam -> ringnummer
+ActiveWorkbook.Worksheets(1).Sort.SortFields.Clear
+    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
+        Range("O6:O" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
+        Range("N6:N" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
+        Range("AC6:AC" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
+        Range("Q6:Q" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
+        Range("L6:L" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    With ActiveWorkbook.Worksheets(1).Sort
+        .SetRange Range("A5:AZ" & lastRow)
+        .Header = xlYes
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+End With
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+End Sub
+
