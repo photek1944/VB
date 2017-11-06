@@ -43,7 +43,7 @@ wkb2.Close
 
 'slaat de nieuwe werkmap op als een xlsm bestand
 ActiveWorkbook.SaveAs Filename:=nDate & " " & nTime & " " & Range("I3"), FileFormat:=xlOpenXMLWorkbookMacroEnabled
-wk_name = nDate & " " & nTime & " sales PME.xlsm"
+wk_name = nDate & " " & nTime & " " & Range("I3") & ".xlsm"
 
 'converteren naar waarden
 Worksheets(1).Activate
