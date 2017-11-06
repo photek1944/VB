@@ -78,6 +78,38 @@ ActiveWorkbook.Worksheets(1).Sort.SortFields.Clear
         .Apply
 End With
 
+x = 0
+For cell = 7 To lastRow
+    If (Cells(cell, 26).Value = Cells(cell - 1, 26).Value) Then
+            Range("F" & cell - 1 & ":AI" & cell - 1).Select
+            Selection.Copy
+            Range("F" & cell & ":AI" & cell).Select
+            Selection.PasteSpecial Paste:=xlPasteFormats, Operation:=xlNone, _
+                SkipBlanks:=False, Transpose:=False
+            Application.CutCopyMode = False
+    Else
+        If x = 0 Then
+            x = 1
+            With Range("F" & cell & ":AI" & cell).Interior
+                .Pattern = xlSolid
+                .PatternColorIndex = xlAutomatic
+                .ThemeColor = xlThemeColorAccent1
+                .TintAndShade = 0.799981688894314
+                .PatternTintAndShade = 0
+            End With
+        ElseIf x = 1 Then
+            x = 0
+            With Range("F" & cell & ":AI" & cell).Interior
+                .Pattern = xlSolid
+                .PatternColorIndex = xlAutomatic
+                .ThemeColor = xlThemeColorDark1
+                .TintAndShade = 0
+                .PatternTintAndShade = 0
+            End With
+        End If
+    End If
+Next cell
+
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
 
