@@ -22,7 +22,7 @@ Application.DisplayAlerts = False
     ShpNaam = Range("AO2").Value
     
     Application.ActiveWorkbook.SaveAs Filename:=xPath & _
-    "\" & nDate & " " & "(" & ShpNr & ")" & " " & ShpNaam & ".xlsm"
+    "\" & nDate & " " & "(" & ShpNaam & ")" & " " & ShpNr & ".xlsm"
     
     Application.ActiveWorkbook.Close False
 
