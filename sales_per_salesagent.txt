@@ -16,10 +16,10 @@ nDate = Format(Date, "yyyy-mm-dd")
 nTime = Format(Time, "(hhumm)")
 
 'versie toevoegen
-Range("I3").Value = "Versie: " & nDate & " " & "(" & Time & ")"
+Range("H4").Value = "Versie: " & nDate & " " & "(" & Time & ")"
 
 'geeft het werkblad de datum van vandaag als titel
-ActiveWorkbook.Worksheets(1).Name = "PME " & nDate & " " & nTime
+ActiveWorkbook.Worksheets(1).Name = nDate & " " & nTime
 
 'verandert de folder naar de map met de niet-betalerslijsten
 ChDrive "N"
@@ -28,7 +28,7 @@ ChDir "N:\Medewerkers"
 'laat de gebruiker een xl bestand kiezen om toe te voegen
 Filename = Application.GetOpenFilename( _
     FileFilter:="xl Files,*.xl*,xm Files,*.xm*", _
-    Title:="Selecteer de vorige sales PME spreadsheet.", _
+    Title:="Selecteer de vorige sales spreadsheet.", _
 MultiSelect:=False)
 
 'maakt objecten van de actieve werkmap en creëert een nieuwe werkmap voor het geselecteerde bestand
@@ -42,8 +42,8 @@ wkb2.Sheets(1).Copy after:=wkb1.Sheets(1)
 wkb2.Close
 
 'slaat de nieuwe werkmap op als een xlsm bestand
-ActiveWorkbook.SaveAs Filename:=nDate & " " & nTime & " " & Range("I3"), FileFormat:=xlOpenXMLWorkbookMacroEnabled
-wk_name = nDate & " " & nTime & " " & Range("I3") & ".xlsm"
+wk_name = Range("J3").Value
+ActiveWorkbook.SaveAs Filename:=nDate & " " & nTime & " " & wk_name, FileFormat:=xlOpenXMLWorkbookMacroEnabled
 
 'converteren naar waarden
 Worksheets(1).Activate
