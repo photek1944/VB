@@ -23,9 +23,12 @@ Range("H4").Value = "Version: " & nDate & " " & "(" & Time & ")"
 'geeft het werkblad de datum van vandaag als titel
 ActiveWorkbook.Worksheets(1).Name = nDate & " " & nTime
 
+'sla de naam van de agent op in wk_name
+wk_name = Range("J3").Value
+
 'verandert de folder naar de map met de niet-betalerslijsten
 ChDrive "N"
-ChDir "N:\Medewerkers"
+ChDir "N:\Medewerkers" & "\" & wk_name
 
 'laat de gebruiker een xl bestand kiezen om toe te voegen
 Filename = Application.GetOpenFilename( _
@@ -44,7 +47,6 @@ wkb2.Sheets(1).Copy after:=wkb1.Sheets(1)
 wkb2.Close
 
 'slaat de nieuwe werkmap op als een xlsm bestand
-wk_name = Range("J3").Value
 ActiveWorkbook.SaveAs Filename:=nDate & " " & nTime & " " & wk_name, FileFormat:=xlOpenXMLWorkbookMacroEnabled
 
 'converteren naar waarden
@@ -127,7 +129,6 @@ Range("K6:K" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($H6,'" & Sheet2Name & "'!
 With Range("J6:K" & lastRow)
     .Value = .Value
 End With
-
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
