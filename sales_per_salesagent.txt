@@ -1,9 +1,9 @@
 Option Explicit
 
-Dim lastRow As Integer
+Dim lastRow As Integer, lastRow2 As Integer
 Dim nDate As Variant
 Dim nTime As Variant
-Dim Filename As String, wk_name As String
+Dim Filename As String, wk_name As String, Sheet2Name As String
 Dim wkb1 As Workbook, wkb2 As Workbook
 Dim x As Integer, cell As Integer
 
@@ -83,17 +83,17 @@ End With
 'inkleuren van rijen per klant
 x = 0
 For cell = 7 To lastRow
-    If (Cells(cell, 20).Value = Cells(cell - 1, 20).Value) Then
-            Range("H" & cell - 1 & ":AB" & cell - 1).Select
+    If (Cells(cell, 26).Value = Cells(cell - 1, 26).Value) Then
+            Range("F" & cell - 1 & ":AI" & cell - 1).Select
             Selection.Copy
-            Range("H" & cell & ":AB" & cell).Select
+            Range("F" & cell & ":AI" & cell).Select
             Selection.PasteSpecial Paste:=xlPasteFormats, Operation:=xlNone, _
                 SkipBlanks:=False, Transpose:=False
             Application.CutCopyMode = False
     Else
         If x = 0 Then
             x = 1
-            With Range("H" & cell & ":AB" & cell).Interior
+            With Range("F" & cell & ":AI" & cell).Interior
                 .Pattern = xlSolid
                 .PatternColorIndex = xlAutomatic
                 .ThemeColor = xlThemeColorAccent1
@@ -102,7 +102,7 @@ For cell = 7 To lastRow
             End With
         ElseIf x = 1 Then
             x = 0
-            With Range("H" & cell & ":AB" & cell).Interior
+            With Range("F" & cell & ":AI" & cell).Interior
                 .Pattern = xlSolid
                 .PatternColorIndex = xlAutomatic
                 .ThemeColor = xlThemeColorDark1
@@ -112,6 +112,17 @@ For cell = 7 To lastRow
         End If
     End If
 Next cell
+
+'opmerkingen overnemen van de vorige lijst
+Worksheets(2).Activate
+lastRow2 = Range("H:H").Find(what:="END", after:=Range("H5")).Row - 1
+
+Worksheets(1).Activate
+Sheet2Name = Sheets(2).Name
+
+Range("J6:J" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($H6,'" & Sheet2Name & "'!$H$5:$AB$" & lastRow2 & ",3,FALSE)="""","""",VLOOKUP($H6,'" & Sheet2Name & "'!$H$5:$AB$" & lastRow2 & ",3,FALSE)),"""")"
+Range("K6:K" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($H6,'" & Sheet2Name & "'!$H$5:$AB$" & lastRow2 & ",4,FALSE)="""","""",VLOOKUP($H6,'" & Sheet2Name & "'!$H$5:$AB$" & lastRow2 & ",4,FALSE)),"""")"
+
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
