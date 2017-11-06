@@ -18,7 +18,7 @@ Sub Opslaan_Ophaallijst()
     R2 = Range("AO2").Value
     wkb.Copy
     Application.ActiveWorkbook.SaveAs Filename:=xPath & _
-    "\" & nDate & " " & "(" & R1 & ")" & " " & R2 & " (" & R3 & ")" & ".xlsx"
+    "\" & nDate & " " & "(" & R1 & ")" & " " & R2 & ".xlsx"
     Application.ActiveWorkbook.Close False
 
     Application.DisplayAlerts = True
