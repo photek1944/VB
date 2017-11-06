@@ -48,29 +48,29 @@ ActiveWorkbook.SaveAs Filename:=nDate & " " & nTime & " " & wk_name, FileFormat:
 'converteren naar waarden
 Worksheets(1).Activate
 lastRow = Range("H:H").Find(what:="END", after:=Range("H5")).Row - 1
-With Range("H6:X" & lastRow)
+With Range("H6:AB" & lastRow)
     .Value = .Value
 End With
 
 'sorteren land -> klantnaam -> factuurdatum -> leveranciernaam -> ringnummer
 ActiveWorkbook.Worksheets(1).Sort.SortFields.Clear
     ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
+        Range("V6:V" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
+        Range("U6:U" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
+        Range("P6:P" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
         Range("O6:O" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
         :=xlSortNormal
     ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
-        Range("N6:N" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
-        :=xlSortNormal
-    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
-        Range("AC6:AC" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
-        :=xlSortNormal
-    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
-        Range("Q6:Q" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
-        :=xlSortNormal
-    ActiveWorkbook.Worksheets(1).Sort.SortFields.Add Key:= _
-        Range("L6:L" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        Range("H6:H" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
         :=xlSortNormal
     With ActiveWorkbook.Worksheets(1).Sort
-        .SetRange Range("A5:AZ" & lastRow)
+        .SetRange Range("H5:AB" & lastRow)
         .Header = xlYes
         .MatchCase = False
         .Orientation = xlTopToBottom
