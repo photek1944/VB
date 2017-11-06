@@ -5,6 +5,8 @@ Dim nDate As Variant
 Dim nTime As Variant
 Dim Filename As String, wk_name As String
 Dim wkb1 As Workbook, wkb2 As Workbook
+Dim x As Integer, cell As Integer
+
 
 Sub Sales_per_salesagent()
 
@@ -81,17 +83,17 @@ End With
 'inkleuren van rijen per klant
 x = 0
 For cell = 7 To lastRow
-    If (Cells(cell, 26).Value = Cells(cell - 1, 26).Value) Then
-            Range("F" & cell - 1 & ":AI" & cell - 1).Select
+    If (Cells(cell, 20).Value = Cells(cell - 1, 20).Value) Then
+            Range("H" & cell - 1 & ":AB" & cell - 1).Select
             Selection.Copy
-            Range("F" & cell & ":AI" & cell).Select
+            Range("H" & cell & ":AB" & cell).Select
             Selection.PasteSpecial Paste:=xlPasteFormats, Operation:=xlNone, _
                 SkipBlanks:=False, Transpose:=False
             Application.CutCopyMode = False
     Else
         If x = 0 Then
             x = 1
-            With Range("F" & cell & ":AI" & cell).Interior
+            With Range("H" & cell & ":AB" & cell).Interior
                 .Pattern = xlSolid
                 .PatternColorIndex = xlAutomatic
                 .ThemeColor = xlThemeColorAccent1
@@ -100,7 +102,7 @@ For cell = 7 To lastRow
             End With
         ElseIf x = 1 Then
             x = 0
-            With Range("F" & cell & ":AI" & cell).Interior
+            With Range("H" & cell & ":AB" & cell).Interior
                 .Pattern = xlSolid
                 .PatternColorIndex = xlAutomatic
                 .ThemeColor = xlThemeColorDark1
