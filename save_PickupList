@@ -1,4 +1,4 @@
-Sub Opslaan_Ophaallijst()
+Option Explicit
 
     Dim nDate As String
     Dim oDate As String
@@ -6,6 +6,11 @@ Sub Opslaan_Ophaallijst()
     Dim wkb As Workbook
     Dim ShpNr As String
     Dim ShpNaam As String
+
+Sub Opslaan_Ophaallijst()
+
+ChDrive "N"
+ChDir "N:\Logistiek"
 
 With Application.FileDialog(msoFileDialogFolderPicker)
     If .Show = -1 Then
