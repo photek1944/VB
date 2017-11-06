@@ -1,0 +1,27 @@
+Sub Opslaan_Ophaallijst()
+
+    Dim nDate As String
+    Dim oDate As String
+    Dim xPath As String
+    Dim wkb As Workbook
+    Dim R1 As String
+    Dim R2 As String
+
+    xPath = Application.ActiveWorkbook.Path
+    
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+    
+    oDate = Range("AP3").Value
+    nDate = Format(oDate, "yyyy-mm-dd")
+    R1 = Range("AN2").Value
+    R2 = Range("AO2").Value
+    wkb.Copy
+    Application.ActiveWorkbook.SaveAs Filename:=xPath & _
+    "\" & nDate & " " & "(" & R1 & ")" & " " & R2 & " (" & R3 & ")" & ".xlsx"
+    Application.ActiveWorkbook.Close False
+
+    Application.DisplayAlerts = True
+    Application.ScreenUpdating = True
+      
+End Sub
