@@ -78,6 +78,7 @@ ActiveWorkbook.Worksheets(1).Sort.SortFields.Clear
         .Apply
 End With
 
+'inkleuren van rijen per klant
 x = 0
 For cell = 7 To lastRow
     If (Cells(cell, 26).Value = Cells(cell - 1, 26).Value) Then
