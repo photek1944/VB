@@ -298,7 +298,7 @@ Next
 
 'voor alle Standards die aan 4 reminders zitten categorie aanpassen naar Non-payer, om lijst voor te leggen aan zaakvoerders
 For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
-    If Range("AD" & RowToTest).Value >= 4 And Range("AP" & RowToTest).Value > 0 Then
+    If Range("AD" & RowToTest).Value >= 4 And Range("AQ" & RowToTest).Value > 0 Then
         Range("AD" & RowToTest).Select
         With Selection.Font
             .Color = -16776961
@@ -320,7 +320,7 @@ For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
             .TintAndShade = 0
         End With
     End If
-    If Range("AD" & RowToTest).Value >= 4 And Range("AP" & RowToTest).Value > 0 And Range("AH" & RowToTest).Value <> "VIP" Then
+    If Range("AD" & RowToTest).Value >= 4 And Range("AQ" & RowToTest).Value > 0 And Range("AH" & RowToTest).Value <> "VIP" Then
         Range("AH" & RowToTest).Value = "Non-payer"
         Range("AH" & RowToTest).Select
         With Selection.Font
