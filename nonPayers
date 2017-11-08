@@ -337,7 +337,9 @@ For lastRowComdocs = Cells(Rows.Count, "D").End(xlUp).Row To 3 Step -1
         Rows(lastRowComdocs).EntireRow.Delete
     End If
 Next
-        
+
+lastRowComdocs = Cells(Rows.Count, "D").End(xlUp).Row
+
 Sheets(1).Activate
 lastRow = Cells(Rows.Count, "D").End(xlUp).Row
 Range("AY6:AY" & lastRow).Formula = "=LOOKUP_CONCAT($L6,'comdocs'!$D$3:$D$" & lastRowComdocs & ",'comdocs'!$E$3:$E$" & lastRowComdocs & ")"
@@ -349,6 +351,8 @@ Rows("6:" & lastRow).Select
 'kolombreedtes autofitten
 Columns("L:BA").Select
         Selection.Columns.AutoFit
+        
+Sheets(1).Activate
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
