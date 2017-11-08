@@ -91,7 +91,7 @@ With Range("K6:K" & lastRow)
 End With
 Worksheets("comdocs").Activate
 lastRowComdocs = Cells(Rows.Count, "D").End(xlUp).Row
-With Range("D3:K" & lastRowComdocs)
+With Range("D3:R" & lastRowComdocs)
     .Value = .Value
 End With
 
@@ -331,7 +331,13 @@ Next
 
 'lookup functie toevoegen om commissies in één cel te krijgen
 Sheets("comdocs").Activate
-lastRowComdocs = Cells(Rows.Count, "D").End(xlUp).Row
+
+For lastRowComdocs = Cells(Rows.Count, "D").End(xlUp).Row To 3 Step -1
+    If Range("L" & lastRowComdocs).Value = "JA" Then
+        Rows(lastRowComdocs).EntireRow.Delete
+    End If
+Next
+        
 Sheets(1).Activate
 lastRow = Cells(Rows.Count, "D").End(xlUp).Row
 Range("AY6:AY" & lastRow).Formula = "=LOOKUP_CONCAT($L6,'comdocs'!$D$3:$D$" & lastRowComdocs & ",'comdocs'!$E$3:$E$" & lastRowComdocs & ")"
