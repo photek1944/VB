@@ -21,7 +21,7 @@ Dim wk_name As Variant
 Dim Sheet2Name As String
 Dim x As Integer
 Dim cell As Integer
-
+Dim infocomDoc As String
 
 Function LOOKUP_CONCAT(Search_string As String, _
 Search_in_col As Range, Return_val_col As Range)
@@ -341,8 +341,9 @@ Next
 lastRowComdocs = Cells(Rows.Count, "D").End(xlUp).Row
 
 Sheets(1).Activate
-lastRow = Cells(Rows.Count, "D").End(xlUp).Row
-Range("AY6:AY" & lastRow).Formula = "=LOOKUP_CONCAT($L6,'comdocs'!$D$3:$D$" & lastRowComdocs & ",'comdocs'!$E$3:$E$" & lastRowComdocs & ")"
+lastRow = Cells(Rows.Count, "L").End(xlUp).Row
+infocomDoc = "geen comdocs gevonden"
+Range("AY6:AY" & lastRow).Formula = "=IFERROR(LOOKUP_CONCAT($L6,'comdocs'!$D$3:$D$" & lastRowComdocs & ",'comdocs'!$E$3:$E$" & lastRowComdocs & ")," & """" & infocomDoc & """" & ")"
 
 'rijhoogtes aanpassen aan standaardhoogte
 Rows("6:" & lastRow).Select
