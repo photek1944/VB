@@ -353,6 +353,8 @@ Rows("6:" & lastRow).Select
 'kolombreedtes autofitten
 Columns("L:BA").Select
         Selection.Columns.AutoFit
+Columns("AG").Select
+        Selection.ColumnWidth = 25
         
 Sheets(1).Activate
 
