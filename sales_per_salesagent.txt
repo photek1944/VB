@@ -7,6 +7,7 @@ Dim Filename As String, wk_name As String, Sheet2Name As String
 Dim wkb1 As Workbook, wkb2 As Workbook
 Dim x As Integer, cell As Integer
 
+
 Sub Sales_per_salesagent()
 
 Application.ScreenUpdating = False
@@ -130,7 +131,7 @@ With Range("J6:K" & lastRow)
 End With
 
 'delete tweede tabblad
-Worksheets("2").Delete
+Worksheets(2).Delete
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
