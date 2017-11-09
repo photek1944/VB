@@ -7,7 +7,6 @@ Dim Filename As String, wk_name As String, Sheet2Name As String
 Dim wkb1 As Workbook, wkb2 As Workbook
 Dim x As Integer, cell As Integer
 
-
 Sub Sales_per_salesagent()
 
 Application.ScreenUpdating = False
@@ -23,12 +22,12 @@ Range("H4").Value = "Version: " & nDate & " " & "(" & Time & ")"
 'geeft het werkblad de datum van vandaag als titel
 ActiveWorkbook.Worksheets(1).Name = nDate & " " & nTime
 
-'sla de naam van de agent op in wk_name
+'sla agentnaam op in var
 wk_name = Range("J3").Value
 
 'verandert de folder naar de map met de niet-betalerslijsten
 ChDrive "N"
-ChDir "N:\Medewerkers" & "\" & wk_name
+ChDir "N:\Agenten" & "\" & wk_name
 
 'laat de gebruiker een xl bestand kiezen om toe te voegen
 Filename = Application.GetOpenFilename( _
@@ -129,6 +128,9 @@ Range("K6:K" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($H6,'" & Sheet2Name & "'!
 With Range("J6:K" & lastRow)
     .Value = .Value
 End With
+
+'delete tweede tabblad
+Worksheets("2").Delete
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
