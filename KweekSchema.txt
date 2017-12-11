@@ -1,0 +1,122 @@
+Option Explicit
+
+Dim lastRowKweekschema As Integer, RowToTest As Integer, lastRowInlezenDuiven As Integer
+Dim BreederCT1 As String, BreederCT2 As String
+Dim CT As Variant
+Dim InCollection As Boolean
+
+Sub inlezen_duiven()
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+Application.Worksheets("inlezen duiven").Activate
+
+'create new sheet or refresh
+If Not IsEmpty(Range("A3").Value) Then
+    Worksheets("inlezen duiven").Delete
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = "inlezen duiven"
+    Sheets("inlezen duiven").Select
+End If
+
+Range("A1").Value = "ringnr"
+Range("B1").Value = "naam duif"
+Range("C1").Value = "CT lev"
+Range("D1").Value = "lev naam"
+Range("E1").Value = "vestiging"
+Range("F1").Value = "locatie"
+Range("G1").Value = "kleur pluim"
+Range("H1").Value = "ringkleur"
+Range("I1").Value = "IC Partnercode"
+Range("J1").Value = "Geboortedatum"
+Range("K1").Value = "Ringnummer vader"
+Range("L1").Value = "Ringnummer moeder"
+Range("M1").Value = "Bestemming"
+Range("N1").Value = "Geslacht"
+Range("O1").Value = "Procedure code"
+Range("P1").Value = "Soort Duif"
+Range("Q1").Value = "Financieel document 1"
+
+Worksheets("kweekschema").Activate
+lastRowKweekschema = Sheets("kweekschema").ListObjects("samenkweek").Range.Columns(1).Cells.Find("*", SearchOrder:=xlByRows, SearchDirection:=xlPrevious).Row
+
+'create collection of "inlezen duiven 1"
+Dim BreederCollection1 As Collection
+Set BreederCollection1 = New Collection
+
+On Error Resume Next
+For RowToTest = lastRowKweekschema To 6 Step -1
+    BreederCollection1.Add Range("L" & RowToTest).Value, Range("L" & RowToTest).Value
+Next
+On Error GoTo 0
+
+'create collection of "inlezen duiven 2"
+Dim BreederCollection2 As Collection
+Set BreederCollection2 = New Collection
+
+On Error Resume Next
+For RowToTest = lastRowKweekschema To 6 Step -1
+    BreederCollection2.Add Range("M" & RowToTest).Value, Range("M" & RowToTest).Value
+Next
+On Error GoTo 0
+
+'check if BreederCT1 is in collection BreederCollection1
+For RowToTest = lastRowKweekschema To 6 Step -1
+    Worksheets("kweekschema").Activate
+    BreederCT1 = Range("L" & RowToTest).Value
+        InCollection = False
+        For Each CT In BreederCollection1
+            If CT = BreederCT1 Then
+                InCollection = True
+            End If
+        Next CT
+            If InCollection = True Then
+                Worksheets("inlezen duiven").Activate
+                lastRowInlezenDuiven = Cells(Rows.Count, "A").End(xlUp).Row
+                Worksheets("inlezen duiven").Range("A" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("J" & RowToTest)
+                Worksheets("inlezen duiven").Range("D" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("L" & RowToTest)
+                Worksheets("inlezen duiven").Range("K" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("A" & RowToTest)
+                Worksheets("inlezen duiven").Range("L" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("C" & RowToTest)
+            End If
+Next
+
+'check if BreederCT2 is in collection BreederCollection2
+For RowToTest = lastRowKweekschema To 6 Step -1
+    Worksheets("kweekschema").Activate
+    BreederCT2 = Range("M" & RowToTest).Value
+        InCollection = False
+        For Each CT In BreederCollection2
+            If CT = BreederCT2 Then
+                InCollection = True
+            End If
+        Next CT
+            If InCollection = True Then
+                Worksheets("inlezen duiven").Activate
+                lastRowInlezenDuiven = Cells(Rows.Count, "A").End(xlUp).Row
+                Worksheets("inlezen duiven").Range("A" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("K" & RowToTest)
+                Worksheets("inlezen duiven").Range("D" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("L" & RowToTest)
+                Worksheets("inlezen duiven").Range("K" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("A" & RowToTest)
+                Worksheets("inlezen duiven").Range("L" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("C" & RowToTest)
+            End If
+Next
+
+Worksheets("inlezen duiven").Activate
+Rows("2:2").Select
+Selection.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
+
+Range("A2:Q2").Select
+    With Selection.Interior
+        .PatternColorIndex = xlAutomatic
+        .Color = 255
+        .TintAndShade = 0
+        .PatternTintAndShade = 0
+    End With
+    
+'toevoegen lookup formule in tabblad inlezen duiven voor CT-nummers op basis van naam
+'jet maken voor tabbladen ouders en ct-kwekers, kijken of je kan refreshen met data op tabblad kweekschema
+'optie opslaan van tabblad inlezen duiven naar andere locatie
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+End Sub
