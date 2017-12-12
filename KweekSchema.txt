@@ -1,9 +1,10 @@
 Option Explicit
 
-Dim lastRowKweekschema As Integer, RowToTest As Integer, lastRowInlezenDuiven As Integer
+Dim lastRowKweekschema As Integer, RowToTest As Integer, lastRowInlezenDuiven As Integer, lastRowKwekers As Integer
 Dim BreederCT1 As String, BreederCT2 As String
 Dim CT As Variant
 Dim InCollection As Boolean
+
 
 Sub inlezen_duiven()
 
@@ -100,10 +101,40 @@ For RowToTest = lastRowKweekschema To 6 Step -1
             End If
 Next
 
+'toevoegen lookup formule in tabblad inlezen duiven voor CT-nummers op basis van naam
+Worksheets("CT-kwekers").Activate
+lastRowKwekers = Cells(Rows.Count, "A").End(xlUp).Row
+Worksheets("inlezen duiven").Activate
+Range("C2:C" & lastRowInlezenDuiven + 1).Formula = "=VLOOKUP($D2,'" & "CT-kwekers" & "'!$A$2:$B$" & lastRowKwekers & ",2,FALSE)"
+With Range("C2:C" & lastRowInlezenDuiven)
+    .Value = .Value
+End With
+
+'centreren en kolombreedte autoaanpassen
+Columns("A:Q").Select
+    Selection.Columns.AutoFit
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlBottom
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+Range("A1:Q" & lastRowInlezenDuiven + 1).Sort key1:=Range("C1:C" & lastRowInlezenDuiven + 1), _
+    order1:=xlAscending, Header:=xlNo
+
+
+
+'toevoegen van lege 2de rij voor import in Navision
 Worksheets("inlezen duiven").Activate
 Rows("2:2").Select
 Selection.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
 
+'lege 2de rij rood invullen
 Range("A2:Q2").Select
     With Selection.Interior
         .PatternColorIndex = xlAutomatic
@@ -112,8 +143,8 @@ Range("A2:Q2").Select
         .PatternTintAndShade = 0
     End With
     
-'toevoegen lookup formule in tabblad inlezen duiven voor CT-nummers op basis van naam
-'jet maken voor tabbladen ouders en ct-kwekers, kijken of je kan refreshen met data op tabblad kweekschema
+
+
 'optie opslaan van tabblad inlezen duiven naar andere locatie
 
 Application.ScreenUpdating = True
