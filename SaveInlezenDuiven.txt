@@ -1,0 +1,30 @@
+Option Explicit
+
+Dim wb As Workbook, InitFileName As String, fileSaveName As String, xPath As String
+
+Sub Save_kweekschema()
+
+    ChDrive "N"
+    xPath = "N:\PEC\Kweek"
+    
+    InitFileName = xPath & "\" & "inlezen duiven"
+     
+    Sheets("inlezen duiven").Copy
+     
+    Set wb = ActiveWorkbook
+     
+    fileSaveName = Application.GetSaveAsFilename(InitialFileName:=InitFileName, _
+    filefilter:="Excel files , *.xlsx")
+     
+    With wb
+        If fileSaveName <> "False" Then
+             
+            .SaveAs fileSaveName
+            .Close
+        Else
+            .Close False
+            Exit Sub
+        End If
+    End With
+ 
+End Sub
