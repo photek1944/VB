@@ -1,10 +1,10 @@
 Option Explicit
 
 Dim lastRowKweekschema As Integer, RowToTest As Integer, lastRowInlezenDuiven As Integer, lastRowKwekers As Integer
-Dim BreederCT1 As String, BreederCT2 As String
+Dim inlezenduiven1 As String, inlezenduiven2 As String
 Dim CT As Variant
 Dim InCollection As Boolean
-
+Dim dateBorn As Date, date1stEgg As Date
 
 Sub inlezen_duiven()
 
@@ -38,67 +38,56 @@ Range("O1").Value = "Procedure code"
 Range("P1").Value = "Soort Duif"
 Range("Q1").Value = "Financieel document 1"
 
+'search last row on sheet kweekschema
 Worksheets("kweekschema").Activate
 lastRowKweekschema = Sheets("kweekschema").ListObjects("samenkweek").Range.Columns(1).Cells.Find("*", SearchOrder:=xlByRows, SearchDirection:=xlPrevious).Row
 
-'create collection of "inlezen duiven 1"
-Dim BreederCollection1 As Collection
-Set BreederCollection1 = New Collection
-
-On Error Resume Next
+'check if inlezen duiven 1 = "JA"
 For RowToTest = lastRowKweekschema To 6 Step -1
-    BreederCollection1.Add Range("L" & RowToTest).Value, Range("L" & RowToTest).Value
-Next
-On Error GoTo 0
-
-'create collection of "inlezen duiven 2"
-Dim BreederCollection2 As Collection
-Set BreederCollection2 = New Collection
-
-On Error Resume Next
-For RowToTest = lastRowKweekschema To 6 Step -1
-    BreederCollection2.Add Range("M" & RowToTest).Value, Range("M" & RowToTest).Value
-Next
-On Error GoTo 0
-
-'check if BreederCT1 is in collection BreederCollection1
-For RowToTest = lastRowKweekschema To 6 Step -1
-    Worksheets("kweekschema").Activate
-    BreederCT1 = Range("L" & RowToTest).Value
-        InCollection = False
-        For Each CT In BreederCollection1
-            If CT = BreederCT1 Then
-                InCollection = True
-            End If
-        Next CT
-            If InCollection = True Then
-                Worksheets("inlezen duiven").Activate
-                lastRowInlezenDuiven = Cells(Rows.Count, "A").End(xlUp).Row
-                Worksheets("inlezen duiven").Range("A" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("J" & RowToTest)
-                Worksheets("inlezen duiven").Range("D" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("L" & RowToTest)
-                Worksheets("inlezen duiven").Range("K" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("A" & RowToTest)
-                Worksheets("inlezen duiven").Range("L" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("C" & RowToTest)
-            End If
+    inlezenduiven1 = Worksheets("kweekschema").Range("L" & RowToTest).Value
+        If inlezenduiven1 = "JA" Then
+            Worksheets("inlezen duiven").Activate
+            lastRowInlezenDuiven = Cells(Rows.Count, "A").End(xlUp).Row
+                Worksheets("inlezen duiven").Range("A" & lastRowInlezenDuiven + 1) = Worksheets("kweekschema").Range("J" & RowToTest) '1st band
+                Worksheets("inlezen duiven").Range("D" & lastRowInlezenDuiven + 1) = Worksheets("kweekschema").Range("N" & RowToTest) 'kweker 1
+                Worksheets("inlezen duiven").Range("K" & lastRowInlezenDuiven + 1) = Worksheets("kweekschema").Range("A" & RowToTest) 'Father
+                Worksheets("inlezen duiven").Range("L" & lastRowInlezenDuiven + 1) = Worksheets("kweekschema").Range("C" & RowToTest) 'Mother
+                Worksheets("inlezen duiven").Range("E" & lastRowInlezenDuiven + 1) = Worksheets("kweekschema").Range("O" & RowToTest) 'vestiging 1
+                Worksheets("inlezen duiven").Range("F" & lastRowInlezenDuiven + 1) = Worksheets("kweekschema").Range("P" & RowToTest) 'locatie 1
+                Worksheets("inlezen duiven").Range("M" & lastRowInlezenDuiven + 1) = Worksheets("kweekschema").Range("Q" & RowToTest) 'bestemming 1
+                
+                'calculate date of birth
+                date1stEgg = Worksheets("kweekschema").Range("G" & RowToTest).Value
+                dateBorn = Format(DateSerial(Year(date1stEgg), Month(date1stEgg) + 1, 1), "dd/mm/yyyy")
+                Worksheets("inlezen duiven").Range("J" & lastRowInlezenDuiven + 1) = dateBorn
+                
+                'add name (father x mother)
+                Worksheets("inlezen duiven").Range("B" & lastRowInlezenDuiven + 1).Value = "(" & Worksheets("kweekschema").Range("B" & RowToTest) & " x " & Worksheets("kweekschema").Range("D" & RowToTest) & ")"
+        End If
 Next
 
-'check if BreederCT2 is in collection BreederCollection2
+'check if inlezen duiven 2 = "JA"
 For RowToTest = lastRowKweekschema To 6 Step -1
-    Worksheets("kweekschema").Activate
-    BreederCT2 = Range("M" & RowToTest).Value
-        InCollection = False
-        For Each CT In BreederCollection2
-            If CT = BreederCT2 Then
-                InCollection = True
-            End If
-        Next CT
-            If InCollection = True Then
-                Worksheets("inlezen duiven").Activate
-                lastRowInlezenDuiven = Cells(Rows.Count, "A").End(xlUp).Row
-                Worksheets("inlezen duiven").Range("A" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("K" & RowToTest)
-                Worksheets("inlezen duiven").Range("D" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("L" & RowToTest)
-                Worksheets("inlezen duiven").Range("K" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("A" & RowToTest)
-                Worksheets("inlezen duiven").Range("L" & lastRowInlezenDuiven + 1) = Worksheets(1).Range("C" & RowToTest)
-            End If
+    inlezenduiven2 = Worksheets("kweekschema").Range("M" & RowToTest).Value
+        If inlezenduiven2 = "JA" Then
+            Worksheets("inlezen duiven").Activate
+            lastRowInlezenDuiven = Cells(Rows.Count, "A").End(xlUp).Row
+                Worksheets("inlezen duiven").Range("A" & lastRowInlezenDuiven + 1) = Worksheets("kweekschema").Range("K" & RowToTest) '2nd band
+                Worksheets("inlezen duiven").Range("D" & lastRowInlezenDuiven + 1) = Worksheets("kweekschema").Range("S" & RowToTest) 'kweker 2
+                Worksheets("inlezen duiven").Range("K" & lastRowInlezenDuiven + 1) = Worksheets("kweekschema").Range("A" & RowToTest) 'Father
+                Worksheets("inlezen duiven").Range("L" & lastRowInlezenDuiven + 1) = Worksheets("kweekschema").Range("C" & RowToTest) 'Mother
+                Worksheets("inlezen duiven").Range("E" & lastRowInlezenDuiven + 1) = Worksheets("kweekschema").Range("T" & RowToTest) 'vestiging 2
+                Worksheets("inlezen duiven").Range("F" & lastRowInlezenDuiven + 1) = Worksheets("kweekschema").Range("U" & RowToTest) 'locatie 2
+                Worksheets("inlezen duiven").Range("M" & lastRowInlezenDuiven + 1) = Worksheets("kweekschema").Range("V" & RowToTest) 'bestemming 2
+                
+                'calculate date of birth
+                date1stEgg = Worksheets("kweekschema").Range("G" & RowToTest).Value
+                dateBorn = Format(DateSerial(Year(date1stEgg), Month(date1stEgg) + 1, 1), "dd/mm/yyyy")
+                Worksheets("inlezen duiven").Range("J" & lastRowInlezenDuiven + 1) = dateBorn
+                
+                'add name (father x mother)
+                Worksheets("inlezen duiven").Range("B" & lastRowInlezenDuiven + 1).Value = "(" & Worksheets("kweekschema").Range("B" & RowToTest) & " x " & Worksheets("kweekschema").Range("D" & RowToTest) & ")"
+        End If
 Next
 
 'toevoegen lookup formule in tabblad inlezen duiven voor CT-nummers op basis van naam
@@ -109,6 +98,24 @@ Range("C2:C" & lastRowInlezenDuiven + 1).Formula = "=VLOOKUP($D2,'" & "CT-kweker
 With Range("C2:C" & lastRowInlezenDuiven)
     .Value = .Value
 End With
+
+'add IC partnercode & procedure code & financieel document for PEC/PIPA pigeons
+Worksheets("inlezen duiven").Activate
+lastRowInlezenDuiven = Cells(Rows.Count, "A").End(xlUp).Row
+For RowToTest = lastRowInlezenDuiven To 2 Step -1
+    If Worksheets("inlezen duiven").Range("C" & RowToTest) = "CT0005029" Then
+        Worksheets("inlezen duiven").Range("I" & RowToTest).Value = "PEC"
+        Worksheets("inlezen duiven").Range("O" & RowToTest).Value = "PEC-PEC1"
+        Worksheets("inlezen duiven").Range("Q" & RowToTest).Value = "PEC GEBOORTE"
+    ElseIf Worksheets("inlezen duiven").Range("C" & RowToTest) = "CT0003356" Then
+        Worksheets("inlezen duiven").Range("Q" & RowToTest).Value = "PIPA GEBOORTE"
+    End If
+    If Worksheets("inlezen duiven").Range("E" & RowToTest) = "PIPA" Then
+        Worksheets("inlezen duiven").Range("P" & RowToTest).Value = "KWEEKDUIF"
+    Else
+        Worksheets("inlezen duiven").Range("P" & RowToTest).Value = "VLIEGDUIF"
+    End If
+Next
 
 'centreren en kolombreedte autoaanpassen
 Columns("A:Q").Select
@@ -127,8 +134,6 @@ Columns("A:Q").Select
 Range("A1:Q" & lastRowInlezenDuiven + 1).Sort key1:=Range("C1:C" & lastRowInlezenDuiven + 1), _
     order1:=xlAscending, Header:=xlNo
 
-
-
 'toevoegen van lege 2de rij voor import in Navision
 Worksheets("inlezen duiven").Activate
 Rows("2:2").Select
@@ -142,10 +147,6 @@ Range("A2:Q2").Select
         .TintAndShade = 0
         .PatternTintAndShade = 0
     End With
-    
-
-
-'optie opslaan van tabblad inlezen duiven naar andere locatie
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
