@@ -110,10 +110,13 @@ For RowToTest = lastRowInlezenDuiven To 2 Step -1
     ElseIf Worksheets("inlezen duiven").Range("C" & RowToTest) = "CT0003356" Then
         Worksheets("inlezen duiven").Range("Q" & RowToTest).Value = "PIPA GEBOORTE"
     End If
-    If Worksheets("inlezen duiven").Range("E" & RowToTest) = "PIPA" Then
-        Worksheets("inlezen duiven").Range("P" & RowToTest).Value = "KWEEKDUIF"
+    If Worksheets("inlezen duiven").Range("E" & RowToTest) = "PIPA" And Worksheets("inlezen duiven").Range("C" & RowToTest) = "CT0005029" Then
+        Worksheets("inlezen duiven").Range("P" & RowToTest).Value = "VERKOOPDUIF"
     Else
         Worksheets("inlezen duiven").Range("P" & RowToTest).Value = "VLIEGDUIF"
+    End If
+    If Worksheets("inlezen duiven").Range("C" & RowToTest) <> "CT0005029" Then
+        Worksheets("inlezen duiven").Range("P" & RowToTest).Value = "DERDEN"
     End If
 Next
 
