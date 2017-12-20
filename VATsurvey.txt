@@ -15,7 +15,7 @@ For RowToTest = Cells(Rows.Count, "G").End(xlUp).Row To 4 Step -1
     ElseIf InStr(1, Range("J" & RowToTest).Value, "G0001", vbTextCompare) <> 0 Then
         Range("J" & RowToTest).Value = "Informaticadiensten"
         Range("K" & RowToTest).Value = "G0001"
-    ElseIf InStr(1, Range("J" & RowToTest).Value, "H0000", vbTextCompare) <> 0 Then
+    ElseIf InStr(1, Range("J" & RowToTest).Value, "H0000", vbTextCompare) <> 0 Or InStr(1, Range("I" & RowToTest).Value, "Commissies", vbTextCompare) Then
         Range("J" & RowToTest).Value = "Commissies"
         Range("K" & RowToTest).Value = "H0000"
     ElseIf InStr(1, Range("J" & RowToTest).Value, "H6400", vbTextCompare) <> 0 Then
@@ -62,7 +62,7 @@ For RowToTest = Cells(Rows.Count, "G").End(xlUp).Row To 4 Step -1
     ElseIf InStr(1, Range("I" & RowToTest).Value, "G0001", vbTextCompare) <> 0 Then
         Range("I" & RowToTest).Value = "Informaticadiensten"
         Range("J" & RowToTest).Value = "G0001"
-    ElseIf InStr(1, Range("I" & RowToTest).Value, "H0000", vbTextCompare) <> 0 Then
+    ElseIf InStr(1, Range("I" & RowToTest).Value, "H0000", vbTextCompare) <> 0 Or InStr(1, Range("I" & RowToTest).Value, "Commissies", vbTextCompare) Then
         Range("I" & RowToTest).Value = "Commissies"
         Range("J" & RowToTest).Value = "H0000"
     ElseIf InStr(1, Range("I" & RowToTest).Value, "H6400", vbTextCompare) <> 0 Then
@@ -97,5 +97,7 @@ For RowToTest = Cells(Rows.Count, "G").End(xlUp).Row To 4 Step -1
         Range("J" & RowToTest).Value = "H2000"
     End If
 Next
+
+Worksheets(1).Activate
 
 End Sub
