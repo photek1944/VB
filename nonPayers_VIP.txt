@@ -22,8 +22,15 @@ For lastRowVIP = Cells(Rows.Count, "B").End(xlUp).Row To 3 Step -1
 Next
 On Error GoTo 0
 
-'check if CT is in collection VIP, if not, add CT and Suppliername to VIP tab
 Worksheets(1).Activate
+'AutoFilter uitschakelen in beide werkbladen
+If Worksheets(1).AutoFilterMode = True Then
+    Worksheets(1).Range("H5:AB5").AutoFilter
+End If
+If Worksheets(2).AutoFilterMode = True Then
+    Worksheets(2).Range("H5:AB5").AutoFilter
+End If
+'check if CT is in collection VIP, if not, add CT and Suppliername to VIP tab
 For RowToTest = Cells(Rows.Count, "L").End(xlUp).Row To 6 Step -1
     Worksheets(1).Activate
     VIPvar = "VIP"
