@@ -30,6 +30,14 @@ Next
 On Error GoTo 0
 
 Worksheets(1).Activate
+'AutoFilter uitschakelen in beide werkbladen
+If Worksheets(1).AutoFilterMode = True Then
+    Worksheets(1).Range("H5:AB5").AutoFilter
+End If
+If Worksheets(2).AutoFilterMode = True Then
+    Worksheets(2).Range("H5:AB5").AutoFilter
+End If
+'convert to values
 lastRow = Cells(Rows.Count, "L").End(xlUp).Row
 With Range("AI6" & ":AI" & lastRow)
     .Value = .Value
