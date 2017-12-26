@@ -7,6 +7,7 @@ Dim Filename As String, wk_name As String, Sheet2Name As String
 Dim wkb1 As Workbook, wkb2 As Workbook
 Dim x As Integer, cell As Integer
 
+
 Sub Sales_per_salesagent()
 
 Application.ScreenUpdating = False
@@ -47,6 +48,14 @@ wkb2.Close
 
 'slaat de nieuwe werkmap op als een xlsm bestand
 ActiveWorkbook.SaveAs Filename:=nDate & " " & nTime & " " & wk_name, FileFormat:=xlOpenXMLWorkbookMacroEnabled
+
+'AutoFilter uitschakelen in beide werkbladen
+If Worksheets(1).AutoFilterMode = True Then
+    Worksheets(1).Range("H5:AB5").AutoFilter
+End If
+If Worksheets(2).AutoFilterMode = True Then
+    Worksheets(2).Range("H5:AB5").AutoFilter
+End If
 
 'converteren naar waarden
 Worksheets(1).Activate
