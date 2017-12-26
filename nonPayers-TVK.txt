@@ -33,6 +33,14 @@ Worksheets(1).Range("L5:AZ5").Copy _
 Worksheets("terug naar verkoper").Activate
 
 Worksheets(1).Activate
+'AutoFilter uitschakelen in non-payer werkblad
+If Worksheets(1).AutoFilterMode = True Then
+    Worksheets(1).Range("H5:AB5").AutoFilter
+End If
+If Worksheets(2).AutoFilterMode = True Then
+    Worksheets(2).Range("H5:AB5").AutoFilter
+End If
+'convert values
 lastRow = Cells(Rows.Count, "L").End(xlUp).Row
 With Range("AI6" & ":AI" & lastRow)
     .Value = .Value
