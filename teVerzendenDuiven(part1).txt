@@ -138,9 +138,9 @@ Worksheets(1).Activate
 Sheet2Name = Sheets(2).Name
 
 'vlookup data
-Range("P6:P" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($J6,'" & Sheet2Name & "'!$J$5:$AN$" & lastRow2 & ",7,FALSE)="""","""",VLOOKUP($J6,'" & Sheet2Name & "'!$J$5:$AN$" & lastRow2 & ",7,FALSE)),"""")"
+Range("P6:P" & lastRow - 1).Formula = "=IFERROR(IF(VLOOKUP($J6,'" & Sheet2Name & "'!$J$5:$AN$" & lastRow2 & ",7,FALSE)="""","""",VLOOKUP($J6,'" & Sheet2Name & "'!$J$5:$AN$" & lastRow2 & ",7,FALSE)),"""")"
 'vlookup opmerkingen
-Range("Q6:Q" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($J6,'" & Sheet2Name & "'!$J$5:$AN$" & lastRow2 & ",8,FALSE)="""","""",VLOOKUP($J6,'" & Sheet2Name & "'!$J$5:$AN$" & lastRow2 & ",8,FALSE)),"""")"
+Range("Q6:Q" & lastRow - 1).Formula = "=IFERROR(IF(VLOOKUP($J6,'" & Sheet2Name & "'!$J$5:$AN$" & lastRow2 & ",8,FALSE)="""","""",VLOOKUP($J6,'" & Sheet2Name & "'!$J$5:$AN$" & lastRow2 & ",8,FALSE)),"""")"
 
 'converteren naar waarden
 Worksheets(1).Activate
@@ -154,5 +154,7 @@ Worksheets(2).Delete
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
+Application.EnableEvents = True
+ActiveWorkbook.Save
 
 End Sub
