@@ -1,0 +1,158 @@
+Option Explicit
+
+Dim rng As Range, cell As Variant
+Dim auctionName As String
+Dim lastRow As Integer, lastRow2 As Integer
+
+Dim nDate As Variant
+Dim nTime As Variant
+Dim Filename As String, wk_name As String, Sheet2Name As String
+Dim wkb1 As Workbook, wkb2 As Workbook
+Dim x As Integer
+
+Sub run2_Macros()
+
+Application.Run "JetReports.xlam!JetMenu", "Report"
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+'voeg aparte kleuren toe per klant
+lastRow = Cells(Rows.Count, "K").End(xlUp).Row
+x = 0
+For cell = 5 To lastRow
+    If (Cells(cell, 6).Value = Cells(cell - 1, 6).Value) Then
+            Range("J" & cell - 1 & ":AN" & cell - 1).Select
+            Selection.Copy
+            Range("J" & cell & ":AN" & cell).Select
+            Selection.PasteSpecial Paste:=xlPasteFormats, Operation:=xlNone, _
+                SkipBlanks:=False, Transpose:=False
+            Application.CutCopyMode = False
+    Else
+        If x = 0 Then
+            x = 1
+            With Range("J" & cell & ":AN" & cell).Interior
+                .Pattern = xlSolid
+                .PatternColorIndex = xlAutomatic
+                .ThemeColor = xlThemeColorAccent1
+                .TintAndShade = 0.799981688894314
+                .PatternTintAndShade = 0
+            End With
+        ElseIf x = 1 Then
+            x = 0
+            With Range("J" & cell & ":AN" & cell).Interior
+                .Pattern = xlSolid
+                .PatternColorIndex = xlAutomatic
+                .ThemeColor = xlThemeColorDark1
+                .TintAndShade = 0
+                .PatternTintAndShade = 0
+            End With
+        End If
+    End If
+Next cell
+
+Range("J5:AN" & lastRow).Select
+Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlInsideVertical)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlInsideHorizontal)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+End With
+
+'herformatteert de datum en tijd van vandaag
+nDate = format(Date, "yyyy-mm-dd")
+nTime = format(Time, "(hhumm)")
+
+'versie toevoegen
+Range("L4").Value = "Versie: " & nDate & " " & "(" & Time & ")"
+
+'verandert de folder naar de map met de controlelijsten 'te verzenden duiven'
+ChDrive "N"
+ChDir "N:\Administratie\Te verzenden duiven"
+
+'laat de gebruiker een xl bestand kiezen om toe te voegen
+Filename = Application.GetOpenFilename( _
+    FileFilter:="xl Files,*.xl*,xm Files,*.xm*", _
+    Title:="Selecteer de vorige 'te verzenden duiven'-spreadsheet.", _
+MultiSelect:=False)
+
+'maakt objecten van de actieve werkmap en creëert een nieuwe werkmap voor het geselecteerde bestand
+Set wkb1 = ActiveWorkbook
+Set wkb2 = Workbooks.Add(Filename)
+
+'kopieert het eerste werkblad van het geselecteerde bestand naar de actieve werkmap
+wkb2.Sheets(1).Copy after:=wkb1.Sheets(1)
+
+'sluit de werkmap van de gekopieerde niet-betalerslijst
+wkb2.Close
+
+'slaat de nieuwe werkmap op als een xlsm bestand
+wk_name = "te verzenden duiven"
+ActiveWorkbook.SaveAs Filename:=nDate & " " & nTime & " " & wk_name, FileFormat:=xlOpenXMLWorkbookMacroEnabled
+
+'AutoFilter uitschakelen in beide werkbladen
+If Worksheets(1).AutoFilterMode = True Then
+    Worksheets(1).Range("J5:AN5").AutoFilter
+End If
+If Worksheets(2).AutoFilterMode = True Then
+    Worksheets(2).Range("J5:AN5").AutoFilter
+End If
+
+'opmerkingen en data opmerkingen overnemen van de vorige lijst
+Worksheets(2).Activate
+lastRow2 = Range("J:J").Find(what:="END", after:=Range("J5")).Row - 1
+
+Worksheets(1).Activate
+Sheet2Name = Sheets(2).Name
+
+'vlookup data
+Range("P6:P" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($J6,'" & Sheet2Name & "'!$J$5:$AN$" & lastRow2 & ",7,FALSE)="""","""",VLOOKUP($J6,'" & Sheet2Name & "'!$J$5:$AN$" & lastRow2 & ",7,FALSE)),"""")"
+'vlookup opmerkingen
+Range("Q6:Q" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($J6,'" & Sheet2Name & "'!$J$5:$AN$" & lastRow2 & ",8,FALSE)="""","""",VLOOKUP($J6,'" & Sheet2Name & "'!$J$5:$AN$" & lastRow2 & ",8,FALSE)),"""")"
+
+'converteren naar waarden
+Worksheets(1).Activate
+lastRow = Range("J:J").Find(what:="END", after:=Range("J5")).Row - 1
+With Range("J6:AN" & lastRow)
+    .Value = .Value
+End With
+
+'delete tweede tabblad
+Worksheets(2).Delete
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+End Sub
