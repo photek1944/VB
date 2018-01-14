@@ -1,0 +1,22 @@
+Private Sub Worksheet_Change(ByVal Target As Range)
+
+Dim xCellColumn As Integer
+Dim xTimeColumn As Integer
+Dim xRow, xCol As Integer
+
+xCellColumn = 17
+xTimeColumn = 16
+xRow = Target.Row
+xCol = Target.Column
+
+If Target.Text <> "" Then
+    If xCol = xCellColumn Then
+       Cells(xRow, xTimeColumn) = Now()
+    End If
+Else
+    If xCol = xCellColumn Then
+       Cells(xRow, xTimeColumn) = ""
+    End If
+End If
+
+End Sub
