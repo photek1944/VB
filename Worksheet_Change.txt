@@ -11,7 +11,7 @@ xCol = Target.Column
 
 If Target.Text <> "" Then
     If xCol = xCellColumn Then
-       Cells(xRow, xTimeColumn) = Now()
+       Cells(xRow, xTimeColumn) = Now() & " " & Environ("Username")
     End If
 Else
     If xCol = xCellColumn Then
