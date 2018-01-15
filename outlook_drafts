@@ -1,0 +1,20 @@
+'Select Tools->References (Extra-Verwijzingen) from the Visual Basic menu.
+'Find Microsoft Scripting Runtime in the list and place a check in the box beside it.
+
+Option Explicit
+
+Dim RowToTest As Integer
+
+
+Sub outlook_drafts()
+
+Dim supplierEmail As Scripting.Dictionary
+Set supplierEmail = New Scripting.Dictionary
+
+On Error Resume Next
+   For RowToTest = Cells(Rows.Count, "A").End(xlUp).Row To 2 Step -1
+        supplierEmail.Add Key:=Range("C" & RowToTest).Value, Item:=Range("B" & RowToTest).Value
+    Next
+On Error GoTo 0
+
+End Sub
