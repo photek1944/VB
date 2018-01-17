@@ -34,7 +34,7 @@ End If
 Application.Worksheets("P-nrs").Activate
 
 'create new ws.p-nrs if ws.p-nrs already exists
-If Not IsEmpty(Range("A2").Value) Then
+If Not IsEmpty(Range("B2").Value) Then
     Worksheets("P-nrs").Delete
     Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
     Sheets("P-nrs").Select
@@ -81,7 +81,7 @@ End If
 Application.Worksheets("Packingnames").Activate
 
 'create new ws.packingnames if ws.packingnames already exists
-If Not IsEmpty(Range("A2").Value) Then
+If Not IsEmpty(Range("B2").Value) Then
     Worksheets("Packingnames").Delete
     Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
     Sheets("Packingnames").Select
@@ -291,6 +291,5 @@ Range("G2:K2").Select
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
-
 
 End Sub
