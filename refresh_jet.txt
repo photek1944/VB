@@ -1,0 +1,296 @@
+Option Explicit
+
+Dim contents As Variant
+Dim lastRow As Long, lastRowlookupSheet As Long
+Dim R As Long, C As Long
+Dim wsTest As Worksheet
+Dim strSheetName As String
+Dim lookupSheet As Variant
+
+Dim nDate As Date
+Dim rng As Range, cell As Variant
+Dim x As Integer, RowToTest As Integer
+Dim InvoiceValue As Long
+
+
+Sub refresh_jet()
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+'create new ws.P-nrs
+
+strSheetName = "P-nrs"
+ 
+Set wsTest = Nothing
+On Error Resume Next
+Set wsTest = ActiveWorkbook.Worksheets(strSheetName)
+On Error GoTo 0
+ 
+If wsTest Is Nothing Then
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+End If
+
+Application.Worksheets("P-nrs").Activate
+
+'create new ws.p-nrs if ws.p-nrs already exists
+If Not IsEmpty(Range("A2").Value) Then
+    Worksheets("P-nrs").Delete
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+    Sheets("P-nrs").Select
+End If
+
+'copy range bandnumbers to ws.p-nrs
+With ThisWorkbook.Worksheets("Magazijnverzending")
+    lastRow = .Cells(.Rows.Count, 20).End(xlUp).Row
+    contents = .Range("T5:T" & lastRow).Value
+End With
+
+Application.Worksheets("P-nrs").Activate
+For R = 1 To UBound(contents, 1)
+    For C = 1 To UBound(contents, 2)
+        Cells(R, C) = contents(R, C)
+    Next
+Next
+
+'copy range PMD to ws.p-nrs
+With ThisWorkbook.Worksheets("Magazijnverzending")
+    lastRow = .Cells(.Rows.Count, 20).End(xlUp).Row
+    contents = .Range("Q5:S" & lastRow).Value
+End With
+
+Application.Worksheets("P-nrs").Activate
+For R = 1 To UBound(contents, 1)
+    For C = 1 To UBound(contents, 2)
+        Cells(R, C + 1) = contents(R, C)
+    Next
+Next
+
+'create ws.packingnames
+strSheetName = "Packingnames"
+ 
+Set wsTest = Nothing
+On Error Resume Next
+Set wsTest = ActiveWorkbook.Worksheets(strSheetName)
+On Error GoTo 0
+ 
+If wsTest Is Nothing Then
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+End If
+
+Application.Worksheets("Packingnames").Activate
+
+'create new ws.packingnames if ws.packingnames already exists
+If Not IsEmpty(Range("A2").Value) Then
+    Worksheets("Packingnames").Delete
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+    Sheets("Packingnames").Select
+End If
+
+'copy range bandnumbers to ws.packingnames
+With ThisWorkbook.Worksheets("Magazijnverzending")
+    lastRow = .Cells(.Rows.Count, 20).End(xlUp).Row
+    contents = .Range("T5:T" & lastRow).Value
+End With
+
+Application.Worksheets("Packingnames").Activate
+For R = 1 To UBound(contents, 1)
+    For C = 1 To UBound(contents, 2)
+        Cells(R, C) = contents(R, C)
+    Next
+Next
+
+'copy range PMD to ws.p-nrs
+With ThisWorkbook.Worksheets("Magazijnverzending")
+    lastRow = .Cells(.Rows.Count, 20).End(xlUp).Row
+    contents = .Range("Z5:Z" & lastRow).Value
+End With
+
+Application.Worksheets("Packingnames").Activate
+For R = 1 To UBound(contents, 1)
+    For C = 1 To UBound(contents, 2)
+        Cells(R, C + 1) = contents(R, C)
+    Next
+Next
+
+'refresh jet
+Application.Run "JetReports.xlam!JetMenu", "Report"
+
+'vlookup "P"
+lookupSheet = "P-nrs"
+With ThisWorkbook.Worksheets("P-nrs")
+    lastRowlookupSheet = .Cells(.Rows.Count, "B").End(xlUp).Row
+End With
+With ThisWorkbook.Worksheets("Magazijnverzending")
+    lastRow = .Cells(.Rows.Count, "T").End(xlUp).Row
+    .Range("Q6:Q" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$E$" & lastRowlookupSheet & ",2,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$E$" & lastRowlookupSheet & ",2,FALSE)),"""")"
+
+'vlookup "M"
+    .Range("R6:R" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$E$" & lastRowlookupSheet & ",3,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$E$" & lastRowlookupSheet & ",3,FALSE)),"""")"
+
+'vlookup "D
+    .Range("S6:S" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$E$" & lastRowlookupSheet & ",4,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$E$" & lastRowlookupSheet & ",4,FALSE)),"""")"
+End With
+
+'vlookup "packingnames"
+lookupSheet = "Packingnames"
+With ThisWorkbook.Worksheets("Packingnames")
+    lastRowlookupSheet = .Cells(.Rows.Count, "B").End(xlUp).Row
+End With
+With ThisWorkbook.Worksheets("Magazijnverzending")
+    lastRow = .Cells(.Rows.Count, "T").End(xlUp).Row
+    .Range("Z6:Z" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$C$" & lastRowlookupSheet & ",2,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$C$" & lastRowlookupSheet & ",2,FALSE)),"""")"
+End With
+
+'format
+Worksheets("Magazijnverzending").Activate
+nDate = Format(Date, "yyyy-mm-dd")
+Range("F2").Value = "Versie:"
+Range("G2").Value = nDate & "   " & Time
+
+lastRow = Cells(Rows.Count, "Z").End(xlUp).Row
+    ActiveWorkbook.Worksheets("Magazijnverzending").Sort.SortFields.Clear
+    ActiveWorkbook.Worksheets("Magazijnverzending").Sort.SortFields.Add Key:= _
+        Range("AA6:AA" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets("Magazijnverzending").Sort.SortFields.Add Key:= _
+        Range("Z6:Z" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets("Magazijnverzending").Sort.SortFields.Add Key:= _
+        Range("T6:T" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    With ActiveWorkbook.Worksheets("Magazijnverzending").Sort
+        .SetRange Range("G5:AI" & lastRow)
+        .Header = xlYes
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+    End With
+
+'als vestigingveld leeg is, "vendor" toevoegen
+Set rng = Range("K6:K" & lastRow)
+For Each cell In rng
+    If cell.Value = "" Then
+        cell.Value = "VENDOR"
+    End If
+Next cell
+
+'kleur toevoegen per klantnaam
+lastRow = Cells(Rows.Count, "T").End(xlUp).Row
+x = 0
+For cell = 7 To lastRow
+    If (Cells(cell, 26).Value = Cells(cell - 1, 26).Value) Then
+            Range("F" & cell - 1 & ":AI" & cell - 1).Select
+            Selection.Copy
+            Range("F" & cell & ":AI" & cell).Select
+            Selection.PasteSpecial Paste:=xlPasteFormats, Operation:=xlNone, _
+                SkipBlanks:=False, Transpose:=False
+            Application.CutCopyMode = False
+    Else
+        If x = 0 Then
+            x = 1
+            With Range("F" & cell & ":AI" & cell).Interior
+                .Pattern = xlSolid
+                .PatternColorIndex = xlAutomatic
+                .ThemeColor = xlThemeColorAccent1
+                .TintAndShade = 0.799981688894314
+                .PatternTintAndShade = 0
+            End With
+        ElseIf x = 1 Then
+            x = 0
+            With Range("F" & cell & ":AI" & cell).Interior
+                .Pattern = xlSolid
+                .PatternColorIndex = xlAutomatic
+                .ThemeColor = xlThemeColorDark1
+                .TintAndShade = 0
+                .PatternTintAndShade = 0
+            End With
+        End If
+    End If
+Next cell
+
+For RowToTest = (Cells(Rows.Count, "T").End(xlUp).Row) To 6 Step -1
+    InvoiceValue = Cells(RowToTest, "AD").Value
+    If InvoiceValue > 9000 Then
+        Range("T" & RowToTest).Interior.Color = 65535
+    End If
+Next
+
+Range("F6:AI" & lastRow).Select
+Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlInsideVertical)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlInsideHorizontal)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+
+Range("G2").Select
+    With Selection
+        .HorizontalAlignment = xlLeft
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+Range("G2:K2").Select
+    With Selection
+        .HorizontalAlignment = xlLeft
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+
+'factuurlijst
+
+'hoklijst
+
+'leverlijst
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+
+End Sub
