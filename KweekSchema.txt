@@ -62,7 +62,7 @@ For RowToTest = lastRowKweekschema To 6 Step -1
                 Worksheets("inlezen duiven").Range("J" & lastRowInlezenDuiven + 1) = dateBorn
                 
                 'add name (father x mother)
-                Worksheets("inlezen duiven").Range("B" & lastRowInlezenDuiven + 1).Value = "(" & Worksheets("kweekschema").Range("B" & RowToTest) & " x " & Worksheets("kweekschema").Range("D" & RowToTest) & ")"
+                Worksheets("inlezen duiven").Range("B" & lastRowInlezenDuiven + 1).Value = Worksheets("kweekschema").Range("B" & RowToTest) & " x " & Worksheets("kweekschema").Range("D" & RowToTest)
         End If
 Next
 
@@ -86,7 +86,7 @@ For RowToTest = lastRowKweekschema To 6 Step -1
                 Worksheets("inlezen duiven").Range("J" & lastRowInlezenDuiven + 1) = dateBorn
                 
                 'add name (father x mother)
-                Worksheets("inlezen duiven").Range("B" & lastRowInlezenDuiven + 1).Value = "(" & Worksheets("kweekschema").Range("B" & RowToTest) & " x " & Worksheets("kweekschema").Range("D" & RowToTest) & ")"
+                Worksheets("inlezen duiven").Range("B" & lastRowInlezenDuiven + 1).Value = Worksheets("kweekschema").Range("B" & RowToTest) & " x " & Worksheets("kweekschema").Range("D" & RowToTest)
         End If
 Next
 
@@ -111,7 +111,7 @@ For RowToTest = lastRowInlezenDuiven To 2 Step -1
         Worksheets("inlezen duiven").Range("Q" & RowToTest).Value = "PIPA GEBOORTE"
     End If
     If Worksheets("inlezen duiven").Range("E" & RowToTest) = "PIPA" And Worksheets("inlezen duiven").Range("C" & RowToTest) = "CT0005029" Then
-        Worksheets("inlezen duiven").Range("P" & RowToTest).Value = "VERKOOPDUIF"
+        Worksheets("inlezen duiven").Range("P" & RowToTest).Value = "MOG VERKOOPDUIF"
     Else
         Worksheets("inlezen duiven").Range("P" & RowToTest).Value = "VLIEGDUIF"
     End If
@@ -134,8 +134,23 @@ Columns("A:Q").Select
         .ReadingOrder = xlContext
         .MergeCells = False
     End With
-Range("A1:Q" & lastRowInlezenDuiven + 1).Sort key1:=Range("C1:C" & lastRowInlezenDuiven + 1), _
-    order1:=xlAscending, Header:=xlNo
+    
+'sorteren
+ActiveWorkbook.Worksheets("inlezen duiven").Sort.SortFields.Clear
+    ActiveWorkbook.Worksheets("inlezen duiven").Sort.SortFields.Add Key:= _
+        Range("C2:C" & lastRowInlezenDuiven + 1), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    ActiveWorkbook.Worksheets("inlezen duiven").Sort.SortFields.Add Key:= _
+        Range("A2:A" & lastRowInlezenDuiven + 1), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    With ActiveWorkbook.Worksheets("inlezen duiven").Sort
+        .SetRange Range("A1:Q" & lastRowInlezenDuiven + 1)
+        .Header = xlYes
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+    End With
 
 'toevoegen van lege 2de rij voor import in Navision
 Worksheets("inlezen duiven").Activate
