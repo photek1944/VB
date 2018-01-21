@@ -3,18 +3,98 @@
 
 Option Explicit
 
-Dim RowToTest As Integer
-
+Dim dic1 As Object
+Dim dic2 As Object
+Dim Contents As Variant
+Dim ParentKeys As Variant
+Dim ChildKeys As Variant
+Dim R As Long, R2 As Long
+Dim LastR As Long
+Dim WriteStrBandNrs As String, WriteStrCountries As String
+Dim removeLater As Integer
 
 Sub outlook_drafts()
 
-Dim supplierEmail As Scripting.Dictionary
-Set supplierEmail = New Scripting.Dictionary
+With ThisWorkbook.Worksheets(1)
+    LastR = .Cells(.Rows.Count, 3).End(xlUp).Row
+    Contents = .Range("A2:D" & LastR).Value
+End With
 
-On Error Resume Next
-   For RowToTest = Cells(Rows.Count, "A").End(xlUp).Row To 2 Step -1
-        supplierEmail.Add Key:=Range("C" & RowToTest).Value, Item:=Range("B" & RowToTest).Value
+Set dic1 = CreateObject("Scripting.Dictionary")
+dic1.CompareMode = vbTextCompare
+
+For R = 1 To UBound(Contents)
+    If dic1.Exists(Contents(R, 1)) Then
+        Set dic2 = dic1.Item(Contents(R, 1))
+                  
+        If dic2.Exists(Contents(R, 2)) Then
+            dic2.Item(Contents(R, 2)) = dic2.Item(Contents(R, 2))
+        Else
+            dic2.Add Contents(R, 2), Contents(R, 3)
+        End If
+    Else
+        Set dic2 = CreateObject("Scripting.Dictionary")
+        dic2.CompareMode = vbTextCompare
+        dic2.Add Contents(R, 2), Contents(R, 3)
+        dic1.Add Contents(R, 1), dic2
+    End If
+Next
+
+Worksheets.Add
+[A1:C1].Value = Array("E-mail", "Bandnumbers", "Countries")
+    
+ParentKeys = dic1.Keys
+[A2].Resize(UBound(ParentKeys) + 1, 1).Value = Application.Transpose(ParentKeys)
+    
+For R = 0 To UBound(ParentKeys)
+    Set dic2 = dic1.Item(ParentKeys(R))
+    
+    ChildKeys = dic2.Keys
+    WriteStrBandNrs = ""
+    WriteStrCountries = ""
+    
+    For R2 = 0 To dic2.Count - 1
+        WriteStrBandNrs = WriteStrBandNrs & Chr(10) & ChildKeys(R2)
+        WriteStrCountries = WriteStrCountries & Chr(10) & dic2.Item(ChildKeys(R2))
     Next
-On Error GoTo 0
+    
+    WriteStrBandNrs = Mid(WriteStrBandNrs, 2)
+    WriteStrCountries = Mid(WriteStrCountries, 2)
+    
+    Cells(R + 2, 2) = WriteStrBandNrs
+    Cells(R + 2, 3) = WriteStrCountries
+Next
+
+[A1].Sort Key1:=[A1], Order1:=xlAscending, Header:=xlYes
+With [B:B]
+    .ColumnWidth = 40
+    .WrapText = True
+End With
+Columns.AutoFit
+Rows.AutoFit
+    
+Dim OutObj As Object, OutMail As Object
+Set OutObj = CreateObject("Outlook.Application")
+
+ParentKeys = dic1.Keys
+
+Dim k As Variant
+Dim x As Long
+R = 1
+
+For Each k In ParentKeys
+    R = R + 1
+    Set OutMail = OutObj.createitem(0)
+        With OutMail
+            .To = k
+            .CC = "logistics@pipa.be;" & "supplyagent@pipa.be"
+            .Subject = "te leveren: " & R - 1
+            .body = Cells(R, 2)
+            .display
+        End With
+Next k
+
+Set dic2 = Nothing
+Set dic1 = Nothing
 
 End Sub
