@@ -1,6 +1,6 @@
-Sub leverlijst()
+Sub lever_lijst()
 
-Dim lastRow As Integer, RowToTest As Integer, lastRow2 As Integer
+Dim lastRow As Integer, RowToTest As Integer, lastRow2 As Integer, R As Long
 
 Application.ScreenUpdating = False
 Application.DisplayAlerts = False
@@ -28,15 +28,15 @@ If Not IsEmpty(Range("A2").Value) Then
 End If
 
 'timestamp toevoegen
-Range("G2").Value = "Versie: " & Date & "   " & Time
+Range("I2").Value = "Versie: " & Date & "   " & Time
 
 'titelblad
-Range("D2").Value = "Leverlijst"
+Range("F2").Value = "Leverlijst"
 
 'formatteren
 Range("A2").Value = Worksheets("Magazijnverzending").Range("F3")
 Range("A2").NumberFormat = "dd/mm/yyyy"
-Range("A3").Value = Worksheets("Magazijnverzending").Range("K3")
+Range("A3").Value = Worksheets("Magazijnverzending").Range("F4")
 Range("A2:J5").Font.Bold = True
 
 'kolomheaders toevoegen
@@ -44,72 +44,65 @@ Range("A5").Value = "vestiging"
 Range("B5").Value = "hok"
 Range("C5").Value = "verzochte ld"
 Range("D5").Value = "toegezegde ld"
-Range("E5").Value = "P nr."
-Range("F5").Value = "ringnummer"
-Range("G5").Value = "leverancier"
-Range("H5").Value = "bedrag"
+Range("E5").Value = "sex"
+Range("F5").Value = "packing ring"
+Range("G5").Value = "P-nr."
+Range("H5").Value = "ringnummer"
+Range("I5").Value = "leverancier"
+Range("J5").Value = "bedrag"
 
-'toevoegen van alle lijnen met 'vendor' aan werkblad 'leverlijst'
-For RowToTest = Application.Worksheets("Magazijnverzending").Cells(Rows.Count, "T").End(xlUp).Row To 6 Step -1
-    If Worksheets("Magazijnverzending").Range("K" & RowToTest) = "VENDOR" Then
-        lastRow = Application.Worksheets("Leverlijst").Cells(Rows.Count, "F").End(xlUp).Row
+'toevoegen van alle lijnen aan werkblad 'leverlijst'
+RowToTest = Worksheets("Magazijnverzending").Cells(Rows.Count, "T").End(xlUp).Row
         
         'kopiëren van vestiging
-        Application.Worksheets("Leverlijst").Activate
-        Worksheets("Magazijnverzending").Range("K" & RowToTest).Copy
-        Worksheets("Leverlijst").Range("A" & lastRow + 1).PasteSpecial Paste:=xlPasteValues
-        Application.CutCopyMode = False
-        
+        Worksheets("Leverlijst").Range("A6:A" & RowToTest).Value = Worksheets("Magazijnverzending").Range("K6:K" & RowToTest).Value
+
         'kopiëren van hok
-        Worksheets("Magazijnverzending").Range("L" & RowToTest).Copy
-        Worksheets("Leverlijst").Range("B" & lastRow + 1).PasteSpecial Paste:=xlPasteValues
-        Application.CutCopyMode = False
-        
+        Worksheets("Leverlijst").Range("B6:B" & RowToTest).Value = Worksheets("Magazijnverzending").Range("L6:L" & RowToTest).Value
+
         'kopiëren van verzochte leverdatum
-        Worksheets("Magazijnverzending").Range("M" & RowToTest).Copy
-        Worksheets("Leverlijst").Range("C" & lastRow + 1).PasteSpecial Paste:=xlPasteValues
-        Application.CutCopyMode = False
-        
+        Worksheets("Leverlijst").Range("C6:C" & RowToTest).Value = Worksheets("Magazijnverzending").Range("M6:M" & RowToTest).Value
+
         'kopiëren van toegezegde leverdatum
-        Worksheets("Magazijnverzending").Range("N" & RowToTest).Copy
-        Worksheets("Leverlijst").Range("D" & lastRow + 1).PasteSpecial Paste:=xlPasteValues
-        Application.CutCopyMode = False
-        
-        'kopiëren van P nr.
-        Worksheets("Magazijnverzending").Range("Q" & RowToTest).Copy
-        Worksheets("Leverlijst").Range("E" & lastRow + 1).PasteSpecial Paste:=xlPasteValues
-        Application.CutCopyMode = False
-        
+        Worksheets("Leverlijst").Range("D6:D" & RowToTest).Value = Worksheets("Magazijnverzending").Range("N6:N" & RowToTest).Value
+
+        'kopiëren van sex
+        Worksheets("Leverlijst").Range("E6:E" & RowToTest).Value = Worksheets("Magazijnverzending").Range("AG6:AG" & RowToTest).Value
+
+        'kopiëren van packing ring
+        Worksheets("Leverlijst").Range("F6:F" & RowToTest).Value = Worksheets("Magazijnverzending").Range("AH6:AH" & RowToTest).Value
+
+        'kopiëren van P-nr
+        Worksheets("Leverlijst").Range("G6:G" & RowToTest).Value = Worksheets("Magazijnverzending").Range("Q6:Q" & RowToTest).Value
+
         'kopiëren van ringnummers
-        Worksheets("Magazijnverzending").Range("T" & RowToTest).Copy
-        Worksheets("Leverlijst").Range("F" & lastRow + 1).PasteSpecial Paste:=xlPasteValues
-        Application.CutCopyMode = False
-        
+        Worksheets("Leverlijst").Range("H6:H" & RowToTest).Value = Worksheets("Magazijnverzending").Range("T6:T" & RowToTest).Value
+
         'kopiëren van leverancier
-        Worksheets("Magazijnverzending").Range("U" & RowToTest).Copy
-        Worksheets("Leverlijst").Range("G" & lastRow + 1).PasteSpecial Paste:=xlPasteValues
-        Application.CutCopyMode = False
-        
+        Worksheets("Leverlijst").Range("I6:I" & RowToTest).Value = Worksheets("Magazijnverzending").Range("U6:U" & RowToTest).Value
+
         'kopiëren van bedragen
-        Worksheets("Magazijnverzending").Range("AD" & RowToTest).Copy
-        Worksheets("Leverlijst").Range("H" & lastRow + 1).PasteSpecial Paste:=xlPasteValues
-        Application.CutCopyMode = False
+        Worksheets("Leverlijst").Range("J6:J" & RowToTest).Value = Worksheets("Magazijnverzending").Range("AD6:AD" & RowToTest).Value
+
+For RowToTest = Cells(Rows.Count, "H").End(xlUp).Row To 6 Step -1
+    If Worksheets("Leverlijst").Range("A" & RowToTest).Value = "PIPA" Then
+        Rows(RowToTest).EntireRow.Delete
     End If
 Next
-        
+
 'sorteren
-lastRow = Worksheets("Leverlijst").Cells(Rows.Count, "F").End(xlUp).Row
+lastRow = Worksheets("Leverlijst").Cells(Rows.Count, "H").End(xlUp).Row
 ActiveWorkbook.Worksheets("Leverlijst").Sort.SortFields.Clear
     'leverancier
     ActiveWorkbook.Worksheets("Leverlijst").Sort.SortFields.Add Key:= _
-        Range("G6:G" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        Range("I6:I" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
         :=xlSortNormal
     'ringnummer
     ActiveWorkbook.Worksheets("Leverlijst").Sort.SortFields.Add Key:= _
-        Range("F6:F" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        Range("H6:H" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
         :=xlSortNormal
     With ActiveWorkbook.Worksheets("Leverlijst").Sort
-        .SetRange Range("A5:H" & lastRow)
+        .SetRange Range("A5:J" & lastRow)
         .Header = xlYes
         .MatchCase = False
         .Orientation = xlTopToBottom
@@ -117,13 +110,20 @@ ActiveWorkbook.Worksheets("Leverlijst").Sort.SortFields.Clear
         .Apply
     End With
     
+'subtotalen
+Range("A5:J" & lastRow).Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.Subtotal GroupBy:=9, Function:=xlCount, TotalList:=Array(8), _
+Replace:=True, PageBreaks:=False, SummaryBelowData:=True
+    
 'opmaak headers
-Range("A5:H5").Select
+Range("A5:J5").Select
     With Selection.Interior
         .Pattern = xlSolid
         .PatternColorIndex = xlAutomatic
         .ThemeColor = xlThemeColorDark2
         .TintAndShade = -9.99786370433668E-02
+        
         .PatternTintAndShade = 0
 End With
 
@@ -131,9 +131,9 @@ End With
 Range("C6:D" & lastRow).NumberFormat = "dd/mm/yyyy"
 
 'kolombreedtes autoaanpassen en waarden centreren
-Columns("A:H").Select
+Columns("A:J").Select
     Selection.Columns.AutoFit
-Columns("A:H").Select
+Columns("A:J").Select
 With Selection
     .HorizontalAlignment = xlCenter
     .VerticalAlignment = xlBottom
@@ -148,7 +148,7 @@ End With
 
 'omkaderen
 lastRow = Cells(Rows.Count, "A").End(xlUp).Row
-Range("A6:H" & lastRow).Select
+Range("A6:J" & lastRow).Select
 Selection.Borders(xlDiagonalDown).LineStyle = xlNone
 Selection.Borders(xlDiagonalUp).LineStyle = xlNone
     With Selection.Borders(xlEdgeLeft)
@@ -187,51 +187,110 @@ Selection.Borders(xlDiagonalUp).LineStyle = xlNone
         .TintAndShade = 0
         .Weight = xlThin
     End With
-    
-'kleur toevoegen per leveranciernaam
-lastRow = Cells(Rows.Count, "F").End(xlUp).Row
-x = 0
-For cell = 7 To lastRow
-    If (Cells(cell, 7).Value = Cells(cell - 1, 7).Value) Then
-            Range("A" & cell - 1 & ":G" & cell - 1).Select
-            Selection.Copy
-            Range("A" & cell & ":G" & cell).Select
-            Selection.PasteSpecial Paste:=xlPasteFormats, Operation:=xlNone, _
-                SkipBlanks:=False, Transpose:=False
-            Application.CutCopyMode = False
-    Else
-        If x = 0 Then
-            x = 1
-            With Range("A" & cell & ":G" & cell).Interior
-                .Pattern = xlSolid
-                .PatternColorIndex = xlAutomatic
-                .ThemeColor = xlThemeColorAccent1
-                .TintAndShade = 0.799981688894314
-                .PatternTintAndShade = 0
-            End With
-        ElseIf x = 1 Then
-            x = 0
-            With Range("A" & cell & ":G" & cell).Interior
-                .Pattern = xlSolid
-                .PatternColorIndex = xlAutomatic
-                .ThemeColor = xlThemeColorDark1
-                .TintAndShade = 0
-                .PatternTintAndShade = 0
-            End With
-        End If
+
+'packing ring en ringnummers inkleuren volgens packing ring
+Dim Packing As Variant
+Packing = Range("F6:H" & lastRow)
+
+For R = LBound(Packing) To UBound(Packing)
+    Cells(R + 5, 8).Select
+    If Packing(R, 1) = "L-other (droze)" Then
+        With Selection.Interior
+            .Pattern = xlSolid
+            .PatternColorIndex = xlAutomatic
+            .ThemeColor = xlThemeColorAccent2
+            .TintAndShade = 0.799981688894314
+            .PatternTintAndShade = 0
+        End With
+    ElseIf Packing(R, 1) = "G (groen)" Then
+        With Selection.Interior
+            .Pattern = xlSolid
+            .PatternColorIndex = xlAutomatic
+            .ThemeColor = xlThemeColorAccent3
+            .TintAndShade = 0.599993896298105
+            .PatternTintAndShade = 0
+        End With
+    ElseIf Packing(R, 1) = "L-KR (blauw)" Then
+        With Selection.Interior
+            .Pattern = xlSolid
+            .PatternColorIndex = xlAutomatic
+            .ThemeColor = xlThemeColorAccent1
+            .TintAndShade = 0.599993896298105
+            .PatternTintAndShade = 0
+        End With
+    ElseIf Packing(R, 1) = "L-GW (geel)" Then
+        With Selection.Interior
+            .Pattern = xlSolid
+            .PatternColorIndex = xlAutomatic
+            .Color = 6750207
+            .TintAndShade = 0
+            .PatternTintAndShade = 0
+        End With
     End If
-Next cell
-    
+Next
+      
 'dure duiven inkleuren
-For RowToTest = (Cells(Rows.Count, "H").End(xlUp).Row) To 6 Step -1
-    InvoiceValue = Cells(RowToTest, "H").Value
+For RowToTest = (Cells(Rows.Count, "J").End(xlUp).Row) To 6 Step -1
+    InvoiceValue = Cells(RowToTest, "J").Value
     If InvoiceValue > 9000 Then
-        Range("F" & RowToTest).Interior.Color = 65535
+        Range("G" & RowToTest).Interior.Color = 65535
     End If
 Next
 
 'kolom bedragen verbergen
-Columns("H").Hidden = True
+Columns("J").Hidden = True
+
+'format titels
+Range("A2:A3").Select
+Selection.Style = "Heading 1"
+    With Selection
+        .HorizontalAlignment = xlLeft
+        .VerticalAlignment = xlBottom
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Range("A3").Select
+    Selection.NumberFormat = "[$-F800]dddd, mmmm dd, yyyy"
+    Range("B2:I2").Select
+    Selection.Style = "Heading 1"
+
+Range("A3:C3").Select
+With Selection
+    .HorizontalAlignment = xlLeft
+    .VerticalAlignment = xlBottom
+    .WrapText = False
+    .Orientation = 0
+    .AddIndent = False
+    .IndentLevel = 0
+    .ShrinkToFit = False
+    .ReadingOrder = xlContext
+    .MergeCells = True
+    .Merge
+End With
+Columns("A:A").ColumnWidth = 19.43
+
+Range("F2:H2").Select
+Selection.Style = "Heading 1"
+Range("F2:H2").Select
+With Selection
+    .HorizontalAlignment = xlCenter
+    .VerticalAlignment = xlBottom
+    .WrapText = False
+    .Orientation = 0
+    .AddIndent = False
+    .IndentLevel = 0
+    .ShrinkToFit = False
+    .ReadingOrder = xlContext
+    .MergeCells = True
+    .Merge
+End With
+Range("F2").Select
+Selection.Font.Size = 22
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
