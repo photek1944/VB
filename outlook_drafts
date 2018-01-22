@@ -5,19 +5,23 @@ Option Explicit
 
 Dim dic1 As Object
 Dim dic2 As Object
+Dim dic3 As Object
+Dim dic4 As Object
+Dim SupplyAgent As String, SupplierName As String
+Dim WriteStrBandNrs As String, WriteStrCountries As String
 Dim Contents As Variant
 Dim ParentKeys As Variant
-Dim ChildKeys As Variant
-Dim R As Long, R2 As Long
+Dim ChildKeysdic2 As Variant, ChildKeysdic3 As Variant, ChildKeysdic4 As Variant
+Dim R As Long, R2 As Long, R3 As Long, R4 As Long
 Dim LastR As Long
-Dim WriteStrBandNrs As String, WriteStrCountries As String
+
 Dim removeLater As Integer
 
 Sub outlook_drafts()
 
 With ThisWorkbook.Worksheets(1)
     LastR = .Cells(.Rows.Count, 3).End(xlUp).Row
-    Contents = .Range("A2:D" & LastR).Value
+    Contents = .Range("A2:E" & LastR).Value
 End With
 
 Set dic1 = CreateObject("Scripting.Dictionary")
@@ -28,45 +32,89 @@ For R = 1 To UBound(Contents)
         Set dic2 = dic1.Item(Contents(R, 1))
                   
         If dic2.Exists(Contents(R, 2)) Then
-            dic2.Item(Contents(R, 2)) = dic2.Item(Contents(R, 2))
+            Set dic3 = dic2.Item(Contents(R, 2))
+            
+            If dic3.Exists(Contents(R, 3)) Then
+                Set dic4 = dic3.Item(Contents(R, 3))
+                
+                If dic4.Exists(Contents(R, 4)) Then
+                    dic4.Item(Contents(R, 4)) = dic4.Item(Contents(R, 4))
+                Else
+                    dic4.Add Contents(R, 4), Contents(R, 5)
+                End If
+                
+            Else
+                Set dic4 = CreateObject("Scripting.Dictionary")
+                dic4.CompareMode = vbTextCompare
+                dic4.Add Contents(R, 4), Contents(R, 5)
+                dic3.Add Contents(R, 3), dic4
+            End If
+                
         Else
-            dic2.Add Contents(R, 2), Contents(R, 3)
+            Set dic4 = CreateObject("Scripting.Dictionary")
+            dic4.CompareMode = vbTextCompare
+            Set dic3 = CreateObject("Scripting.Dictionary")
+            dic3.CompareMode = vbTextCompare
+            dic4.Add Contents(R, 4), Contents(R, 5)
+            dic3.Add Contents(R, 3), dic4
+            dic2.Add Contents(R, 2), dic3
         End If
     Else
+        Set dic4 = CreateObject("Scripting.Dictionary")
+        dic4.CompareMode = vbTextCompare
+        Set dic3 = CreateObject("Scripting.Dictionary")
+        dic3.CompareMode = vbTextCompare
         Set dic2 = CreateObject("Scripting.Dictionary")
         dic2.CompareMode = vbTextCompare
-        dic2.Add Contents(R, 2), Contents(R, 3)
+        dic4.Add Contents(R, 4), Contents(R, 5)
+        dic3.Add Contents(R, 3), dic4
+        dic2.Add Contents(R, 2), dic3
         dic1.Add Contents(R, 1), dic2
     End If
 Next
 
-Worksheets.Add
-[A1:C1].Value = Array("E-mail", "Bandnumbers", "Countries")
+Worksheets.Add(After:=Worksheets(Worksheets.Count)).Name = "lookup"
+[A1:E1].Value = Array("E-mail", "Supply agent", "Supplier Name", "Bandnumbers", "Countries")
     
 ParentKeys = dic1.Keys
+
 [A2].Resize(UBound(ParentKeys) + 1, 1).Value = Application.Transpose(ParentKeys)
     
 For R = 0 To UBound(ParentKeys)
     Set dic2 = dic1.Item(ParentKeys(R))
+    ChildKeysdic2 = dic2.Keys
+    Set dic3 = dic2.Item(ChildKeysdic2(0))
+    ChildKeysdic3 = dic3.Keys
+    Set dic4 = dic3.Item(ChildKeysdic3(0))
+    ChildKeysdic4 = dic4.Keys
     
-    ChildKeys = dic2.Keys
+    SupplyAgent = ""
+    SupplierName = ""
     WriteStrBandNrs = ""
     WriteStrCountries = ""
     
     For R2 = 0 To dic2.Count - 1
-        WriteStrBandNrs = WriteStrBandNrs & Chr(10) & ChildKeys(R2)
-        WriteStrCountries = WriteStrCountries & Chr(10) & dic2.Item(ChildKeys(R2))
+        SupplierName = ChildKeysdic2(R2)
+    Next
+    For R3 = 0 To dic3.Count - 1
+        SupplyAgent = ChildKeysdic3(R3)
+    Next
+    For R4 = 0 To dic4.Count - 1
+        WriteStrBandNrs = WriteStrBandNrs & Chr(10) & ChildKeysdic4(R4)
+        WriteStrCountries = WriteStrCountries & Chr(10) & dic4.Item(ChildKeysdic4(R4))
     Next
     
     WriteStrBandNrs = Mid(WriteStrBandNrs, 2)
     WriteStrCountries = Mid(WriteStrCountries, 2)
     
-    Cells(R + 2, 2) = WriteStrBandNrs
-    Cells(R + 2, 3) = WriteStrCountries
+    Cells(R + 2, 2) = SupplyAgent
+    Cells(R + 2, 3) = SupplierName
+    Cells(R + 2, 4) = WriteStrBandNrs
+    Cells(R + 2, 5) = WriteStrCountries
 Next
 
 [A1].Sort Key1:=[A1], Order1:=xlAscending, Header:=xlYes
-With [B:B]
+With [D:E]
     .ColumnWidth = 40
     .WrapText = True
 End With
@@ -85,15 +133,21 @@ R = 1
 For Each k In ParentKeys
     R = R + 1
     Set OutMail = OutObj.createitem(0)
+    Set dic2 = dic1.Item(ParentKeys(R))
+    ChildKeysdic2 = dic2.Keys
+    Set dic3 = dic2.Item(ChildKeysdic2(0))
+    ChildKeysdic3 = dic3.Keys
         With OutMail
             .To = k
-            .CC = "logistics@pipa.be;" & "supplyagent@pipa.be"
-            .Subject = "te leveren: " & R - 1
-            .body = Cells(R, 2)
+            .CC = "logistics@pipa.be;" & ChildKeysdic3(0)
+            .Subject = "te leveren: " & ChildKeysdic2(0)
+            .body = "Beste " & ChildKeysdic2(0) & "," & vbCrLf & vbNewLine & Cells(R, 4)
             .display
         End With
 Next k
 
+Set dic4 = Nothing
+Set dic3 = Nothing
 Set dic2 = Nothing
 Set dic1 = Nothing
 
