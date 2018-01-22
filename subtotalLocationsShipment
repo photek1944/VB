@@ -235,7 +235,7 @@ Columns("L").Hidden = True
 
 'format titels
 Range("A2:A3").Select
-Selection.Style = "Heading 1"
+Selection.Style = "Kop 1"
     With Selection
         .HorizontalAlignment = xlLeft
         .VerticalAlignment = xlBottom
@@ -250,7 +250,7 @@ Selection.Style = "Heading 1"
     Range("A3").Select
     Selection.NumberFormat = "[$-F800]dddd, mmmm dd, yyyy"
     Range("B2:I2").Select
-    Selection.Style = "Heading 1"
+    Selection.Style = "Kop 1"
 
 
 Range("A3:C3").Select
@@ -269,7 +269,7 @@ End With
 Columns("A:A").ColumnWidth = 19.43
 
 Range("F2:K2").Select
-Selection.Style = "Heading 1"
+Selection.Style = "Kop 1"
 Range("F2:I2").Select
 With Selection
     .HorizontalAlignment = xlCenter
