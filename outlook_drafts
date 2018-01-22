@@ -75,11 +75,11 @@ Next
 
 Worksheets.Add(After:=Worksheets(Worksheets.Count)).Name = "lookup"
 [A1:E1].Value = Array("E-mail", "Supply agent", "Supplier Name", "Bandnumbers", "Countries")
-    
+
 ParentKeys = dic1.Keys
 
 [A2].Resize(UBound(ParentKeys) + 1, 1).Value = Application.Transpose(ParentKeys)
-    
+
 For R = 0 To UBound(ParentKeys)
     Set dic2 = dic1.Item(ParentKeys(R))
     ChildKeysdic2 = dic2.Keys
@@ -87,12 +87,12 @@ For R = 0 To UBound(ParentKeys)
     ChildKeysdic3 = dic3.Keys
     Set dic4 = dic3.Item(ChildKeysdic3(0))
     ChildKeysdic4 = dic4.Keys
-    
+
     SupplyAgent = ""
     SupplierName = ""
     WriteStrBandNrs = ""
     WriteStrCountries = ""
-    
+
     For R2 = 0 To dic2.Count - 1
         SupplierName = ChildKeysdic2(R2)
     Next
@@ -103,10 +103,10 @@ For R = 0 To UBound(ParentKeys)
         WriteStrBandNrs = WriteStrBandNrs & Chr(10) & ChildKeysdic4(R4)
         WriteStrCountries = WriteStrCountries & Chr(10) & dic4.Item(ChildKeysdic4(R4))
     Next
-    
+
     WriteStrBandNrs = Mid(WriteStrBandNrs, 2)
     WriteStrCountries = Mid(WriteStrCountries, 2)
-    
+
     Cells(R + 2, 2) = SupplyAgent
     Cells(R + 2, 3) = SupplierName
     Cells(R + 2, 4) = WriteStrBandNrs
@@ -130,21 +130,21 @@ Dim k As Variant
 Dim x As Long
 R = 1
 
-For Each k In ParentKeys
+For k = 0 To UBound(ParentKeys)
     R = R + 1
     Set OutMail = OutObj.createitem(0)
-    Set dic2 = dic1.Item(ParentKeys(R))
+    Set dic2 = dic1.Item(ParentKeys(k))
     ChildKeysdic2 = dic2.Keys
     Set dic3 = dic2.Item(ChildKeysdic2(0))
     ChildKeysdic3 = dic3.Keys
         With OutMail
-            .To = k
+            .To = ParentKeys(k)
             .CC = "logistics@pipa.be;" & ChildKeysdic3(0)
             .Subject = "te leveren: " & ChildKeysdic2(0)
             .body = "Beste " & ChildKeysdic2(0) & "," & vbCrLf & vbNewLine & Cells(R, 4)
             .display
         End With
-Next k
+Next
 
 Set dic4 = Nothing
 Set dic3 = Nothing
