@@ -11,14 +11,14 @@ Application.DisplayAlerts = False
 'in geval van refresh van bestaande hoklijst, volledig worksheet verwijderen en nieuw maken
 If Not IsEmpty(Range("A2").Value) Then
     lastRow2 = Cells(Rows.Count, "H").End(xlUp).Row
-    Range("A5:" & "J" & lastRow2).RemoveSubtotal
+    Range("A5:" & "L" & lastRow2).RemoveSubtotal
     Worksheets("Hoklijst").Delete
     Sheets.Add(After:=Sheets(Sheets.Count)).Name = "Hoklijst"
     Sheets("Hoklijst").Select
 End If
 
 'timestamp toevoegen
-Range("I2").Value = "Versie: " & Date & "   " & Time
+Range("K2").Value = "Versie: " & Date & "   " & Time
 
 'titelblad
 Range("F2").Value = "Hoklijst"
@@ -26,8 +26,8 @@ Range("F2").Value = "Hoklijst"
 'formatteren
 Range("A2").Value = Worksheets("Magazijnverzending").Range("F3")
 Range("A2").NumberFormat = "dd/mm/yyyy"
-Range("A3").Value = Worksheets("Magazijnverzending").Range("K3")
-Range("A2:J5").Font.Bold = True
+Range("A3").Value = Worksheets("Magazijnverzending").Range("F4")
+Range("A2:L5").Font.Bold = True
 
 'kolomheaders toevoegen
 Range("A5").Value = "vestiging"
@@ -36,10 +36,12 @@ Range("C5").Value = "verzochte ld"
 Range("D5").Value = "toegezegde ld"
 Range("E5").Value = "pluim"
 Range("F5").Value = "ringkleur"
-Range("G5").Value = "P nr."
-Range("H5").Value = "ringnummer"
-Range("I5").Value = "leverancier"
-Range("J5").Value = "bedrag"
+Range("G5").Value = "sex"
+Range("H5").Value = "packing ring"
+Range("I5").Value = "P nr."
+Range("J5").Value = "ringnummer"
+Range("K5").Value = "leverancier"
+Range("L5").Value = "bedrag"
 
 'lastRow Magazijnverzending
 Application.Worksheets("Magazijnverzending").Activate
@@ -76,24 +78,34 @@ Worksheets("Magazijnverzending").Range("P6:P" & lastRow).Copy
 Worksheets("Hoklijst").Range("F6").PasteSpecial Paste:=xlPasteValues
 Application.CutCopyMode = False
 
+'kopiëren van sex
+Worksheets("Magazijnverzending").Range("AG6:AG" & lastRow).Copy
+Worksheets("Hoklijst").Range("G6").PasteSpecial Paste:=xlPasteValues
+Application.CutCopyMode = False
+
+'kopiëren van packing ring
+Worksheets("Magazijnverzending").Range("AH6:AH" & lastRow).Copy
+Worksheets("Hoklijst").Range("H6").PasteSpecial Paste:=xlPasteValues
+Application.CutCopyMode = False
+
 'kopiëren van P nr.
 Worksheets("Magazijnverzending").Range("Q6:Q" & lastRow).Copy
-Worksheets("Hoklijst").Range("G6").PasteSpecial Paste:=xlPasteValues
+Worksheets("Hoklijst").Range("I6").PasteSpecial Paste:=xlPasteValues
 Application.CutCopyMode = False
 
 'kopiëren van ringnummers
 Worksheets("Magazijnverzending").Range("T6:T" & lastRow).Copy
-Worksheets("Hoklijst").Range("H6").PasteSpecial Paste:=xlPasteValues
+Worksheets("Hoklijst").Range("J6").PasteSpecial Paste:=xlPasteValues
 Application.CutCopyMode = False
 
 'kopiëren van leverancier
 Worksheets("Magazijnverzending").Range("U6:U" & lastRow).Copy
-Worksheets("Hoklijst").Range("I6").PasteSpecial Paste:=xlPasteValues
+Worksheets("Hoklijst").Range("K6").PasteSpecial Paste:=xlPasteValues
 Application.CutCopyMode = False
 
 'kopiëren van bedragen
 Worksheets("Magazijnverzending").Range("AD6:AD" & lastRow).Copy
-Worksheets("Hoklijst").Range("J6").PasteSpecial Paste:=xlPasteValues
+Worksheets("Hoklijst").Range("L6").PasteSpecial Paste:=xlPasteValues
 Application.CutCopyMode = False
 
 lastRow = Cells(Rows.Count, "H").End(xlUp).Row
@@ -110,10 +122,10 @@ ActiveWorkbook.Worksheets("Hoklijst").Sort.SortFields.Clear
         Range("B6:B" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
         :=xlSortNormal
     ActiveWorkbook.Worksheets("Hoklijst").Sort.SortFields.Add Key:= _
-        Range("H6:H" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        Range("J6:J" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
         :=xlSortNormal
     With ActiveWorkbook.Worksheets("Hoklijst").Sort
-        .SetRange Range("A5:H" & lastRow)
+        .SetRange Range("A5:L" & lastRow)
         .Header = xlYes
         .MatchCase = False
         .Orientation = xlTopToBottom
@@ -122,7 +134,7 @@ ActiveWorkbook.Worksheets("Hoklijst").Sort.SortFields.Clear
     End With
     
 'opmaak headers
-Range("A5:J5").Select
+Range("A5:L5").Select
     With Selection.Interior
         .Pattern = xlSolid
         .PatternColorIndex = xlAutomatic
@@ -132,15 +144,15 @@ Range("A5:J5").Select
     End With
 
 'subtotalen
-Range("A5:J" & lastRow).Select
+Range("A5:L" & lastRow).Select
     Range(Selection, Selection.End(xlDown)).Select
     Selection.Subtotal GroupBy:=2, Function:=xlCount, TotalList:=Array(2), _
         Replace:=True, PageBreaks:=False, SummaryBelowData:=True
         
 'kolombreedtes autoaanpassen en waarden centreren
-Columns("A:J").Select
+Columns("A:L").Select
     Selection.Columns.AutoFit
-Columns("A:J").Select
+Columns("A:L").Select
 With Selection
     .HorizontalAlignment = xlCenter
     .VerticalAlignment = xlBottom
@@ -155,7 +167,7 @@ End With
 
 'omkaderen
 lastRow = Cells(Rows.Count, "A").End(xlUp).Row
-Range("A6:J" & lastRow).Select
+Range("A6:L" & lastRow).Select
 Selection.Borders(xlDiagonalDown).LineStyle = xlNone
 Selection.Borders(xlDiagonalUp).LineStyle = xlNone
     With Selection.Borders(xlEdgeLeft)
@@ -196,10 +208,10 @@ Selection.Borders(xlDiagonalUp).LineStyle = xlNone
     End With
     
 'dure duiven inkleuren
-For RowToTest = (Cells(Rows.Count, "H").End(xlUp).Row) To 6 Step -1
-    InvoiceValue = Cells(RowToTest, "J").Value
+For RowToTest = (Cells(Rows.Count, "J").End(xlUp).Row) To 6 Step -1
+    InvoiceValue = Cells(RowToTest, "L").Value
     If InvoiceValue > 9000 Then
-        Range("H" & RowToTest).Interior.Color = 65535
+        Range("J" & RowToTest).Interior.Color = 65535
     End If
 Next
 
@@ -207,19 +219,72 @@ Next
 For RowToTest = (Cells(Rows.Count, "A").End(xlUp).Row) To 6 Step -1
     subTot = Cells(RowToTest, "A").Value
     If subTot Like "*" & "Aantal" & "*" Then
-        With Range("A" & RowToTest & ":J" & RowToTest).Interior
+        With Range("A" & RowToTest & ":L" & RowToTest).Interior
             .Pattern = xlSolid
             .PatternColorIndex = xlAutomatic
             .ThemeColor = xlThemeColorAccent1
             .TintAndShade = 0.599993896298105
             .PatternTintAndShade = 0
         End With
-        Range("A" & RowToTest & ":J" & RowToTest).Font.Bold = True
+        Range("A" & RowToTest & ":L" & RowToTest).Font.Bold = True
     End If
 Next
 
 'kolom bedragen verbergen
-Columns("J").Hidden = True
+Columns("L").Hidden = True
+
+'format titels
+Range("A2:A3").Select
+Selection.Style = "Heading 1"
+    With Selection
+        .HorizontalAlignment = xlLeft
+        .VerticalAlignment = xlBottom
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Range("A3").Select
+    Selection.NumberFormat = "[$-F800]dddd, mmmm dd, yyyy"
+    Range("B2:I2").Select
+    Selection.Style = "Heading 1"
+
+
+Range("A3:C3").Select
+With Selection
+    .HorizontalAlignment = xlLeft
+    .VerticalAlignment = xlBottom
+    .WrapText = False
+    .Orientation = 0
+    .AddIndent = False
+    .IndentLevel = 0
+    .ShrinkToFit = False
+    .ReadingOrder = xlContext
+    .MergeCells = True
+    .Merge
+End With
+Columns("A:A").ColumnWidth = 19.43
+
+Range("F2:K2").Select
+Selection.Style = "Heading 1"
+Range("F2:I2").Select
+With Selection
+    .HorizontalAlignment = xlCenter
+    .VerticalAlignment = xlBottom
+    .WrapText = False
+    .Orientation = 0
+    .AddIndent = False
+    .IndentLevel = 0
+    .ShrinkToFit = False
+    .ReadingOrder = xlContext
+    .MergeCells = True
+    .Merge
+End With
+Range("F2").Select
+Selection.Font.Size = 22
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
