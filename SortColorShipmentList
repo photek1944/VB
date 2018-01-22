@@ -8,7 +8,8 @@ nDate = Format(Date, "yyyy-mm-dd")
 Range("F2").Value = "Versie:"
 Range("G2").Value = nDate & "   " & Time
 
-lastRow = Cells(Rows.Count, "Z").End(xlUp).Row
+'sorteren
+lastRow = Cells(Rows.Count, "T").End(xlUp).Row
     ActiveWorkbook.Worksheets("Magazijnverzending").Sort.SortFields.Clear
     ActiveWorkbook.Worksheets("Magazijnverzending").Sort.SortFields.Add Key:= _
         Range("AA6:AA" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
@@ -36,7 +37,12 @@ For Each cell In rng
     End If
 Next cell
 
-lastRow = Cells(Rows.Count, "T").End(xlUp).Row
+'waarden plakken voor formules kolommen sex en packing ring
+With Range("AG6:AH" & lastRow)
+    .Value = .Value
+End With
+
+'format
 x = 0
 For cell = 7 To lastRow
     If (Cells(cell, 26).Value = Cells(cell - 1, 26).Value) Then
