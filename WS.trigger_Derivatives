@@ -1,0 +1,9 @@
+Private Sub Worksheet_Change(ByVal Target As Range)
+If Not Intersect(Target, Range("O3")) Is Nothing Then
+    Select Case Range("O3")
+        Case "Hoklijst": hok_lijst
+        Case "Factuurlijst": factuur_lijst
+        Case "Leverlijst": lever_lijst
+    End Select
+End If
+End Sub
