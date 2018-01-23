@@ -186,9 +186,9 @@ Next
 
 'totaalrijen inkleuren
 For RowToTest = (Cells(Rows.Count, "A").End(xlUp).Row) To 6 Step -1
-    subTot = Cells(RowToTest, "A").Value
+    subTot = Cells(RowToTest, "I").Value
     If subTot Like "*" & "Aantal" & "*" Then
-        With Range("A" & RowToTest & ":L" & RowToTest).Interior
+        With Range("A" & RowToTest & ":J" & RowToTest).Interior
             .Pattern = xlSolid
             .PatternColorIndex = xlAutomatic
             .ThemeColor = xlThemeColorAccent1
@@ -350,6 +350,10 @@ Selection.Borders(xlDiagonalUp).LineStyle = xlNone
         .TintAndShade = 0
         .Weight = xlThin
     End With
+    
+'autofit column "I"
+Columns("I:I").Select
+Selection.Columns.AutoFit
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
