@@ -1,4 +1,4 @@
-Sub factuurlijst()
+Option Explicit
 
 Dim ringNummers As Variant, factuurNummers As Variant, bedragen As Variant
 Dim colUnique As Collection
@@ -7,15 +7,39 @@ Dim i As Long
 Dim lastRow As Integer, lastRow2 As Integer, lastRow3 As Integer
 Dim checkCell As Variant
 Dim RowToTest As Integer
+Dim strSheetName As String
+Dim wsTest As Object
+Dim nDate As Date
+
+Sub factuur_lijst()
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+'create New ws.factuurlijst
+strSheetName = "Factuurlijst"
+ 
+Set wsTest = Nothing
+On Error Resume Next
+Set wsTest = ActiveWorkbook.Worksheets(strSheetName)
+On Error GoTo 0
+ 
+If wsTest Is Nothing Then
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+Else 'create new ws.factuurlijst if ws.factuurlijst already exists
+    Worksheets(strSheetName).Delete
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+    Sheets(strSheetName).Select
+End If
 
 Application.Worksheets("Factuurlijst").Activate
 
+[C2] = "Factuurlijst"
+
 'in geval van refresh van bestaande factuurlijst, laatste rij onder tabel wordt verwijderd zodat lastRows klopt in latere code
 If Not IsEmpty(Range("A2").Value) Then
-    lastRow2 = Cells(Rows.Count, "A").End(xlUp).Row
     lastRow3 = Cells(Rows.Count, "E").End(xlUp).Row
-    Range("A" & lastRow2 & ":C" & lastRow2).Delete (xlShiftUp)
-    Range("E" & lastRow3 & ":G" & lastRow3).Delete (xlShiftUp)
+    Range("A2:G" & lastRow3).Delete (xlShiftUp)
 End If
 
 Application.Worksheets("Magazijnverzending").Activate
@@ -173,6 +197,11 @@ Range("E6:G" & (lastRow3 - 1)).Sort key1:=Range("F6:F" & (lastRow3 - 1)), _
 Range("C6:C" & lastRow2).NumberFormat = "€#,##0.00_);(€#,##0.00)"
 Range("G6:G" & lastRow3).NumberFormat = "€#,##0.00_);(€#,##0.00)"
 
+'timestamp toevoegen
+nDate = Format(Date, "yyyy-mm-dd")
+Range("E2").Value = "Versie:"
+Range("F2").Value = nDate & "   " & Time
+
 'kolombreedtes autoaanpassen en waarden centreren
 Columns("A:G").Select
     Selection.Columns.AutoFit
@@ -188,5 +217,24 @@ With Selection
     .ReadingOrder = xlContext
     .MergeCells = False
 End With
+
+'leftjustify
+Range("F2").Select
+    With Selection
+        .HorizontalAlignment = xlLeft
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+
 Range("A2").Select
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
 End Sub
