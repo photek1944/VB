@@ -143,6 +143,7 @@ With Selection
 End With
 
 'packing ring en ringnummers inkleuren volgens packing ring
+lastRow = Worksheets("Leverlijst").Cells(Rows.Count, "H").End(xlUp).Row
 Dim Packing As Variant
 Packing = Range("F6:H" & lastRow)
 
