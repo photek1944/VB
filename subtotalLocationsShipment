@@ -1,3 +1,4 @@
+
 Sub hok_lijst()
 
 Dim lastRow As Integer
@@ -117,6 +118,12 @@ Worksheets("Magazijnverzending").Range("AD6:AD" & lastRow).Copy
 Worksheets("Hoklijst").Range("L6").PasteSpecial Paste:=xlPasteValues
 Application.CutCopyMode = False
 
+For RowToTest = Cells(Rows.Count, "H").End(xlUp).Row To 6 Step -1
+    If Worksheets("Hoklijst").Range("A" & RowToTest).Value = "VENDOR" Then
+        Rows(RowToTest).EntireRow.Delete
+    End If
+Next
+
 lastRow = Cells(Rows.Count, "H").End(xlUp).Row
 
 'opmaak datums
@@ -152,11 +159,6 @@ Range("A5:L5").Select
         .PatternTintAndShade = 0
     End With
 
-'subtotalen
-Range("A5:L" & lastRow).Select
-    Range(Selection, Selection.End(xlDown)).Select
-    Selection.Subtotal GroupBy:=2, Function:=xlCount, TotalList:=Array(2), _
-        Replace:=True, PageBreaks:=False, SummaryBelowData:=True
         
 'kolombreedtes autoaanpassen en waarden centreren
 Columns("A:L").Select
@@ -173,6 +175,132 @@ With Selection
     .ReadingOrder = xlContext
     .MergeCells = False
 End With
+    
+'kolom bedragen verbergen
+Columns("L").Hidden = True
+
+'format titels
+Range("A2:A3").Select
+Selection.Style = "Heading 1"
+    With Selection
+        .HorizontalAlignment = xlLeft
+        .VerticalAlignment = xlBottom
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Range("A3").Select
+    Selection.NumberFormat = "[$-F800]dddd, mmmm dd, yyyy"
+    Range("B2:I2").Select
+    Selection.Style = "Heading 1"
+
+Range("A3:C3").Select
+With Selection
+    .HorizontalAlignment = xlLeft
+    .VerticalAlignment = xlBottom
+    .WrapText = False
+    .Orientation = 0
+    .AddIndent = False
+    .IndentLevel = 0
+    .ShrinkToFit = False
+    .ReadingOrder = xlContext
+    .MergeCells = True
+    .Merge
+End With
+Columns("A:A").ColumnWidth = 19.43
+
+Range("F2:K2").Select
+Selection.Style = "Heading 1"
+Range("F2:I2").Select
+With Selection
+    .HorizontalAlignment = xlCenter
+    .VerticalAlignment = xlBottom
+    .WrapText = False
+    .Orientation = 0
+    .AddIndent = False
+    .IndentLevel = 0
+    .ShrinkToFit = False
+    .ReadingOrder = xlContext
+    .MergeCells = True
+    .Merge
+End With
+Range("F2").Select
+Selection.Font.Size = 22
+
+'subtotalen
+Range("A5:L" & lastRow).Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Subtotal GroupBy:=2, Function:=xlCount, TotalList:=Array(2), _
+        Replace:=True, PageBreaks:=False, SummaryBelowData:=True
+        
+'dure duiven inkleuren
+For RowToTest = (Cells(Rows.Count, "H").End(xlUp).Row) To 6 Step -1
+    InvoiceValue = Cells(RowToTest, "L").Value
+    If InvoiceValue > 9000 Then
+        Range("I" & RowToTest).Interior.Color = 65535
+    End If
+Next
+
+'packing ring en ringnummers inkleuren volgens packing ring
+lastRow = Cells(Rows.Count, "A").End(xlUp).Row
+Dim Packing As Variant
+Packing = Range("H6:J" & lastRow)
+
+For R = LBound(Packing) To UBound(Packing)
+    Cells(R + 5, 8).Select
+    If Packing(R, 1) = "L-other (droze)" Then
+        With Selection.Interior
+            .Pattern = xlSolid
+            .PatternColorIndex = xlAutomatic
+            .ThemeColor = xlThemeColorAccent2
+            .TintAndShade = 0.799981688894314
+            .PatternTintAndShade = 0
+        End With
+    ElseIf Packing(R, 1) = "G (groen)" Then
+        With Selection.Interior
+            .Pattern = xlSolid
+            .PatternColorIndex = xlAutomatic
+            .ThemeColor = xlThemeColorAccent3
+            .TintAndShade = 0.599993896298105
+            .PatternTintAndShade = 0
+        End With
+    ElseIf Packing(R, 1) = "L-KR (blauw)" Then
+        With Selection.Interior
+            .Pattern = xlSolid
+            .PatternColorIndex = xlAutomatic
+            .ThemeColor = xlThemeColorAccent1
+            .TintAndShade = 0.599993896298105
+            .PatternTintAndShade = 0
+        End With
+    ElseIf Packing(R, 1) = "L-GW (geel)" Then
+        With Selection.Interior
+            .Pattern = xlSolid
+            .PatternColorIndex = xlAutomatic
+            .Color = 6750207
+            .TintAndShade = 0
+            .PatternTintAndShade = 0
+        End With
+    End If
+Next
+
+'totaalrijen inkleuren
+For RowToTest = (Cells(Rows.Count, "A").End(xlUp).Row) To 6 Step -1
+    subTot = Cells(RowToTest, "A").Value
+    If subTot Like "*" & "Aantal" & "*" Then
+        With Range("A" & RowToTest & ":L" & RowToTest).Interior
+            .Pattern = xlSolid
+            .PatternColorIndex = xlAutomatic
+            .ThemeColor = xlThemeColorAccent1
+            .TintAndShade = 0.599993896298105
+            .PatternTintAndShade = 0
+        End With
+        Range("A" & RowToTest & ":L" & RowToTest).Font.Bold = True
+    End If
+Next
 
 'omkaderen
 lastRow = Cells(Rows.Count, "A").End(xlUp).Row
@@ -215,85 +343,6 @@ Selection.Borders(xlDiagonalUp).LineStyle = xlNone
         .TintAndShade = 0
         .Weight = xlThin
     End With
-    
-'dure duiven inkleuren
-For RowToTest = (Cells(Rows.Count, "J").End(xlUp).Row) To 6 Step -1
-    InvoiceValue = Cells(RowToTest, "L").Value
-    If InvoiceValue > 9000 Then
-        Range("J" & RowToTest).Interior.Color = 65535
-    End If
-Next
-
-'totaalrijen inkleuren
-For RowToTest = (Cells(Rows.Count, "A").End(xlUp).Row) To 6 Step -1
-    subTot = Cells(RowToTest, "A").Value
-    If subTot Like "*" & "Aantal" & "*" Then
-        With Range("A" & RowToTest & ":L" & RowToTest).Interior
-            .Pattern = xlSolid
-            .PatternColorIndex = xlAutomatic
-            .ThemeColor = xlThemeColorAccent1
-            .TintAndShade = 0.599993896298105
-            .PatternTintAndShade = 0
-        End With
-        Range("A" & RowToTest & ":L" & RowToTest).Font.Bold = True
-    End If
-Next
-
-'kolom bedragen verbergen
-Columns("L").Hidden = True
-
-'format titels
-Range("A2:A3").Select
-Selection.Style = "Heading 1"
-    With Selection
-        .HorizontalAlignment = xlLeft
-        .VerticalAlignment = xlBottom
-        .WrapText = False
-        .Orientation = 0
-        .AddIndent = False
-        .IndentLevel = 0
-        .ShrinkToFit = False
-        .ReadingOrder = xlContext
-        .MergeCells = False
-    End With
-    Range("A3").Select
-    Selection.NumberFormat = "[$-F800]dddd, mmmm dd, yyyy"
-    Range("B2:I2").Select
-    Selection.Style = "Heading 1"
-
-
-Range("A3:C3").Select
-With Selection
-    .HorizontalAlignment = xlLeft
-    .VerticalAlignment = xlBottom
-    .WrapText = False
-    .Orientation = 0
-    .AddIndent = False
-    .IndentLevel = 0
-    .ShrinkToFit = False
-    .ReadingOrder = xlContext
-    .MergeCells = True
-    .Merge
-End With
-Columns("A:A").ColumnWidth = 19.43
-
-Range("F2:K2").Select
-Selection.Style = "Heading 1"
-Range("F2:I2").Select
-With Selection
-    .HorizontalAlignment = xlCenter
-    .VerticalAlignment = xlBottom
-    .WrapText = False
-    .Orientation = 0
-    .AddIndent = False
-    .IndentLevel = 0
-    .ShrinkToFit = False
-    .ReadingOrder = xlContext
-    .MergeCells = True
-    .Merge
-End With
-Range("F2").Select
-Selection.Font.Size = 22
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
