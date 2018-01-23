@@ -1,4 +1,4 @@
-Sub hoklijst()
+Sub hok_lijst()
 
 Dim lastRow As Integer
 Dim RowToTest As Long
@@ -8,14 +8,23 @@ Application.Worksheets("Hoklijst").Activate
 Application.ScreenUpdating = False
 Application.DisplayAlerts = False
 
-'in geval van refresh van bestaande hoklijst, volledig worksheet verwijderen en nieuw maken
-If Not IsEmpty(Range("A2").Value) Then
-    lastRow2 = Cells(Rows.Count, "H").End(xlUp).Row
-    Range("A5:" & "L" & lastRow2).RemoveSubtotal
-    Worksheets("Hoklijst").Delete
-    Sheets.Add(After:=Sheets(Sheets.Count)).Name = "Hoklijst"
-    Sheets("Hoklijst").Select
+'create New ws.hoklijst
+strSheetName = "Hoklijst"
+ 
+Set wsTest = Nothing
+On Error Resume Next
+Set wsTest = ActiveWorkbook.Worksheets(strSheetName)
+On Error GoTo 0
+ 
+If wsTest Is Nothing Then
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+Else 'create new ws.hoklijst if ws.hoklijst already exists
+    Worksheets(strSheetName).Delete
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+    Sheets(strSheetName).Select
 End If
+
+Application.Worksheets("Hoklijst").Activate
 
 'timestamp toevoegen
 Range("K2").Value = "Versie: " & Date & "   " & Time
@@ -235,7 +244,7 @@ Columns("L").Hidden = True
 
 'format titels
 Range("A2:A3").Select
-Selection.Style = "Kop 1"
+Selection.Style = "Heading 1"
     With Selection
         .HorizontalAlignment = xlLeft
         .VerticalAlignment = xlBottom
@@ -250,7 +259,7 @@ Selection.Style = "Kop 1"
     Range("A3").Select
     Selection.NumberFormat = "[$-F800]dddd, mmmm dd, yyyy"
     Range("B2:I2").Select
-    Selection.Style = "Kop 1"
+    Selection.Style = "Heading 1"
 
 
 Range("A3:C3").Select
@@ -269,7 +278,7 @@ End With
 Columns("A:A").ColumnWidth = 19.43
 
 Range("F2:K2").Select
-Selection.Style = "Kop 1"
+Selection.Style = "Heading 1"
 Range("F2:I2").Select
 With Selection
     .HorizontalAlignment = xlCenter
