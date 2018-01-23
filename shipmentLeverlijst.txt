@@ -183,6 +183,21 @@ For R = LBound(Packing) To UBound(Packing)
         End With
     End If
 Next
+
+'totaalrijen inkleuren
+For RowToTest = (Cells(Rows.Count, "A").End(xlUp).Row) To 6 Step -1
+    subTot = Cells(RowToTest, "A").Value
+    If subTot Like "*" & "Aantal" & "*" Then
+        With Range("A" & RowToTest & ":L" & RowToTest).Interior
+            .Pattern = xlSolid
+            .PatternColorIndex = xlAutomatic
+            .ThemeColor = xlThemeColorAccent1
+            .TintAndShade = 0.599993896298105
+            .PatternTintAndShade = 0
+        End With
+        Range("A" & RowToTest & ":L" & RowToTest).Font.Bold = True
+    End If
+Next
       
 'dure duiven inkleuren
 For RowToTest = (Cells(Rows.Count, "J").End(xlUp).Row) To 6 Step -1
@@ -195,28 +210,56 @@ Next
 'kolom bedragen verbergen
 Columns("J").Hidden = True
 
-'format titels
+'opmaak titels
 Range("A2:A3").Select
-Selection.Style = "Heading 1"
-    With Selection
-        .HorizontalAlignment = xlLeft
-        .VerticalAlignment = xlBottom
-        .WrapText = False
-        .Orientation = 0
-        .AddIndent = False
-        .IndentLevel = 0
-        .ShrinkToFit = False
-        .ReadingOrder = xlContext
-        .MergeCells = False
-    End With
-    Range("A3").Select
-    Selection.NumberFormat = "[$-F800]dddd, mmmm dd, yyyy"
-    Range("B2:I2").Select
-    Selection.Style = "Heading 1"
+With Selection.Font
+    .Name = "Calibri"
+    .Size = 15
+    .Bold = True
+    .Strikethrough = False
+    .Superscript = False
+    .Subscript = False
+    .OutlineFont = False
+    .Shadow = False
+    .Underline = xlUnderlineStyleNone
+    .ThemeColor = xlThemeColorLight2
+    .TintAndShade = 0
+    .ThemeFont = xlThemeFontMinor
+End With
+With Selection
+    .HorizontalAlignment = xlLeft
+    .VerticalAlignment = xlBottom
+    .WrapText = False
+    .Orientation = 0
+    .AddIndent = False
+    .IndentLevel = 0
+    .ShrinkToFit = False
+    .ReadingOrder = xlContext
+    .MergeCells = False
+End With
+
+Range("A2").Select
+With Selection.Borders(xlEdgeBottom)
+    .LineStyle = xlContinuous
+    .ThemeColor = 4
+    .TintAndShade = 0.399975585192419
+    .Weight = xlThick
+End With
+
+Range("A3").Select
+Selection.NumberFormat = "[$-F800]dddd, mmmm dd, yyyy"
+
+Range("B2:I2").Select
+With Selection.Borders(xlEdgeBottom)
+    .LineStyle = xlContinuous
+    .ThemeColor = 4
+    .TintAndShade = 0.399975585192419
+    .Weight = xlThick
+End With
 
 Range("A3:C3").Select
 With Selection
-    .HorizontalAlignment = xlLeft
+    .HorizontalAlignment = xlCenter
     .VerticalAlignment = xlBottom
     .WrapText = False
     .Orientation = 0
@@ -227,10 +270,14 @@ With Selection
     .MergeCells = True
     .Merge
 End With
+With Selection.Borders(xlEdgeBottom)
+    .LineStyle = xlContinuous
+    .ThemeColor = 4
+    .TintAndShade = 0.399975585192419
+    .Weight = xlThick
+End With
 Columns("A:A").ColumnWidth = 19.43
 
-Range("F2:H2").Select
-Selection.Style = "Heading 1"
 Range("F2:H2").Select
 With Selection
     .HorizontalAlignment = xlCenter
@@ -243,6 +290,21 @@ With Selection
     .ReadingOrder = xlContext
     .MergeCells = True
     .Merge
+End With
+Range("F2:I2").Select
+With Selection.Font
+    .Name = "Calibri"
+    .Size = 15
+    .Bold = True
+    .Strikethrough = False
+    .Superscript = False
+    .Subscript = False
+    .OutlineFont = False
+    .Shadow = False
+    .Underline = xlUnderlineStyleNone
+    .ThemeColor = xlThemeColorLight2
+    .TintAndShade = 0
+    .ThemeFont = xlThemeFontMinor
 End With
 Range("F2").Select
 Selection.Font.Size = 22
