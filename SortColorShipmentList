@@ -28,6 +28,14 @@ lastRow = Cells(Rows.Count, "T").End(xlUp).Row
         .SortMethod = xlPinYin
         .Apply
     End With
+    
+'waar lege waarden voor 'invoice nr' 'shipping only' toevoegen
+For RowToTest = (Cells(Rows.Count, "AC").End(xlUp).Row) To 6 Step -1
+    checkCell = Range("AC" & RowToTest).Value
+    If checkCell = "" Then
+        Range("AC" & RowToTest).Value = "shipping only"
+    End If
+Next
 
 'als vestigingveld leeg is, "vendor" toevoegen
 Set rng = Range("K6:K" & lastRow)
