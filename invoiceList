@@ -44,14 +44,6 @@ End If
 
 Application.Worksheets("Magazijnverzending").Activate
 
-'waar lege waarden voor 'invoice nr' 'shipping only' toevoegen
-For RowToTest = (Cells(Rows.Count, "AC").End(xlUp).Row) To 6 Step -1
-    checkCell = Range("AC" & RowToTest).Value
-    If checkCell = "" Then
-        Range("AC" & RowToTest).Value = "shipping only"
-    End If
-Next
-
 lastRow = Cells(Rows.Count, "AC").End(xlUp).Row
 
 'factuurnummers opslaan in array
