@@ -5,9 +5,8 @@ Dim lastRow As Integer, RowToTest As Integer, lastRow2 As Integer, R As Long
 Application.ScreenUpdating = False
 Application.DisplayAlerts = False
 
-'check of leverlijst werkblad al bestaat, zoniet creëer nieuw werkblad "leverlijst"
-Dim wsTest As Worksheet
-Const strSheetName As String = "Leverlijst"
+'create new ws.leverlijst
+strSheetName = "Leverlijst"
  
 Set wsTest = Nothing
 On Error Resume Next
@@ -15,17 +14,14 @@ Set wsTest = ActiveWorkbook.Worksheets(strSheetName)
 On Error GoTo 0
  
 If wsTest Is Nothing Then
-    Sheets.Add(After:=Sheets(Sheets.Count)).Name = "Leverlijst"
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+Else 'create new ws.leverlijst if ws.leverlijst already exists
+    Worksheets(strSheetName).Delete
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+    Sheets(strSheetName).Select
 End If
 
 Application.Worksheets("Leverlijst").Activate
-
-'in geval van refresh van bestaande leverlijst, volledig worksheet verwijderen en nieuw maken
-If Not IsEmpty(Range("A2").Value) Then
-    Worksheets("Leverlijst").Delete
-    Sheets.Add(After:=Sheets(Sheets.Count)).Name = "Leverlijst"
-    Sheets("Leverlijst").Select
-End If
 
 'timestamp toevoegen
 Range("I2").Value = "Versie: " & Date & "   " & Time
