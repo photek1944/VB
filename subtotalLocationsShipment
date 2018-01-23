@@ -4,8 +4,6 @@ Sub hok_lijst()
 Dim lastRow As Integer
 Dim RowToTest As Long
 
-Application.Worksheets("Hoklijst").Activate
-
 Application.ScreenUpdating = False
 Application.DisplayAlerts = False
 
