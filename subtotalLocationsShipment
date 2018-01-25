@@ -262,7 +262,6 @@ With Selection.Borders(xlEdgeBottom)
     .Weight = xlThick
 End With
 
-
 Range("F2:I2").Select
 With Selection
     .HorizontalAlignment = xlCenter
@@ -299,7 +298,7 @@ Dim Packing As Variant
 Packing = Range("H6:J" & lastRow)
 
 For R = LBound(Packing) To UBound(Packing)
-    Cells(R + 5, 8).Select
+    Cells(R + 5, 10).Select
     If Packing(R, 1) = "L-other (droze)" Then
         With Selection.Interior
             .Pattern = xlSolid
@@ -391,7 +390,7 @@ Selection.Borders(xlDiagonalUp).LineStyle = xlNone
         .TintAndShade = 0
         .Weight = xlThin
     End With
-
+    
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
 
