@@ -35,8 +35,8 @@ Worksheets("Baskets").Activate
 
 'add titles
 [E1] = "Mandoverzicht"
-[E2] = Worksheets("Magazijnverzending").Range("K3")
-[E3] = Worksheets("Magazijnverzending").Range("F3")
+[E2] = Worksheets("Magazijnverzending").Range("F3")
+[E3] = Worksheets("Magazijnverzending").Range("F4")
 Range("E3").NumberFormat = "dd/mm/yyyy"
 
 'add timestamp
