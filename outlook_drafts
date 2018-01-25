@@ -14,15 +14,21 @@ Dim ParentKeys As Variant
 Dim ChildKeysdic2 As Variant, ChildKeysdic3 As Variant, ChildKeysdic4 As Variant
 Dim R As Long, R2 As Long, R3 As Long, R4 As Long
 Dim LastR As Long
+Dim nDate As Date
 
 Dim removeLater As Integer
 
 Sub outlook_drafts()
 
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
 With ThisWorkbook.Worksheets(1)
     LastR = .Cells(.Rows.Count, 3).End(xlUp).Row
-    Contents = .Range("A2:E" & LastR).Value
+    Contents = .Range("I3:O" & LastR).Value
 End With
+
+nDate = [O3]
 
 Set dic1 = CreateObject("Scripting.Dictionary")
 dic1.CompareMode = vbTextCompare
@@ -113,7 +119,7 @@ For R = 0 To UBound(ParentKeys)
     Cells(R + 2, 5) = WriteStrCountries
 Next
 
-[A1].Sort Key1:=[A1], Order1:=xlAscending, Header:=xlYes
+'[A1].Sort Key1:=[A1], Order1:=xlAscending, Header:=xlYes
 With [D:E]
     .ColumnWidth = 40
     .WrapText = True
@@ -138,10 +144,18 @@ For k = 0 To UBound(ParentKeys)
     Set dic3 = dic2.Item(ChildKeysdic2(0))
     ChildKeysdic3 = dic3.Keys
         With OutMail
+            .SentOnBehalfOfName = "logistics@pipa.be"
             .To = ParentKeys(k)
-            .CC = "logistics@pipa.be;" & ChildKeysdic3(0)
-            .Subject = "te leveren: " & ChildKeysdic2(0)
-            .body = "Beste " & ChildKeysdic2(0) & "," & vbCrLf & vbNewLine & Cells(R, 4)
+            .CC = "logistics@pipa.be;" & ChildKeysdic2(0)
+            .Subject = "te leveren: " & ChildKeysdic3(0) & " - " & nDate
+            .body = "Beste " & ChildKeysdic3(0) & "," & _
+            vbNewLine & vbNewLine & "Kunt u onderstaande duif/duiven leveren op " & nDate & "?" & _
+            vbNewLine & vbNewLine & Worksheets("lookup").Cells(R, 4) & _
+            vbNewLine & vbNewLine & "Graag nog even een seintje ter bevestiging." & _
+            vbNewLine & vbNewLine & "Alvast bedankt!" & _
+            vbNewLine & "PIPA Logistics" & _
+            vbNewLine & vbNewLine & "logistics@pipa.be" & _
+            vbNewLine & "+32 9 2166404"
             .display
         End With
 Next
@@ -150,5 +164,10 @@ Set dic4 = Nothing
 Set dic3 = Nothing
 Set dic2 = Nothing
 Set dic1 = Nothing
+
+Worksheets("lookup").Delete
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
 
 End Sub
