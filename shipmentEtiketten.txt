@@ -1,0 +1,63 @@
+Option Explicit
+
+Dim Contents As Variant
+Dim strSheetName As String, wsTest As Worksheet
+Dim lastRow As Long, R As Long, C As Long
+
+Sub Etiketten_lijst()
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+'create new ws.etiketten
+strSheetName = "Etiketten"
+ 
+Set wsTest = Nothing
+On Error Resume Next
+Set wsTest = ActiveWorkbook.Worksheets(strSheetName)
+On Error GoTo 0
+ 
+If wsTest Is Nothing Then
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+Else 'create new ws.etiketten if ws.etiketten already exists
+    Worksheets(strSheetName).Delete
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+    Sheets(strSheetName).Select
+End If
+
+Worksheets("Magazijnverzending").Activate
+lastRow = Cells(Rows.Count, "T").End(xlUp).Row
+
+Contents = Range("Q5:AB" & lastRow).Value
+
+'add content
+Worksheets("Etiketten").Activate
+For R = 1 To UBound(Contents, 1)
+    For C = 1 To UBound(Contents, 2)
+        If Contents(R, 2) <> "" Then
+            Cells(R, C) = Contents(R, C)
+        End If
+    Next
+Next
+
+'sort
+lastRow = Cells(Rows.Count, "A").End(xlUp).Row
+ActiveWorkbook.Worksheets("Etiketten").Sort.SortFields.Clear
+    ActiveWorkbook.Worksheets("Etiketten").Sort.SortFields.Add Key:= _
+        Range("A1:A" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+        :=xlSortNormal
+    With ActiveWorkbook.Worksheets("Etiketten").Sort
+        .SetRange Range("A1:L" & lastRow)
+        .Header = xlYes
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+    End With
+
+
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+End Sub
