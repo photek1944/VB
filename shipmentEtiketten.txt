@@ -55,6 +55,13 @@ ActiveWorkbook.Worksheets("Etiketten").Sort.SortFields.Clear
         .Apply
     End With
 
+Columns("B:I").Delete
+
+[A1:D1].Font.Bold = True
+With Columns("A:D")
+    .AutoFit
+    .HorizontalAlignment = xlCenter
+End With
 
 
 Application.ScreenUpdating = True
