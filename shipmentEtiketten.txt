@@ -3,6 +3,7 @@ Option Explicit
 Dim Contents As Variant
 Dim strSheetName As String, wsTest As Worksheet
 Dim lastRow As Long, R As Long, C As Long
+Dim xPath As String
 
 Sub Etiketten_lijst()
 
@@ -63,6 +64,21 @@ With Columns("A:D")
     .HorizontalAlignment = xlCenter
 End With
 
+'current wb.directory
+xPath = ActiveWorkbook.Path
+
+'save to current directory
+Dim wb As Workbook
+Set wb = Workbooks.Add
+ThisWorkbook.Sheets("Etiketten").Copy Before:=wb.Sheets(1)
+wb.Sheets("Blad1").Delete
+wb.Sheets("Blad2").Delete
+wb.Sheets("Blad3").Delete
+wb.SaveAs xPath & "\etiketten.xlsx"
+
+wb.Close
+
+Worksheets("Etiketten").Delete
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
