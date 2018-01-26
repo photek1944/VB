@@ -1,0 +1,33 @@
+Option Explicit
+
+
+Sub Enveloppen_lijst()
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+'create new ws.enveloppen
+strSheetName = "Enveloppen"
+ 
+Set wsTest = Nothing
+On Error Resume Next
+Set wsTest = ActiveWorkbook.Worksheets(strSheetName)
+On Error GoTo 0
+ 
+If wsTest Is Nothing Then
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+Else 'create new ws.leverlijst if ws.leverlijst already exists
+    Worksheets(strSheetName).Delete
+    Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+    Sheets(strSheetName).Select
+End If
+
+
+
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+
+
+End Sub
