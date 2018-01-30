@@ -2,9 +2,12 @@ Dim lastRow As String
 Dim rng As Range, cell As Variant
 Dim x As Integer
 
-Sub Verzendlijst_formatteren()
+Sub Verzendlijst_formatting()
 
-nDate = Format(Date, "yyyy-mm-dd")
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+nDate = format(Date, "yyyy-mm-dd")
 Range("F2").Value = "Versie:"
 Range("G2").Value = nDate & "   " & Time
 
@@ -42,6 +45,14 @@ Set rng = Range("K6:K" & lastRow)
 For Each cell In rng
     If cell.Value = "" Then
         cell.Value = "VENDOR"
+    End If
+Next cell
+
+'als agentnaam leeg is, "PIPA" toevoegen
+Set rng = Range("AA6:AA" & lastRow)
+For Each cell In rng
+    If cell.Value = "" Then
+        cell.Value = "PIPA"
     End If
 Next cell
 
@@ -156,4 +167,7 @@ Range("G2:K2").Select
     End With
     Selection.Merge
     
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
 End Sub
