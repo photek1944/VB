@@ -213,7 +213,6 @@ For i = 1 To colUnique.Count
     .ShrinkToFit = False
     .ReadingOrder = xlContext
     End With
-
 Next
     
 Application.ScreenUpdating = True
