@@ -1,0 +1,112 @@
+Option Explicit
+
+Dim AgentName As Variant
+Dim Contents As Variant
+Dim lastRow As Long
+Dim i As Long, R As Long, C As Long
+Dim strSheetName As String
+Dim wsTest As Object
+Dim Headers As Variant
+
+Sub Pak_lijst()
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+'create collection for column (AA) for agentname and create ws.agentnames worksheets
+Dim colUnique As Collection
+Set colUnique = New Collection
+
+'add ranges
+With Worksheets("Magazijnverzending")
+lastRow = .Cells(Rows.Count, "T").End(xlUp).Row
+AgentName = .Range("AA6:AA" & lastRow).Value
+End With
+
+'add content to collection
+For i = LBound(AgentName) To UBound(AgentName)
+    On Error Resume Next
+        colUnique.Add AgentName(i, 1), CStr(AgentName(i, 1))
+    On Error GoTo 0
+Next i
+
+'create new ws.agentname for each agent's name
+For i = 1 To colUnique.Count
+    strSheetName = colUnique(i)
+    Set wsTest = Nothing
+    On Error Resume Next
+        Set wsTest = ActiveWorkbook.Worksheets(strSheetName)
+    On Error GoTo 0
+    If wsTest Is Nothing Then
+        Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+    Else 'create new ws.agentname if ws.agentname already exists
+        Worksheets(strSheetName).Delete
+        Sheets.Add(After:=Sheets(Sheets.Count)).Name = strSheetName
+        Sheets(strSheetName).Select
+    End If
+Next
+
+'create array for (P:Agent)-columns
+Contents = Worksheets("Magazijnverzending").Range("Q6:AA" & lastRow).Value
+
+'add content to each ws.agentname
+For i = 1 To colUnique.Count
+    For R = 1 To UBound(Contents, 1)
+        For C = 1 To UBound(Contents, 2)
+            If Contents(R, 11) = colUnique(i) And Contents(R, 2) <> "" Then
+                Worksheets(colUnique(i)).Cells(R + 6, C).Value = Contents(R, C)
+            End If
+        Next
+    Next
+Next
+
+'add sorting to remove empty rows
+For i = 1 To colUnique.Count
+    With Worksheets(colUnique(i))
+        lastRow = .Cells(Rows.Count, "D").End(xlUp).Row
+        .Sort.SortFields.Clear
+        .Sort.SortFields.Add Key:= _
+            Range("A5:A" & lastRow), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption _
+            :=xlSortNormal
+        With ActiveWorkbook.Worksheets(colUnique(i)).Sort
+            .SetRange Range("A5:K" & lastRow)
+            .Header = xlYes
+            .MatchCase = False
+            .Orientation = xlTopToBottom
+            .SortMethod = xlPinYin
+            .Apply
+        End With
+    End With
+Next
+
+'add column headers to array
+Headers = Array("P-nr", "Basket Size", "# Pigeons", "Packing Name")
+
+'delete surplus columns and add headers
+For i = 1 To colUnique.Count
+    With Worksheets(colUnique(i))
+        .Columns("D:I").Delete
+        .Columns("E").Delete
+        .Range("A5:D5").Value = Headers
+        .Columns("A:D").AutoFit
+    lastRow = .Cells(Rows.Count, "C").End(xlUp).Row
+    .Range("C" & lastRow + 1).Formula = "=SUM($C$6:$C$" & lastRow & ")"
+    .Range("B" & lastRow + 1).Value = "total:"
+    .Columns("A:D").HorizontalAlignment = xlCenter
+    .Range("A1").Select
+    End With
+Next
+
+'add totals
+
+
+
+
+
+'add formatting
+
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+End Sub
