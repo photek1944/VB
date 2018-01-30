@@ -3,7 +3,7 @@ Option Explicit
 Dim AgentName As Variant
 Dim Contents As Variant
 Dim lastRow As Long
-Dim i As Long, R As Long, C As Long
+Dim i As Long, R As Long, C As Long, x As Long, cell As Integer
 Dim strSheetName As String
 Dim wsTest As Object
 Dim Headers As Variant
@@ -88,24 +88,134 @@ For i = 1 To colUnique.Count
         .Columns("D:I").Delete
         .Columns("E").Delete
         .Range("A5:D5").Value = Headers
+        .Range("A5:D5").Font.Bold = True
         .Columns("A:D").AutoFit
     lastRow = .Cells(Rows.Count, "C").End(xlUp).Row
     .Range("C" & lastRow + 1).Formula = "=SUM($C$6:$C$" & lastRow & ")"
-    .Range("B" & lastRow + 1).Value = "total:"
+    .Range("B" & lastRow + 1).Value = "total"
+    .Range("B" & lastRow + 1 & ":D" & lastRow + 1).Font.Bold = True
     .Columns("A:D").HorizontalAlignment = xlCenter
-    .Range("A1").Select
     End With
 Next
 
-'add totals
-
-
-
-
-
 'add formatting
+For i = 1 To colUnique.Count
+    With Worksheets(colUnique(i))
+    lastRow = .Cells(Rows.Count, "C").End(xlUp).Row
+    x = 0
+        For cell = 7 To lastRow
+            If (.Cells(cell, 4).Value = Cells(cell - 1, 4).Value) Then
+                    .Range("A" & cell - 1 & ":D" & cell - 1).Select
+                    Selection.Copy
+                    .Range("A" & cell & ":D" & cell).Select
+                    Selection.PasteSpecial Paste:=xlPasteFormats, Operation:=xlNone, _
+                        SkipBlanks:=False, Transpose:=False
+                    Application.CutCopyMode = False
+            Else
+                If x = 0 Then
+                    x = 1
+                        Worksheets(colUnique(i)).Range("A" & cell & ":D" & cell).Interior.Pattern = xlSolid
+                        Worksheets(colUnique(i)).Range("A" & cell & ":D" & cell).Interior.PatternColorIndex = xlAutomatic
+                        Worksheets(colUnique(i)).Range("A" & cell & ":D" & cell).Interior.ThemeColor = xlThemeColorAccent1
+                        Worksheets(colUnique(i)).Range("A" & cell & ":D" & cell).Interior.TintAndShade = 0.799981688894314
+                        Worksheets(colUnique(i)).Range("A" & cell & ":D" & cell).Interior.PatternTintAndShade = 0
+                ElseIf x = 1 Then
+                    x = 0
+                        Worksheets(colUnique(i)).Range("A" & cell & ":D" & cell).Interior.Pattern = xlSolid
+                        Worksheets(colUnique(i)).Range("A" & cell & ":D" & cell).Interior.PatternColorIndex = xlAutomatic
+                        Worksheets(colUnique(i)).Range("A" & cell & ":D" & cell).Interior.ThemeColor = xlThemeColorDark1
+                        Worksheets(colUnique(i)).Range("A" & cell & ":D" & cell).Interior.TintAndShade = 0
+                        Worksheets(colUnique(i)).Range("A" & cell & ":D" & cell).Interior.PatternTintAndShade = 0
+                End If
+            End If
+        Next cell
+    End With
+Next
 
+For i = 1 To colUnique.Count
+    Worksheets(colUnique(i)).Select
+    lastRow = Worksheets(colUnique(i)).Cells(Rows.Count, "C").End(xlUp).Row
+    Worksheets(colUnique(i)).Range("A5:D" & lastRow).Select
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    With Selection.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlInsideVertical)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    With Selection.Borders(xlInsideHorizontal)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+Next
 
+For i = 1 To colUnique.Count
+    Worksheets(colUnique(i)).Select
+    With Worksheets(colUnique(i))
+        .Range("A1").Value = "Packing list"
+        .Range("A2").Value = CStr(colUnique(i))
+        .Range("A3").Value = Worksheets("Magazijnverzending").Range("F3").Value
+        .Range("A4").Value = "(" & "Version: " & Date & " " & Time & ")"
+        .Range("A1:D1").Merge
+        .Range("A2:D2").Merge
+        .Range("A3:D3").Merge
+        .Range("A4:D4").Merge
+        .Range("A1:D3").Select
+    End With
+    With Selection.Font
+    .Name = "Calibri"
+    .Size = 11
+    .Bold = True
+    .Strikethrough = False
+    .Superscript = False
+    .Subscript = False
+    .OutlineFont = False
+    .Shadow = False
+    .Underline = xlUnderlineStyleNone
+    .ThemeColor = xlThemeColorLight2
+    .TintAndShade = 0
+    .ThemeFont = xlThemeFontMinor
+    End With
+    With Selection
+    .HorizontalAlignment = xlCenter
+    .VerticalAlignment = xlBottom
+    .WrapText = False
+    .Orientation = 0
+    .AddIndent = False
+    .IndentLevel = 0
+    .ShrinkToFit = False
+    .ReadingOrder = xlContext
+    End With
+
+Next
+    
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
 
