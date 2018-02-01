@@ -70,12 +70,13 @@ End With
 With ThisWorkbook.Worksheets("Magazijnverzending")
     lastRow = .Cells(.Rows.Count, "T").End(xlUp).Row
     .Range("Q6:Q" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",2,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",2,FALSE)),"""")"
-
+    .Range("Q6:Q" & lastRow).Value = .Range("Q6:Q" & lastRow).Value
 'vlookup "M"
     .Range("R6:R" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",3,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",3,FALSE)),"""")"
-
+    .Range("R6:R" & lastRow).Value = .Range("R6:R" & lastRow).Value
 'vlookup "D
     .Range("S6:S" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",4,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",4,FALSE)),"""")"
+    .Range("S6:S" & lastRow).Value = .Range("S6:S" & lastRow).Value
 End With
 
 'vlookup "client (packing) names"
@@ -86,6 +87,7 @@ End With
 With ThisWorkbook.Worksheets("Magazijnverzending")
     lastRow = .Cells(.Rows.Count, "T").End(xlUp).Row
     .Range("Z6:Z" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",5,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",5,FALSE)),"""")"
+    .Range("Z6:Z" & lastRow).Value = .Range("Z6:Z" & lastRow).Value
 End With
 
 'Format
