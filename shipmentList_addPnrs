@@ -4,6 +4,7 @@ Dim rng As Range
 Dim lastRow As Long, totalCount As Long, pigeonCount As Long, expensiveCount As Long, Pcount As Long
 Dim Cell As Object, client As Variant
 Dim rowClientOccurance1 As Long, rowClientOccurance2 As Long, i As Long, remainder As Long
+Dim counter As Long, nextStartingRow As Long, addRows As Long, subtractRows As Long
 
 Sub Add_P_nrs()
 
@@ -54,12 +55,15 @@ For Each client In colUnique
         Range("C" & rowClientOccurance2).Value = pigeonCount
         
     Case 7, 9, 11:
+        subtractRows = Int(pigeonCount / 2)
+        addRows = Int(pigeonCount / 2 + 0.999999)
+        
         'basket part1
         rowClientOccurance1 = Columns("E").Find(What:=client, LookAt:=xlWhole, MatchCase:=False).Row
         rowClientOccurance2 = Columns("E").Find(What:=client, LookAt:=xlWhole, SearchDirection:=xlPrevious, MatchCase:=False).Row
-        Set rng = Range("E" & rowClientOccurance1 & ":E" & rowClientOccurance2 - 2)
+        Set rng = Range("E" & rowClientOccurance1 & ":E" & rowClientOccurance2 - subtractRows)
         pigeonCount = Application.WorksheetFunction.CountIf(rng, client)
-        Set rng = Range("D" & rowClientOccurance1 & ":D" & rowClientOccurance2 - 2)
+        Set rng = Range("D" & rowClientOccurance1 & ":D" & rowClientOccurance2 - subtractRows)
         expensiveCount = 0
             For Each Cell In rng
                 If Cell.Interior.Color = 65535 Then
@@ -67,7 +71,7 @@ For Each client In colUnique
                 End If
             Next Cell
         totalCount = pigeonCount + expensiveCount
-        Set rng = Range("A" & rowClientOccurance1 & ":A" & rowClientOccurance2 - 2)
+        Set rng = Range("A" & rowClientOccurance1 & ":A" & rowClientOccurance2 - subtractRows)
             For Each Cell In rng
                 If Cell.Offset(0, 4).Value = Cell.Offset(-1, 4).Value Then
                     Cell = Cell.Offset(-1, 0).Value
@@ -79,14 +83,15 @@ For Each client In colUnique
         If totalCount = 1 Then
             totalCount = totalCount + 1
         End If
-        Range("B" & rowClientOccurance2 - 2).Value = totalCount
-        Range("C" & rowClientOccurance2 - 2).Value = pigeonCount
+        Range("B" & rowClientOccurance2 - subtractRows).Value = totalCount
+        Range("C" & rowClientOccurance2 - subtractRows).Value = pigeonCount
+        
         'basket part 2
         rowClientOccurance1 = Columns("E").Find(What:=client, LookAt:=xlWhole, MatchCase:=False).Row
         rowClientOccurance2 = Columns("E").Find(What:=client, LookAt:=xlWhole, SearchDirection:=xlPrevious, MatchCase:=False).Row
-        Set rng = Range("E" & rowClientOccurance1 + 3 & ":E" & rowClientOccurance2)
+        Set rng = Range("E" & rowClientOccurance1 + addRows & ":E" & rowClientOccurance2)
         pigeonCount = Application.WorksheetFunction.CountIf(rng, client)
-        Set rng = Range("D" & rowClientOccurance1 + 3 & ":D" & rowClientOccurance2)
+        Set rng = Range("D" & rowClientOccurance1 + addRows & ":D" & rowClientOccurance2)
         expensiveCount = 0
             For Each Cell In rng
                 If Cell.Interior.Color = 65535 Then
@@ -94,7 +99,7 @@ For Each client In colUnique
                 End If
             Next Cell
         totalCount = pigeonCount + expensiveCount
-        Set rng = Range("A" & rowClientOccurance1 + 3 & ":A" & rowClientOccurance2)
+        Set rng = Range("A" & rowClientOccurance1 + addRows & ":A" & rowClientOccurance2)
         Pcount = Pcount + 1
             For Each Cell In rng
                 Cell = Pcount
@@ -104,20 +109,48 @@ For Each client In colUnique
         End If
         Range("B" & rowClientOccurance2).Value = totalCount
         Range("C" & rowClientOccurance2).Value = pigeonCount
-        
+
     Case Is > 12:
-        i = totalCount \ 12
-        remainder = totalCount - (i * 12)
-        
-        rowClientOccurance1 = Columns("E").Find(What:=client, LookAt:=xlWhole, MatchCase:=False).Row
-        rowClientOccurance2 = Columns("E").Find(What:=client, LookAt:=xlWhole, SearchDirection:=xlPrevious, MatchCase:=False).Row
-        Set rng = Range("E" & rowClientOccurance1 & ":E" & rowClientOccurance2)
-        pigeonCount = Application.WorksheetFunction.CountIf(rng, client)
-    
-    
+        i = pigeonCount \ 12
+        remainder = pigeonCount - (i * 12)
+    'calculate ranges per 12 pigeon baskets
+         nextStartingRow = 0
+        For counter = 1 To i
+            rowClientOccurance1 = Columns("E").Find(What:=client, LookAt:=xlWhole, MatchCase:=False).Row + nextStartingRow
+            Set rng = Range("E" & rowClientOccurance1 & ":E" & rowClientOccurance1 + 11)
+            pigeonCount = Application.WorksheetFunction.CountIf(rng, client)
+            nextStartingRow = nextStartingRow + 12
+            Set rng = Range("D" & rowClientOccurance1 & ":D" & rowClientOccurance1 + 11)
+            expensiveCount = 0
+                For Each Cell In rng
+                    If Cell.Interior.Color = 65535 Then
+                        expensiveCount = expensiveCount + 1
+                    End If
+                Next Cell
+            totalCount = pigeonCount + expensiveCount
+                'if all pigeons fit into one 12 size basket:
+                If totalCount = 12 Then
+                    Set rng = Range("A" & rowClientOccurance1 & ":A" & rowClientOccurance1 + 11)
+                    For Each Cell In rng
+                        If Cell.Offset(-1, 1).Value = "" Then
+                            Cell = Cell.Offset(-1, 0).Value
+                        Else
+                            Cell = Pcount + 1
+                            Pcount = Pcount + 1
+                        End If
+                    Next Cell
+                    If totalCount = 1 Then
+                        totalCount = totalCount + 1
+                    End If
+                End If
+                Range("B" & rowClientOccurance1 + 11).Value = totalCount
+                Range("C" & rowClientOccurance1 + 11).Value = pigeonCount
+                'if the pigeons do not fit into a 12 size basket:
+                
+         Next
+
+    'fill up remainder basket
     End Select
-    
-    'End If
 Next client
 
 [A1] = "P"
