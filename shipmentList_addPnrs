@@ -201,6 +201,7 @@ For Each client In clientCollection
                         End Select
                 End If
             Next
+            
         'remainder
         Call set_Range(client)
         If remainder > 1 Then
