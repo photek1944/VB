@@ -201,10 +201,13 @@ For Each client In clientCollection
                         End Select
                 End If
             Next
-            
-        'remainder basket
+        'remainder
         Call set_Range(client)
-        startingRow = endingRow - remainder
+        If remainder > 1 Then
+            startingRow = endingRow - remainder
+        Else
+            startingRow = endingRow
+        End If
         Call count_Pigeons(client)
         Call count_Expensive(rng)
         totalCount = pigeonCount + expensiveCount
