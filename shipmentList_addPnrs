@@ -180,7 +180,7 @@ For Each client In clientCollection
                                 Call print_PMD(rng)
                                 
                             Case 7, 9, 11:
-                                'part 1 of basket part 1
+                                'part 1 of basket part 2
                                 subtractRows = Int(pigeonCount / 2)
                                 totalPigeonCount = pigeonCount
                                 Call count_Pigeons(client)
@@ -189,7 +189,7 @@ For Each client In clientCollection
                                 Set rng = Range("A" & startingRow + addRows & ":A" & endingRow - subtractRows)
                                 Call print_PMD(rng)
                                 
-                                'part 2 of basket part 1
+                                'part 2 of basket part 2
                                 addRows = Int(totalPigeonCount / 2 + 0.999999)
                                 subtractRows = 0
                                 Call count_Pigeons(client)
