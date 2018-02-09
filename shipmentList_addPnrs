@@ -8,21 +8,21 @@ Dim counter As Long, nextStartingRow As Long, addRows As Long, subtractRows As L
 
 Private Sub set_Range(ByRef client As Variant)
 
-startingRow = Columns("E").Find(What:=client, LookAt:=xlWhole, MatchCase:=False).Row
-endingRow = Columns("E").Find(What:=client, LookAt:=xlWhole, SearchDirection:=xlPrevious, MatchCase:=False).Row
+startingRow = Columns("Z").Find(What:=client, LookAt:=xlWhole, MatchCase:=False).Row
+endingRow = Columns("Z").Find(What:=client, LookAt:=xlWhole, SearchDirection:=xlPrevious, MatchCase:=False).Row
 
 End Sub
 
 Private Sub count_Pigeons(ByRef client As Variant)
 
-Set rng = Range("E" & startingRow + addRows & ":E" & endingRow - subtractRows)
+Set rng = Range("Z" & startingRow + addRows & ":Z" & endingRow - subtractRows)
 pigeonCount = Application.WorksheetFunction.CountIf(rng, client)
 
 End Sub
 
 Private Sub count_Expensive(ByRef rng As Range)
 
-Set rng = Range("D" & startingRow + addRows & ":D" & endingRow - subtractRows)
+Set rng = Range("T" & startingRow + addRows & ":T" & endingRow - subtractRows)
 expensiveCount = 0
 For Each Cell In rng
     If Cell.Interior.Color = 65535 Then
@@ -45,27 +45,29 @@ Next Cell
 If totalCount = 1 Then
     totalCount = totalCount + 1
 End If
-Range("B" & endingRow - subtractRows).Value = totalCount
-Range("C" & endingRow - subtractRows).Value = pigeonCount
+Range("R" & endingRow - subtractRows).Value = totalCount
+Range("S" & endingRow - subtractRows).Value = pigeonCount
 
 End Sub
 
-Sub abbreviated_add_P()
+Sub Add_P_nrs()
 
-lastRow = Cells(Rows.Count, "E").End(xlUp).Row
-Range("A2:C" & lastRow).Value = ""
+lastRow = Cells(Rows.Count, "Z").End(xlUp).Row
+Range("Q6:S" & lastRow).Value = ""
+
+Range("Z6:" & "Z" & lastRow).Value = Range("Z6:" & "Z" & lastRow).Value
 
 Dim clientCollection As Collection
 Set clientCollection = New Collection
 
-Set rng = Range("E2:E" & lastRow)
+Set rng = Range("Z6:Z" & lastRow)
 For Each Cell In rng
     On Error Resume Next
         clientCollection.Add Cell, Cell
     On Error GoTo 0
 Next Cell
 
-[A1] = 0
+[Q5] = 0
 
 For Each client In clientCollection
     subtractRows = 0
@@ -78,7 +80,7 @@ For Each client In clientCollection
     Select Case totalCount
     
     Case 1 To 6, 8, 10, 12:
-        Set rng = Range("A" & startingRow & ":A" & endingRow)
+        Set rng = Range("Q" & startingRow & ":Q" & endingRow)
         Call print_PMD(rng)
 
     Case 7, 9, 11:
@@ -90,7 +92,7 @@ For Each client In clientCollection
         Call count_Pigeons(client)
         Call count_Expensive(rng)
         totalCount = pigeonCount + expensiveCount
-        Set rng = Range("A" & startingRow + addRows & ":A" & endingRow - subtractRows)
+        Set rng = Range("Q" & startingRow + addRows & ":Q" & endingRow - subtractRows)
         Call print_PMD(rng)
         
         'add content to basket part 2
@@ -100,7 +102,7 @@ For Each client In clientCollection
         Call count_Pigeons(client)
         Call count_Expensive(rng)
         totalCount = pigeonCount + expensiveCount
-        Set rng = Range("A" & startingRow + addRows & ":A" & endingRow - subtractRows)
+        Set rng = Range("Q" & startingRow + addRows & ":Q" & endingRow - subtractRows)
         addRows = 0
         Call print_PMD(rng)
     
@@ -112,7 +114,7 @@ For Each client In clientCollection
 
         For counter = 1 To i
                 addRows = 11
-                startingRow = Columns("E").Find(What:=client, LookAt:=xlWhole, MatchCase:=False).Row + nextStartingRow
+                startingRow = Columns("Z").Find(What:=client, LookAt:=xlWhole, MatchCase:=False).Row + nextStartingRow
                 endingRow = startingRow + addRows
                 addRows = 0
                 nextStartingRow = nextStartingRow + 12
@@ -122,7 +124,7 @@ For Each client In clientCollection
                 totalCount = pigeonCount + expensiveCount
                 'if all pigeons fit into one 12 size basket then:
                 If totalCount = 12 Then
-                    Set rng = Range("A" & startingRow & ":A" & endingRow)
+                    Set rng = Range("Q" & startingRow & ":Q" & endingRow)
                     addRows = 0
                     Call print_PMD(rng)
                 End If
@@ -140,7 +142,7 @@ For Each client In clientCollection
                     
                     Select Case totalCount
                         Case 1 To 6, 8, 10, 12:
-                            Set rng = Range("A" & startingRow & ":A" & endingRow)
+                            Set rng = Range("Q" & startingRow & ":Q" & endingRow)
                             Call print_PMD(rng)
                             
                         Case 7, 9, 11:
@@ -150,7 +152,7 @@ For Each client In clientCollection
                             Call count_Pigeons(client)
                             Call count_Expensive(rng)
                             totalCount = pigeonCount + expensiveCount
-                            Set rng = Range("A" & startingRow + addRows & ":A" & endingRow - subtractRows)
+                            Set rng = Range("Q" & startingRow + addRows & ":Q" & endingRow - subtractRows)
                             Call print_PMD(rng)
                             
                             'part 2 of basket part 1
@@ -159,7 +161,7 @@ For Each client In clientCollection
                             Call count_Pigeons(client)
                             Call count_Expensive(rng)
                             totalCount = pigeonCount + expensiveCount
-                            Set rng = Range("A" & startingRow + addRows & ":A" & endingRow - subtractRows)
+                            Set rng = Range("Q" & startingRow + addRows & ":Q" & endingRow - subtractRows)
                             addRows = 0
                             Call print_PMD(rng)
                     End Select
@@ -176,32 +178,31 @@ For Each client In clientCollection
                         
                         Select Case totalCount
                             Case 1 To 6, 8, 10, 12:
-                                Set rng = Range("A" & startingRow & ":A" & endingRow)
+                                Set rng = Range("Q" & startingRow & ":Q" & endingRow)
                                 Call print_PMD(rng)
                                 
                             Case 7, 9, 11:
-                                'part 1 of basket part 2
+                                'part 1 of basket part 1
                                 subtractRows = Int(pigeonCount / 2)
                                 totalPigeonCount = pigeonCount
                                 Call count_Pigeons(client)
                                 Call count_Expensive(rng)
                                 totalCount = pigeonCount + expensiveCount
-                                Set rng = Range("A" & startingRow + addRows & ":A" & endingRow - subtractRows)
+                                Set rng = Range("Q" & startingRow + addRows & ":Q" & endingRow - subtractRows)
                                 Call print_PMD(rng)
                                 
-                                'part 2 of basket part 2
+                                'part 2 of basket part 1
                                 addRows = Int(totalPigeonCount / 2 + 0.999999)
                                 subtractRows = 0
                                 Call count_Pigeons(client)
                                 Call count_Expensive(rng)
                                 totalCount = pigeonCount + expensiveCount
-                                Set rng = Range("A" & startingRow + addRows & ":A" & endingRow - subtractRows)
+                                Set rng = Range("Q" & startingRow + addRows & ":Q" & endingRow - subtractRows)
                                 addRows = 0
                                 Call print_PMD(rng)
                         End Select
                 End If
             Next
-            
         'remainder
         Call set_Range(client)
         If remainder > 1 Then
@@ -216,7 +217,7 @@ For Each client In clientCollection
         Select Case totalCount
     
         Case 1 To 6, 8, 10, 12:
-            Set rng = Range("A" & startingRow & ":A" & endingRow)
+            Set rng = Range("Q" & startingRow & ":Q" & endingRow)
             Call print_PMD(rng)
 
         Case 7, 9, 11:
@@ -228,7 +229,7 @@ For Each client In clientCollection
             Call count_Pigeons(client)
             Call count_Expensive(rng)
             totalCount = pigeonCount + expensiveCount
-            Set rng = Range("A" & startingRow + addRows & ":A" & endingRow - subtractRows)
+            Set rng = Range("Q" & startingRow + addRows & ":Q" & endingRow - subtractRows)
             Call print_PMD(rng)
         
             'add content to basket part 2
@@ -238,14 +239,14 @@ For Each client In clientCollection
             Call count_Pigeons(client)
             Call count_Expensive(rng)
             totalCount = pigeonCount + expensiveCount
-            Set rng = Range("A" & startingRow + addRows & ":A" & endingRow - subtractRows)
+            Set rng = Range("Q" & startingRow + addRows & ":Q" & endingRow - subtractRows)
             addRows = 0
             Call print_PMD(rng)
         End Select
     End Select
 Next client
 
-[A1] = "P"
+[Q5] = "P"
 Pcount = 0
     
 End Sub
