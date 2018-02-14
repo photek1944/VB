@@ -1,0 +1,141 @@
+Option Explicit
+
+Dim rng As Range
+Dim lastRow As Long, startingRow As Long, currentRow As Long, firstRow As Long, rowCounter As Long, endRow As Long
+Dim totalCount As Integer, pigeonCounter As Integer, expensiveCounter As Integer
+Dim totalCounter As Integer, Pcount As Integer, basketType As Integer, lastRowBasket As Long
+Dim Cell As Object, counter As Integer, addRows As Integer, subtractRows As Integer, totalpigeonCount As Long
+
+Sub set_Range(ByRef columnLetter As String, ByRef endRow As Long, ByRef firstRow As Long)
+
+Set rng = Range(columnLetter & firstRow & ":" & columnLetter & endRow)
+
+End Sub
+
+Sub count_pigeons(ByRef rng As Range)
+
+pigeonCounter = Application.WorksheetFunction.CountA(rng)
+
+End Sub
+
+Sub count_expensive(ByRef rng As Range)
+
+expensiveCounter = 0
+For Each Cell In rng
+    If Cell.Interior.Color = 65535 Then
+        expensiveCounter = expensiveCounter + 1
+    End If
+Next Cell
+
+End Sub
+
+Sub print_PMD(ByRef rng As Range, ByRef endRow As Long)
+
+For Each Cell In rng
+    If Cell.Offset(-1, 1).Value = "" Then
+        Cell = Cell.Offset(-1, 0).Value
+    Else
+        Cell = Pcount + 1
+        Pcount = Pcount + 1
+    End If
+Next Cell
+If totalCount = 1 Then
+    totalCount = totalCount + 1
+End If
+If totalCounter = 1 Then
+    Range("R" & endRow).Value = totalCounter + 1
+Else
+    Range("R" & endRow).Value = totalCounter
+End If
+Range("S" & endRow).Value = pigeonCounter
+
+End Sub
+
+Sub test_p_nrs()
+
+[Q5] = 0
+
+startingRow = 6
+lastRow = Cells(Rows.Count, "T").End(xlUp).Row
+Range("Q6:S" & lastRow).Value = ""
+
+basketType = InputBox("Zoveel mogelijk manden gebruiken van volgend type:", "Soort mand")
+
+totalCount = lastRow - startingRow + 1
+
+currentRow = startingRow
+
+Do Until rowCounter >= totalCount
+    totalCounter = 0
+    expensiveCounter = 0
+    pigeonCounter = 0
+    Do Until totalCounter = basketType
+        pigeonCounter = pigeonCounter + 1
+        rowCounter = rowCounter + 1
+            If Cells(currentRow, "T").Interior.Color = 65535 Then
+                expensiveCounter = expensiveCounter + 1
+            End If
+        totalCounter = pigeonCounter + expensiveCounter
+            If totalCounter = basketType Then
+                endRow = currentRow
+                firstRow = (endRow - pigeonCounter)
+                Call set_Range("Q", endRow, firstRow)
+                Call print_PMD(rng, endRow)
+            ElseIf totalCounter > basketType Then
+                endRow = currentRow - 1
+                firstRow = (endRow - pigeonCounter + 2)
+                Call set_Range("Q", endRow, firstRow)
+                totalCounter = basketType
+                pigeonCounter = pigeonCounter - 1
+                Call print_PMD(rng, endRow)
+                Exit Do
+            End If
+        currentRow = currentRow + 1
+        If rowCounter = totalCount Then
+            Exit Do
+        End If
+    Loop
+Loop
+
+lastRowBasket = Cells(Rows.Count, "Q").End(xlUp).Row
+firstRow = lastRowBasket + 1
+endRow = lastRow
+
+Call set_Range("T", endRow, firstRow)
+Call count_pigeons(rng)
+Call count_expensive(rng)
+totalCounter = pigeonCounter + expensiveCounter
+
+Select Case totalCounter
+
+Case 1 To 6, 8, 10, 12:
+    Call set_Range("Q", endRow, firstRow)
+    Call print_PMD(rng, endRow)
+
+Case 7, 9, 11:
+    'add content to basket part 1
+    addRows = 0
+    subtractRows = Int(pigeonCounter / 2)
+    totalpigeonCount = pigeonCounter
+    Set rng = Range("T" & firstRow + addRows & ":T" & endRow - subtractRows)
+    Call count_pigeons(rng)
+    Call count_expensive(rng)
+    totalCounter = pigeonCounter + expensiveCounter
+    Set rng = Range("Q" & firstRow + addRows & ":Q" & endRow - subtractRows)
+    Call print_PMD(rng, endRow - subtractRows)
+    
+    'add content to basket part 2
+    addRows = Int(totalpigeonCount / 2 + 0.999999)
+    subtractRows = 0
+    Set rng = Range("T" & firstRow + addRows & ":T" & endRow - subtractRows)
+    Call count_pigeons(rng)
+    Call count_expensive(rng)
+    totalCounter = pigeonCounter + expensiveCounter
+    Set rng = Range("Q" & firstRow + addRows & ":Q" & endRow - subtractRows)
+    Call print_PMD(rng, endRow - subtractRows)
+
+End Select
+
+[Q5] = "P"
+
+End Sub
