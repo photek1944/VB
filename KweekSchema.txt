@@ -91,11 +91,11 @@ For RowToTest = lastRowKweekschema To 6 Step -1
 Next
 
 'toevoegen lookup formule in tabblad inlezen duiven voor CT-nummers op basis van naam
-Worksheets("CT-kwekers").Activate
+Worksheets("CT-leveranciers").Activate
 lastRowKwekers = Cells(Rows.Count, "A").End(xlUp).Row
 Worksheets("inlezen duiven").Activate
-Range("C2:C" & lastRowInlezenDuiven + 1).Formula = "=VLOOKUP($D2,'" & "CT-kwekers" & "'!$A$2:$B$" & lastRowKwekers & ",2,FALSE)"
-With Range("C2:C" & lastRowInlezenDuiven)
+Range("C2:C" & lastRowInlezenDuiven + 1).Formula = "=VLOOKUP($D2,'" & "CT-leveranciers" & "'!$A$2:$B$" & lastRowKwekers & ",2,FALSE)"
+With Range("C2:C" & lastRowInlezenDuiven + 1)
     .Value = .Value
 End With
 
