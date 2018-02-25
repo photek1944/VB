@@ -47,6 +47,16 @@ For R = lastRow - 4 To LBound(content, 1) Step -1
     End If
 Next
 
+'copy amounts from T-AKB/T-COM to correct VA amounts
+lastRow = Cells(Rows.Count, "C").End(xlUp).Row
+Set rng = Range("H5:H" & lastRow)
+
+For Each cell In rng
+    If cell.Value = "Meerw. op courante realisatie van mva" Then
+        Range("O" & cell.Row).Value = Range("AA" & cell.Row).Value * -1
+    End If
+Next cell
+
 'refresh pivot
 Dim pt As PivotTable
 Set pt = Worksheets("pivot").PivotTables("PivotTable1")
