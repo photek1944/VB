@@ -1,0 +1,47 @@
+Option Explicit
+
+Dim lastRow As Long, R As Long, numberofCells As Long
+Dim content As Variant
+Dim rng As Variant, cell As Object
+Dim bandNumber As Variant
+
+Sub delete_emptyRows()
+
+Dim listVA As Collection
+Set listVA = New Collection
+
+lastRow = Cells(Rows.Count, "C").End(xlUp).Row
+
+Set rng = Range("J5:J" & lastRow)
+
+'create collection of band VA band numbers
+For Each cell In rng
+    If cell.Value <> "" And cell.Offset(0, -2).Value = "Meerw. op courante realisatie van mva" Then
+        On Error Resume Next
+            listVA.Add cell.Value, cell.Value
+            Debug.Print cell
+        On Error GoTo 0
+    End If
+Next cell
+
+'loop through collection VA
+For Each cell In rng
+    For Each bandNumber In listVA
+        If cell.Value = bandNumber And cell.Offset(0, -2).Value = "DUIF" Then
+            cell.Offset(0, -2).Value = "Meerw. op courante realisatie van mva"
+        End If
+    Next bandNumber
+Next cell
+
+content = Range("O5:R" & lastRow).Value
+numberofCells = lastRow - 4
+
+For R = lastRow - 4 To LBound(content, 1) Step -1
+    If content(R, 1) = "" Then
+        Rows(R + 4).Delete
+    ElseIf content(R, 1) = "0" And content(R, 4) = "" Then
+        Rows(R + 4).Delete
+    End If
+Next
+
+End Sub
