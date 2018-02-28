@@ -97,44 +97,47 @@ Do Until rowCounter >= totalCount
     Loop
 Loop
 
-lastRowBasket = Cells(Rows.Count, "Q").End(xlUp).Row
-firstRow = lastRowBasket + 1
-endRow = lastRow
-
-Call set_Range("T", endRow, firstRow)
-Call count_pigeons(rng)
-Call count_expensive(rng)
-totalCounter = pigeonCounter + expensiveCounter
-
-Select Case totalCounter
-
-Case 1 To 6, 8, 10, 12:
-    Call set_Range("Q", endRow, firstRow)
-    Call print_PMD(rng, endRow)
-
-Case 7, 9, 11:
-    'add content to basket part 1
-    addRows = 0
-    subtractRows = Int(pigeonCounter / 2)
-    totalpigeonCount = pigeonCounter
-    Set rng = Range("T" & firstRow + addRows & ":T" & endRow - subtractRows)
-    Call count_pigeons(rng)
-    Call count_expensive(rng)
-    totalCounter = pigeonCounter + expensiveCounter
-    Set rng = Range("Q" & firstRow + addRows & ":Q" & endRow - subtractRows)
-    Call print_PMD(rng, endRow - subtractRows)
+'execute final code to fill remainder basket if previous code did not yet reach the lastRow
+If currentRow <= lastRow Then
+    lastRowBasket = Cells(Rows.Count, "Q").End(xlUp).Row
+    firstRow = lastRowBasket + 1
+    endRow = lastRow
     
-    'add content to basket part 2
-    addRows = Int(totalpigeonCount / 2 + 0.999999)
-    subtractRows = 0
-    Set rng = Range("T" & firstRow + addRows & ":T" & endRow - subtractRows)
+    Call set_Range("T", endRow, firstRow)
     Call count_pigeons(rng)
     Call count_expensive(rng)
     totalCounter = pigeonCounter + expensiveCounter
-    Set rng = Range("Q" & firstRow + addRows & ":Q" & endRow - subtractRows)
-    Call print_PMD(rng, endRow - subtractRows)
-
-End Select
+    
+    Select Case totalCounter
+    
+    Case 1 To 6, 8, 10, 12:
+        Call set_Range("Q", endRow, firstRow)
+        Call print_PMD(rng, endRow)
+    
+    Case 7, 9, 11:
+        'add content to basket part 1
+        addRows = 0
+        subtractRows = Int(pigeonCounter / 2)
+        totalpigeonCount = pigeonCounter
+        Set rng = Range("T" & firstRow + addRows & ":T" & endRow - subtractRows)
+        Call count_pigeons(rng)
+        Call count_expensive(rng)
+        totalCounter = pigeonCounter + expensiveCounter
+        Set rng = Range("Q" & firstRow + addRows & ":Q" & endRow - subtractRows)
+        Call print_PMD(rng, endRow - subtractRows)
+        
+        'add content to basket part 2
+        addRows = Int(totalpigeonCount / 2 + 0.999999)
+        subtractRows = 0
+        Set rng = Range("T" & firstRow + addRows & ":T" & endRow - subtractRows)
+        Call count_pigeons(rng)
+        Call count_expensive(rng)
+        totalCounter = pigeonCounter + expensiveCounter
+        Set rng = Range("Q" & firstRow + addRows & ":Q" & endRow - subtractRows)
+        Call print_PMD(rng, endRow - subtractRows)
+    
+    End Select
+End If
 
 [Q5] = "P"
 
