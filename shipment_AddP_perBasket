@@ -98,8 +98,8 @@ Do Until rowCounter >= totalCount
 Loop
 
 'execute final code to fill remainder basket if previous code did not yet reach the lastRow
-If currentRow <= lastRow Then
-    lastRowBasket = Cells(Rows.Count, "Q").End(xlUp).Row
+lastRowBasket = Cells(Rows.Count, "Q").End(xlUp).Row
+If lastRowBasket <= lastRow Then
     firstRow = lastRowBasket + 1
     endRow = lastRow
     
