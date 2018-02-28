@@ -33,7 +33,7 @@ Sub print_PMD(ByRef rng As Range, ByRef endRow As Long)
 
 For Each Cell In rng
     If Cell.Offset(-1, 1).Value = "" Then
-        Cell = Cell.Offset(-1, 0).Value
+        Cell.Value = Cell.Offset(-1, 0).Value
     Else
         Cell = Pcount + 1
         Pcount = Pcount + 1
@@ -51,7 +51,7 @@ Range("S" & endRow).Value = pigeonCounter
 
 End Sub
 
-Sub test_p_nrs()
+Sub P_nrs_baskettype()
 
 [Q5] = 0
 
@@ -78,7 +78,7 @@ Do Until rowCounter >= totalCount
         totalCounter = pigeonCounter + expensiveCounter
             If totalCounter = basketType Then
                 endRow = currentRow
-                firstRow = (endRow - pigeonCounter)
+                firstRow = (endRow - pigeonCounter + 1)
                 Call set_Range("Q", endRow, firstRow)
                 Call print_PMD(rng, endRow)
             ElseIf totalCounter > basketType Then
@@ -137,5 +137,15 @@ Case 7, 9, 11:
 End Select
 
 [Q5] = "P"
+
+'empty variables
+currentRow = 0
+rowCounter = 0
+endRow = 0
+firstRow = 0
+rowCounter = 0
+totalCount = 0
+totalCounter = 0
+Pcount = 0
 
 End Sub
