@@ -8,11 +8,11 @@ Dim strSheetName As String
 Dim lookupSheet As Variant
 
 Dim nDate As Date
-Dim rng As Range, cell As Variant
+Dim rng As Range, Cell As Variant
 Dim x As Integer, RowToTest As Integer
 Dim InvoiceValue As Long
 
-Sub refresh_jet()
+Sub Refresh_Jet()
 
 Application.ScreenUpdating = False
 Application.DisplayAlerts = False
@@ -37,7 +37,7 @@ For R = 1 To UBound(Contents, 1)
     Next
 Next
 
-'copy range PMD to ws.lookups
+'copy range PMD to ws.lookups [B:C:D]
 With ThisWorkbook.Worksheets("Magazijnverzending")
     Contents = .Range("Q5:S" & lastRow).Value
 End With
@@ -48,9 +48,9 @@ For R = 1 To UBound(Contents, 1)
     Next
 Next
 
-'copy range client (packing) names to ws.lookups
+'copy range client/packing names and agent names to ws.lookups [E:F]
 With ThisWorkbook.Worksheets("Magazijnverzending")
-    Contents = .Range("Z5:Z" & lastRow).Value
+    Contents = .Range("Z5:AA" & lastRow).Value
 End With
 Application.Worksheets("lookups").Activate
 For R = 1 To UBound(Contents, 1)
@@ -59,58 +59,71 @@ For R = 1 To UBound(Contents, 1)
     Next
 Next
 
-'refresh jet
-Application.Run "JetReports.xlam!JetMenu", "Report"
+'copy range packing ring and notes to ws.lookups [G:H]
+With ThisWorkbook.Worksheets("Magazijnverzending")
+    lastRow = .Cells(.Rows.Count, "T").End(xlUp).Row
+    Contents = .Range("AH5:AI" & lastRow).Value
+End With
+Application.Worksheets("lookups").Activate
+For R = 1 To UBound(Contents, 1)
+    For C = 1 To UBound(Contents, 2)
+        Cells(R, C + 6) = Contents(R, C)
+    Next
+Next
 
-'VLookup "P"
+'refresh jet
+Application.Run "JetReports.xlam!JetMenu", "Refresh"
+
+'vlookup "P"
 lookupSheet = "lookups"
 With ThisWorkbook.Worksheets("lookups")
     lastRowlookupSheet = .Cells(.Rows.Count, "B").End(xlUp).Row
 End With
 With ThisWorkbook.Worksheets("Magazijnverzending")
     lastRow = .Cells(.Rows.Count, "T").End(xlUp).Row
-    .Range("Q6:Q" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",2,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",2,FALSE)),"""")"
+    .Range("Q6:Q" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$I$" & lastRowlookupSheet & ",2,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$I$" & lastRowlookupSheet & ",2,FALSE)),"""")"
     .Range("Q6:Q" & lastRow).Value = .Range("Q6:Q" & lastRow).Value
 'vlookup "M"
-    .Range("R6:R" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",3,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",3,FALSE)),"""")"
+    .Range("R6:R" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$I$" & lastRowlookupSheet & ",3,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$I$" & lastRowlookupSheet & ",3,FALSE)),"""")"
     .Range("R6:R" & lastRow).Value = .Range("R6:R" & lastRow).Value
-'vlookup "D
-    .Range("S6:S" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",4,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",4,FALSE)),"""")"
+'vlookup "D"
+    .Range("S6:S" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$I$" & lastRowlookupSheet & ",4,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$I$" & lastRowlookupSheet & ",4,FALSE)),"""")"
     .Range("S6:S" & lastRow).Value = .Range("S6:S" & lastRow).Value
-End With
-
 'vlookup "client (packing) names"
-lookupSheet = "lookups"
-With ThisWorkbook.Worksheets("lookups")
-    lastRowlookupSheet = .Cells(.Rows.Count, "B").End(xlUp).Row
-End With
-With ThisWorkbook.Worksheets("Magazijnverzending")
-    lastRow = .Cells(.Rows.Count, "T").End(xlUp).Row
-    .Range("Z6:Z" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",5,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$F$" & lastRowlookupSheet & ",5,FALSE)),"""")"
+    .Range("Z6:Z" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$I$" & lastRowlookupSheet & ",5,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$I$" & lastRowlookupSheet & ",5,FALSE)),"""")"
     .Range("Z6:Z" & lastRow).Value = .Range("Z6:Z" & lastRow).Value
+'vlookup "agent names"
+    .Range("AA6:AA" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$I$" & lastRowlookupSheet & ",6,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$I$" & lastRowlookupSheet & ",6,FALSE)),"""")"
+    .Range("AA6:AA" & lastRow).Value = .Range("AA6:AA" & lastRow).Value
+'vlookup "packing ring"
+    .Range("AH6:AH" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$I$" & lastRowlookupSheet & ",7,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$I$" & lastRowlookupSheet & ",7,FALSE)),"""")"
+    .Range("AH6:AH" & lastRow).Value = .Range("AH6:AH" & lastRow).Value
+'vlookup "notes"
+    .Range("AI6:AI" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$I$" & lastRowlookupSheet & ",8,FALSE)="""","""",VLOOKUP($T6,'" & lookupSheet & "'!$B$2:$I$" & lastRowlookupSheet & ",8,FALSE)),"""")"
+    .Range("AI6:AI" & lastRow).Value = .Range("AI6:AI" & lastRow).Value
 End With
 
 'Format
 Worksheets("Magazijnverzending").Activate
-nDate = Format(Date, "yyyy-mm-dd")
+nDate = format(Date, "yyyy-mm-dd")
 Range("F2").Value = "Versie:"
 Range("G2").Value = nDate & "   " & Time
 
 'als P-nr leeg is, "New" toevoegen
 Set rng = Range("Q6:Q" & lastRow)
-For Each cell In rng
-    If cell.Value = "" Then
-        cell.Value = "!New"
+For Each Cell In rng
+    If Cell.Value = "" Then
+        Cell.Value = "!New"
     End If
-Next cell
+Next Cell
 
 'als clientname leeg is, "New" toevoegen
 Set rng = Range("Z6:Z" & lastRow)
-For Each cell In rng
-    If cell.Value = "" Then
-        cell.Value = "!New"
+For Each Cell In rng
+    If Cell.Value = "" Then
+        Cell.Value = "!New"
     End If
-Next cell
+Next Cell
 
 'lastRow = Cells(Rows.Count, "Z").End(xlUp).Row
     ActiveWorkbook.Worksheets("Magazijnverzending").Sort.SortFields.Clear
@@ -131,30 +144,30 @@ Next cell
         .SortMethod = xlPinYin
         .Apply
     End With
-'
+
 'als vestigingveld leeg is, "vendor" toevoegen
 Set rng = Range("K6:K" & lastRow)
-For Each cell In rng
-    If cell.Value = "" Then
-        cell.Value = "VENDOR"
+For Each Cell In rng
+    If Cell.Value = "" Then
+        Cell.Value = "VENDOR"
     End If
-Next cell
-'
+Next Cell
+
 'kleur toevoegen per klantnaam
 lastRow = Cells(Rows.Count, "T").End(xlUp).Row
 x = 0
-For cell = 7 To lastRow
-    If (Cells(cell, 26).Value = Cells(cell - 1, 26).Value) Then
-            Range("F" & cell - 1 & ":AI" & cell - 1).Select
+For Cell = 7 To lastRow
+    If (Cells(Cell, 26).Value = Cells(Cell - 1, 26).Value) Then
+            Range("F" & Cell - 1 & ":AI" & Cell - 1).Select
             Selection.Copy
-            Range("F" & cell & ":AI" & cell).Select
+            Range("F" & Cell & ":AI" & Cell).Select
             Selection.PasteSpecial Paste:=xlPasteFormats, Operation:=xlNone, _
                 SkipBlanks:=False, Transpose:=False
             Application.CutCopyMode = False
     Else
         If x = 0 Then
             x = 1
-            With Range("F" & cell & ":AI" & cell).Interior
+            With Range("F" & Cell & ":AI" & Cell).Interior
                 .Pattern = xlSolid
                 .PatternColorIndex = xlAutomatic
                 .ThemeColor = xlThemeColorAccent1
@@ -163,7 +176,7 @@ For cell = 7 To lastRow
             End With
         ElseIf x = 1 Then
             x = 0
-            With Range("F" & cell & ":AI" & cell).Interior
+            With Range("F" & Cell & ":AI" & Cell).Interior
                 .Pattern = xlSolid
                 .PatternColorIndex = xlAutomatic
                 .ThemeColor = xlThemeColorDark1
@@ -172,7 +185,7 @@ For cell = 7 To lastRow
             End With
         End If
     End If
-Next cell
+Next Cell
 
 For RowToTest = (Cells(Rows.Count, "T").End(xlUp).Row) To 6 Step -1
     InvoiceValue = Cells(RowToTest, "AD").Value
@@ -246,12 +259,20 @@ Range("G2:K2").Select
         .MergeCells = False
     End With
     Selection.Merge
-
-'factuurlijst
-
-'hoklijst
-
-'leverlijst
+    
+'delete surplus ws
+On Error Resume Next
+    Worksheets("lookups").Delete
+    Worksheets("Baskets").Delete
+    Worksheets("Factuurlijst").Delete
+    Worksheets("Hoklijst").Delete
+    Worksheets("Leverlijst").Delete
+    Worksheets("Detaillijst").Delete
+    Worksheets("Enveloppen").Delete
+    Worksheets("Mandlijst").Delete
+    Worksheets("Paklijst").Delete
+    Worksheets("Controlelijst").Delete
+On Error GoTo 0
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
