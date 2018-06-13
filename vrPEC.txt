@@ -1,40 +1,18 @@
-Private Function IsInArray(valToBeFound As Variant, arr As Variant) As Boolean
-
-Dim element As Variant
-On Error GoTo IsInArrayError:
-    For Each element In arr
-        If element = valToBeFound Then
-            IsInArray = True
-            Exit Function
-        End If
-    Next element
-Exit Function
-IsInArrayError:
-On Error GoTo 0
-IsInArray = False
-End Function
-
+'versie PEC VR 13-06-2018 [Niels]
+'================================
+'
 Sub ophalen_vrPEC()
 
-Dim wkb1 As Workbook
-Dim wkb2 As Workbook
-Dim fileName As String
-Dim nDate As String
-Dim RetVal As Variant
-Dim wk_name As Variant
-Dim wsh As Object
-Set wsh = VBA.CreateObject("WScript.Shell")
-Dim waitOnReturn As Boolean: waitOnReturn = True
-Dim windowStyle As Integer: windowStyle = 1
-Dim removeArray As Variant
-Dim addArray As Variant
+Dim wkb1 As Workbook, wkb2 As Workbook
+Dim fileName As String, nDate As String
+Dim RetVal As Variant, wk_name As Variant
+Dim removeArray As Variant, addArray As Variant
 Dim TotalRowsRemoved As Long
 Dim bandNumberRem As String
 Dim bandNumberAdd As Variant
-Dim RowToTest As Long
-Dim RowToAdd As Long
-Dim TotalRowsAdded As Long
-Dim lastRow As Long
+Dim bandNumber As Variant
+Dim RowToTest As Long, RowToAdd As Long, TotalRowsAdded As Long, lastRow As Long
+Dim lastRowNew As Long, lastRowOld As Long
 Dim Sheet2Name As String
 Dim rng As Variant
 
@@ -51,18 +29,19 @@ fileName = Application.GetOpenFilename( _
     Title:="Selecteer de Excel-file van de voorraadlijst om de huidige voorraad mee te vergelijken.", _
     MultiSelect:=False)
 
-'maakt objecten van de actieve werkmap en creëert een nieuwe werkmap voor het geselecteerde bestand
+'maakt objecten van de actieve werkmap (nieuwe VR) en creëert een nieuwe werkmap voor het geselecteerde bestand (oudere VR)
 Set wkb1 = ActiveWorkbook
 Set wkb2 = Workbooks.Add(fileName)
 
 'kopieert het eerste werkblad van het geselecteerde bestand naar de actieve werkmap
-wkb2.Sheets(1).Copy After:=wkb1.Sheets(1)
+wkb2.Sheets(1).Copy after:=wkb1.Sheets(1)
 
 'focust op het werkblad van de huidige voorraad en converteert naar waarden
 wkb1.Sheets(1).Activate
 With Range("C:C")
     .Value = .Value
 End With
+
 'focust op het werkblad van de oude voorraad en converteert naar waarden
 'schakelt alle filters weer uit
 wkb1.Sheets(2).Activate
@@ -73,7 +52,7 @@ With Range("C:C")
     .Value = .Value
 End With
 
-'sluit de werkmap van de gekopieerde voorraad
+'sluit de werkmap van de oudere voorraad
 wkb2.Close
 
 'herformatteert de datum en tijd van vandaag
@@ -86,41 +65,97 @@ ActiveWorkbook.Worksheets(1).Name = nDate & " " & nTime
 ActiveWorkbook.SaveAs fileName:=nDate & " " & nTime & " PEC Voorraad", FileFormat:=xlOpenXMLWorkbookMacroEnabled
 wk_name = nDate & " " & nTime & " PEC Voorraad.xlsm"
 
-'sluit de werkmap alvorens python code uit te voeren
-ActiveWorkbook.Close
+'collection ringnummers nieuwe voorraad
+Dim NewSupply As Collection
+Set NewSupply = New Collection
 
-wsh.Run "C:\Users\NielsC\AppData\Local\Programs\Python\Python35\Scripts\dist\vrPEC\vrPEC.exe", windowStyle, waitOnReturn
+Worksheets(1).Activate
+On Error Resume Next
+For lastRowNew = Cells(Rows.Count, "C").End(xlUp).Row - 8 To 6 Step -1
+    NewSupply.Add Range("C" & lastRowNew).Value, Range("C" & lastRowNew).Value
+    'Debug.Print NewSupply(NewSupply.Count)
+Next
+On Error GoTo 0
 
-'opent opnieuw het werkboek nadat de python code uitgevoerd is
-Workbooks.Open (wk_name)
-
-'slaat de verwijderde ringnummers op in een array
-Worksheets("verwijderd").Activate
-If IsEmpty(Range("A1")) = False Then
-    TotalRowsRemoved = Rows(Rows.Count).End(xlUp).Row
-    removeArray = Range(Cells(1, 1), Cells(TotalRowsRemoved, 1)).Value
-Else
-    removeArray = Null
-End If
-
-'slaat de toegevoegde ringnummers op in een array
-Worksheets("toegevoegd").Activate
-If IsEmpty(Range("A1")) = False Then
-    TotalRowsAdded = Rows(Rows.Count).End(xlUp).Row
-    addArray = Range(Cells(1, 1), Cells(TotalRowsAdded, 1)).Value
-Else
-    addArray = Null
-End If
+'collection ringnummers oude voorraad
+Dim OldSupply As Collection
+Set OldSupply = New Collection
 
 Worksheets(2).Activate
+On Error Resume Next
+For lastRowOld = Cells(Rows.Count, "C").End(xlUp).Row - 8 To 6 Step -1
+    OldSupply.Add Range("C" & lastRowOld).Value, Range("C" & lastRowOld).Value
+    'Debug.Print OldSupply(OldSupply.Count)
+Next
+On Error GoTo 0
 
+'collection toegevoegde duiven
+Dim AddedSupply As Collection
+Set AddedSupply = New Collection
+
+For Each bandNumber In NewSupply
+    If Not Exists(OldSupply, bandNumber) Then
+        AddedSupply.Add (bandNumber)
+    End If
+Next
+
+'collection verwijderde duiven
+Dim RemovedSupply As Collection
+Set RemovedSupply = New Collection
+
+For Each bandNumber In OldSupply
+    If Not Exists(NewSupply, bandNumber) Then
+        RemovedSupply.Add (bandNumber)
+    End If
+Next
+
+'maak een werkblad voor de toegevoegde ringnummers
+Dim wsName As String
+wsName = "toegevoegd"
+Worksheets.Add(after:=Sheets(Sheets.Count)).Name = wsName
+Worksheets("toegevoegd").Range("A1").Value = "band numbers"
+
+On Error Resume Next
+For i = 1 To AddedSupply.Count
+    Worksheets("toegevoegd").Range("A" & i + 1).Value = AddedSupply(i)
+Next
+On Error GoTo 0
+
+'maak een werkblad voor de verwijderde ringnummers
+wsName = "verwijderd"
+Worksheets.Add(after:=Sheets(Sheets.Count)).Name = wsName
+Worksheets("verwijderd").Range("A1").Value = "band numbers"
+
+On Error Resume Next
+For i = 1 To AddedSupply.Count
+    Worksheets("verwijderd").Range("A" & (i + 1)).Value = RemovedSupply(i)
+Next
+On Error GoTo 0
+
+'toon de opmerkingen bij de verwijderde ringnummers
+Dim lastRowlookupSheet As Long
+lastRowlookupSheet = Worksheets(2).Range("AA:AA").Find(what:="Opmerking", after:=Range("AA6")).Row - 8
+Dim lookupSheet As String
+lookupSheet = Worksheets(2).Name
+ThisWorkbook.Worksheets("verwijderd").Select
+With ThisWorkbook.Worksheets("verwijderd")
+    lastRow = .Cells(.Rows.Count, "A").End(xlUp).Row
+    .Range("B2:B" & lastRow).Formula = "=IFERROR(IF(VLOOKUP($A2,'" & lookupSheet & "'!$C$6:$AA$" & lastRowlookupSheet & ",25,FALSE)="""","""",VLOOKUP($A2,'" & lookupSheet & "'!$C$6:$AA$" & lastRowlookupSheet & ",25,FALSE)),"""")"
+    .Range("B2:B" & lastRow).Value = .Range("B2:B" & lastRow).Value
+End With
+
+'creëer arrays van de collecties voor verdere verwerking
+addArray = collectionToArray(AddedSupply)
+removeArray = collectionToArray(RemovedSupply)
+
+Worksheets(2).Activate
 'schakelt alle filters weer uit
 If ActiveSheet.FilterMode = True Then
-ActiveSheet.ShowAllData
+    ActiveSheet.ShowAllData
 End If
 
-'zoekt voor elke rij of het ringnummer in kolom C terug te vinden is in de array
-'met verwijderde ringnummers en indien WAAR verwijdert de volledige rij
+'zoekt voor elke rij of het ringnummer in kolom C terug te vinden is in de array met verwijderde ringnummers
+'indien WAAR verwijdert de volledige rij
 For RowToTest = Cells(Rows.Count, "C").End(xlUp).Row - 8 To 6 Step -1
     bandNumberRem = Cells(RowToTest, "C").Value
     If IsArray(removeArray) Then 'controle of het om een array of var gaat (1 item array = var zoals het hier gebruikt wordt)
@@ -240,3 +275,47 @@ Application.ScreenUpdating = True
 Application.DisplayAlerts = True
 
 End Sub
+
+Private Function IsInArray(valToBeFound As Variant, arr As Variant) As Boolean
+
+Dim element As Variant
+On Error GoTo IsInArrayError:
+    For Each element In arr
+        If element = valToBeFound Then
+            IsInArray = True
+            Exit Function
+        End If
+    Next element
+Exit Function
+IsInArrayError:
+On Error GoTo 0
+IsInArray = False
+
+End Function
+
+Private Function Exists(pColl, ByVal bandNr As String) As Boolean
+
+For Each Item In pColl
+    If bandNr = Item Then
+        Exists = True
+        Debug.Print bandNr
+        Exit Function
+    Else
+        Exists = False
+    End If
+Next Item
+
+End Function
+
+Function collectionToArray(c As Collection) As Variant()
+
+    On Error Resume Next
+    Dim a() As Variant: ReDim a(0 To c.Count - 1)
+    Dim i As Integer
+    For i = 1 To c.Count
+        a(i - 1) = c.Item(i)
+    Next
+    collectionToArray = a
+    On Error GoTo 0
+    
+End Function
