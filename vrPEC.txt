@@ -1,5 +1,5 @@
-'versie PEC VR 13-06-2018 [Niels]
-'================================
+'versie 1.2 // PEC VR // 15-06-2018 [Niels]
+'==========================================
 '
 Sub ophalen_vrPEC()
 
@@ -38,9 +38,8 @@ wkb2.Sheets(1).Copy after:=wkb1.Sheets(1)
 
 'focust op het werkblad van de huidige voorraad en converteert naar waarden
 wkb1.Sheets(1).Activate
-With Range("C:C")
-    .Value = .Value
-End With
+lastRow = Cells(Rows.Count, "C").End(xlUp).Row - 8
+Range("C6:C" & lastRow).Value = Range("C6:C" & lastRow).Value
 
 'focust op het werkblad van de oude voorraad en converteert naar waarden
 'schakelt alle filters weer uit
@@ -48,9 +47,8 @@ wkb1.Sheets(2).Activate
 If ActiveSheet.FilterMode = True Then
 ActiveSheet.ShowAllData
 End If
-With Range("C:C")
-    .Value = .Value
-End With
+lastRow = Cells(Rows.Count, "C").End(xlUp).Row - 8
+Range("C6:C" & lastRow).Value = Range("C6:C" & lastRow).Value
 
 'sluit de werkmap van de oudere voorraad
 wkb2.Close
@@ -109,7 +107,7 @@ For Each bandNumber In OldSupply
     End If
 Next
 
-'maak een werkblad voor de toegevoegde ringnummers
+'maakt een werkblad voor de toegevoegde ringnummers
 Dim wsName As String
 wsName = "toegevoegd"
 Worksheets.Add(after:=Sheets(Sheets.Count)).Name = wsName
@@ -121,7 +119,7 @@ For i = 1 To AddedSupply.Count
 Next
 On Error GoTo 0
 
-'maak een werkblad voor de verwijderde ringnummers
+'maakt een werkblad voor de verwijderde ringnummers
 wsName = "verwijderd"
 Worksheets.Add(after:=Sheets(Sheets.Count)).Name = wsName
 Worksheets("verwijderd").Range("A1").Value = "band numbers"
@@ -132,7 +130,7 @@ For i = 1 To AddedSupply.Count
 Next
 On Error GoTo 0
 
-'toon de opmerkingen bij de verwijderde ringnummers
+'toont de opmerkingen bij de verwijderde ringnummers
 Dim lastRowlookupSheet As Long
 lastRowlookupSheet = Worksheets(2).Range("AA:AA").Find(what:="Opmerking", after:=Range("AA6")).Row - 8
 Dim lookupSheet As String
@@ -144,7 +142,7 @@ With ThisWorkbook.Worksheets("verwijderd")
     .Range("B2:B" & lastRow).Value = .Range("B2:B" & lastRow).Value
 End With
 
-'creëer arrays van de collecties voor verdere verwerking
+'creëert arrays van de collecties voor verdere verwerking
 addArray = collectionToArray(AddedSupply)
 removeArray = collectionToArray(RemovedSupply)
 
@@ -309,6 +307,7 @@ End Function
 
 Function collectionToArray(c As Collection) As Variant()
 
+If c.Count > 0 Then
     On Error Resume Next
     Dim a() As Variant: ReDim a(0 To c.Count - 1)
     Dim i As Integer
@@ -317,5 +316,8 @@ Function collectionToArray(c As Collection) As Variant()
     Next
     collectionToArray = a
     On Error GoTo 0
-    
+Else
+    Exit Function
+End If
+
 End Function
